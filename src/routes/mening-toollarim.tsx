@@ -139,6 +139,7 @@ function emptyConfig(tool: ToolDef): ToolConfig {
 function MeningToollarimPage() {
   const [installed, setInstalled] = useState<string[]>([]);
   const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
+  const [instances, setInstances] = useState<ToolInstance[]>([]);
   const [tab, setTab] = useState<TabId>("all");
   const [query, setQuery] = useState("");
   const [installing, setInstalling] = useState<string | null>(null);
@@ -148,6 +149,7 @@ function MeningToollarimPage() {
   useEffect(() => {
     setInstalled(readInstalledToolIds());
     setConfigs(readToolConfigs());
+    setInstances(readToolInstances());
   }, []);
 
   useEffect(() => {
@@ -169,6 +171,11 @@ function MeningToollarimPage() {
     writeToolConfigs(next);
   };
 
+  const persistInstances = (list: ToolInstance[]) => {
+    setInstances(list);
+    writeToolInstances(list);
+  };
+
   const install = (tool: ToolDef) => {
     if (installed.includes(tool.id)) return;
     if (tool.tier === "pro" && !USER_IS_PRO) return;
@@ -186,6 +193,7 @@ function MeningToollarimPage() {
     const { [toolId]: _removed, ...rest } = configs;
     setConfigs(rest);
     writeToolConfigs(rest);
+    persistInstances(instances.filter((i) => i.toolId !== toolId));
   };
 
   const filtered = useMemo(() => {
