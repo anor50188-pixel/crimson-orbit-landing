@@ -23,8 +23,6 @@ import {
   Circle,
   Brain,
   Play,
-  Pencil,
-  Power,
   Sun,
   Box,
   Target,
@@ -117,6 +115,7 @@ function AgentCreatePage() {
   const [activeStep, setActiveStep] = useState<number>(-1);
   const [logs, setLogs] = useState<{ time: string; text: string }[]>([]);
   const [clarifyStage, setClarifyStage] = useState<0 | 1 | 2>(0);
+  const [savedToAgents, setSavedToAgents] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const addLog = (text: string) => setLogs((l) => [...l, { time: nowTime(), text }]);
@@ -243,6 +242,26 @@ function AgentCreatePage() {
     setFollowUp("");
   };
 
+  const handleTry = () => {
+    if (savedToAgents) return;
+    try {
+      const raw = localStorage.getItem("agentus:agents");
+      const list = raw ? JSON.parse(raw) : [];
+      list.push({
+        id: `${Date.now()}`,
+        name: "Hisobot Yig'uvchi",
+        description:
+          "Telegram orqali ma'lumot yig'adi, Sheets ga yozadi va hisobot yuboradi.",
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem("agentus:agents", JSON.stringify(list));
+    } catch {
+      // ignore storage errors
+    }
+    setSavedToAgents(true);
+    addLog("Agent Agentlarim bo'limiga qo'shildi");
+  };
+
   const isSplit = phase !== "hero";
   const completed = phase === "done" ? buildSteps.length : Math.max(activeStep, 0);
   const percent = Math.round((completed / buildSteps.length) * 100);
@@ -258,16 +277,31 @@ function AgentCreatePage() {
         </div>
 
         <nav className="flex-1 space-y-0.5 px-3">
-          {navItems.map(({ icon: Icon, label, active }) =>
-            active ? (
-              <span
-                key={label}
-                className="flex items-center gap-3 rounded-lg bg-primary/15 px-3 py-2.5 text-sm font-medium text-foreground"
-              >
-                <Icon className="h-4 w-4 text-primary" />
-                {label}
-              </span>
-            ) : (
+          {navItems.map(({ icon: Icon, label, active }) => {
+            if (active) {
+              return (
+                <span
+                  key={label}
+                  className="flex items-center gap-3 rounded-lg bg-primary/15 px-3 py-2.5 text-sm font-medium text-foreground"
+                >
+                  <Icon className="h-4 w-4 text-primary" />
+                  {label}
+                </span>
+              );
+            }
+            if (label === "Agentlarim") {
+              return (
+                <Link
+                  key={label}
+                  to="/agentlarim"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </Link>
+              );
+            }
+            return (
               <button
                 key={label}
                 type="button"
@@ -278,8 +312,8 @@ function AgentCreatePage() {
                 <Icon className="h-4 w-4" />
                 {label}
               </button>
-            ),
-          )}
+            );
+          })}
         </nav>
 
         {/* Pro Plan card (demo — plan tizimi hali ulanmagan) */}
@@ -764,35 +798,31 @@ function AgentCreatePage() {
                       </p>
                     </>
                   )}
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <button
-                      type="button"
-                      disabled
-                      title="Sinov muhiti hali ulanmagan (rejalashtirilgan)"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground opacity-80"
-                    >
-                      <Play className="h-3.5 w-3.5" /> Sinab ko'rish
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="Tahrirlash hali ulanmagan (rejalashtirilgan)"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs opacity-80"
-                    >
-                      <Pencil className="h-3.5 w-3.5" /> Tahrirlash
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="Faollashtirish backendi hali ulanmagan (rejalashtirilgan)"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs opacity-80"
-                    >
-                      <Power className="h-3.5 w-3.5" /> Faollashtirish
-                    </button>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    Rejalashtirilgan — haqiqiy backend hali ulanmagan.
-                  </p>
+                  {phase === "done" && (
+                    <div className="flex flex-col items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleTry}
+                        disabled={savedToAgents}
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        <Play className="h-3.5 w-3.5" /> Sinab ko'rish
+                      </button>
+                      {savedToAgents && (
+                        <div className="animate-fade-in text-center">
+                          <p className="text-sm font-medium text-emerald-400">
+                            Agentingiz Agentlarim bo'limida
+                          </p>
+                          <Link
+                            to="/agentlarim"
+                            className="mt-1 inline-block text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                          >
+                            Agentlarim bo'limiga o'tish
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </section>

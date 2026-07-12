@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AgentlarimRouteImport } from './routes/agentlarim'
 import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
 import { Route as IndexRouteImport } from './routes/index'
 
+const AgentlarimRoute = AgentlarimRouteImport.update({
+  id: '/agentlarim',
+  path: '/agentlarim',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgentYaratishRoute = AgentYaratishRouteImport.update({
   id: '/agent-yaratish',
   path: '/agent-yaratish',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
+  '/agentlarim': typeof AgentlarimRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
+  '/agentlarim': typeof AgentlarimRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
+  '/agentlarim': typeof AgentlarimRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agent-yaratish'
+  fullPaths: '/' | '/agent-yaratish' | '/agentlarim'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agent-yaratish'
-  id: '__root__' | '/' | '/agent-yaratish'
+  to: '/' | '/agent-yaratish' | '/agentlarim'
+  id: '__root__' | '/' | '/agent-yaratish' | '/agentlarim'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentYaratishRoute: typeof AgentYaratishRoute
+  AgentlarimRoute: typeof AgentlarimRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/agentlarim': {
+      id: '/agentlarim'
+      path: '/agentlarim'
+      fullPath: '/agentlarim'
+      preLoaderRoute: typeof AgentlarimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agent-yaratish': {
       id: '/agent-yaratish'
       path: '/agent-yaratish'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentYaratishRoute: AgentYaratishRoute,
+  AgentlarimRoute: AgentlarimRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
