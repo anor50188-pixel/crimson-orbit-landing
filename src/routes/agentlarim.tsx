@@ -24,12 +24,18 @@ import {
   X,
   Loader2,
   Sparkles,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
 import {
   readInstalledToolIds,
+  readToolConfigs,
+  readToolInstances,
+  isToolAuthenticated,
   toolCatalog,
   type ToolDef,
+  type ToolInstance,
 } from "@/lib/tools-catalog";
 
 export const Route = createFileRoute("/agentlarim")({
