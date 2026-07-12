@@ -1177,20 +1177,298 @@ function PermissionsTab({
   );
 }
 
-function AgentsTab() {
+// ————————————————————————————————————————————————————————————————
+// Konfiguratsiyalar tab
+// ————————————————————————————————————————————————————————————————
+function InstancesTab({
+  tool, authed, instances, onNew, onEdit, onDelete, onGoAuth,
+}: {
+  tool: ToolDef;
+  authed: boolean;
+  instances: ToolInstance[];
+  onNew: () => void;
+  onEdit: (i: ToolInstance) => void;
+  onDelete: (id: string) => void;
+  onGoAuth: () => void;
+}) {
+  if (!authed) {
+    return (
+      <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
+        <ShieldCheck className="mx-auto mb-2 h-5 w-5 text-amber-400" />
+        <p className="mb-1 text-sm text-foreground">Avval autentifikatsiyani yakunlang</p>
+        <p className="mb-3">Bir marta ulanganingizdan so'ng, cheksiz konfiguratsiya yaratishingiz mumkin.</p>
+        <button
+          type="button"
+          onClick={onGoAuth}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+        >
+          <ShieldCheck className="h-3.5 w-3.5" /> Autentifikatsiyaga o'tish
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-lg border border-dashed border-border/60 bg-card/30 px-4 py-8 text-center text-xs text-muted-foreground">
-      <Bot className="mx-auto mb-2 h-5 w-5 text-primary/70" />
-      <p>Hozircha bu tool hech qaysi agentga ulanmagan.</p>
-      <p className="mt-1 text-[11px] opacity-70">
-        Ulanish "Agentlarim" sahifasidan amalga oshiriladi. Backend tayyor bo'lgach — real ma'lumot ko'rinadi.
-      </p>
-      <Link
-        to="/agentlarim"
-        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground"
-      >
-        <Bot className="h-3.5 w-3.5" /> Agentlarim
-      </Link>
+    <div className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium">Konfiguratsiyalar</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            Bir tool uchun bir nechta konfiguratsiya yaratishingiz mumkin.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onNew}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+        >
+          <Plus className="h-3.5 w-3.5" /> Yangi konfiguratsiya
+        </button>
+      </div>
+
+      {instances.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
+          <Settings className="mx-auto mb-2 h-5 w-5 text-primary/70" />
+          <p>Hali konfiguratsiya yo'q.</p>
+          <p className="mt-1 opacity-70">
+            "Yangi konfiguratsiya" bosib birinchi manzilingizni qo'shing.
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {instances.map((inst) => {
+            const target = tool.targetFieldKey ? inst.fields[tool.targetFieldKey] : "";
+            return (
+              <li
+                key={inst.id}
+                className="group flex items-start gap-3 rounded-lg border border-border/60 bg-card/40 p-3"
+              >
+                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
+                  <tool.icon className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-medium">{inst.name || "Nomsiz konfiguratsiya"}</p>
+                    <span className="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                      Tayyor
+                    </span>
+                  </div>
+                  {target && (
+                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{target}</p>
+                  )}
+                  <p className="mt-0.5 text-[10px] text-muted-foreground/80">
+                    Agentlarda: {inst.connectedAgentIds.length} ta
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(inst)}
+                    className="rounded p-1.5 text-muted-foreground hover:bg-background/60 hover:text-foreground"
+                    aria-label="Tahrirlash"
+                  >
+                    <Settings className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(inst.id)}
+                    className="rounded p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-400"
+                    aria-label="O'chirish"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
+        <div className="mb-1 flex items-center gap-1.5 text-foreground">
+          <Info className="h-3.5 w-3.5 text-primary" /> Eslatma
+        </div>
+        Barcha konfiguratsiyalar bitta ulangan akkaunt va ruxsatlar orqali ishlaydi.
+        API yoki OAuth sozlamalarini o'zgartirish uchun Autentifikatsiya bo'limidan foydalaning.
+      </div>
+    </div>
+  );
+}
+
+function InstanceEditor({
+  tool, instance, onCancel, onSave,
+}: {
+  tool: ToolDef;
+  instance: ToolInstance;
+  onCancel: () => void;
+  onSave: (i: ToolInstance) => void;
+}) {
+  const [draft, setDraft] = useState<ToolInstance>(instance);
+  const fields = tool.instanceFields ?? [];
+  const requiredOk = fields
+    .filter((f) => f.required)
+    .every((f) => (draft.fields[f.key] ?? "").trim().length > 0);
+  const canSave = draft.name.trim().length > 0 && requiredOk;
+
+  const set = (k: string, v: string) =>
+    setDraft((d) => ({ ...d, fields: { ...d.fields, [k]: v } }));
+
+  return (
+    <>
+      <div
+        aria-hidden
+        onClick={onCancel}
+        className="absolute inset-0 z-40 bg-background/50 backdrop-blur-[1px]"
+      />
+      <aside className="absolute inset-y-0 right-0 z-50 flex w-full max-w-[440px] flex-col border-l border-border/60 bg-background shadow-2xl animate-slide-in-right">
+        <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {tool.name} · Konfiguratsiya
+            </p>
+            <h3 className="mt-0.5 text-base font-semibold">
+              {draft.name.trim() || "Yangi konfiguratsiya"}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground"
+            aria-label="Yopish"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 text-sm">
+          <div>
+            <label className="mb-1 block text-[11px] text-muted-foreground">
+              Konfiguratsiya nomi <span className="text-red-400">*</span>
+            </label>
+            <input
+              value={draft.name}
+              onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+              placeholder="Masalan: Haftalik hisobot"
+              className="w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground/80">
+              Agent ichida shu nom bilan ko'rinadi.
+            </p>
+          </div>
+
+          {fields.map((field) => (
+            <InstanceFieldInput
+              key={field.key}
+              field={field}
+              value={draft.fields[field.key] ?? ""}
+              onChange={(v) => set(field.key, v)}
+            />
+          ))}
+
+          <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
+            <div className="mb-1 flex items-center gap-1.5 text-foreground">
+              <Bot className="h-3.5 w-3.5 text-primary" /> Bog'langan agentlar
+            </div>
+            {draft.connectedAgentIds.length === 0
+              ? "Hozircha hech qaysi agentga biriktirilmagan. Agentlarim sahifasidan biriktiring."
+              : `${draft.connectedAgentIds.length} ta agent foydalanmoqda.`}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t border-border/60 px-5 py-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            Bekor qilish
+          </button>
+          <button
+            type="button"
+            disabled={!canSave}
+            onClick={() => onSave({ ...draft, updatedAt: new Date().toISOString() })}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium ${
+              canSave
+                ? "bg-primary text-primary-foreground hover:opacity-90"
+                : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5" /> Konfiguratsiyani saqlash
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+function InstanceFieldInput({
+  field, value, onChange,
+}: {
+  field: InstanceField;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const label = (
+    <label className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
+      <span>
+        {field.label}
+        {field.required && <span className="ml-1 text-red-400">*</span>}
+      </span>
+      {field.help && <span className="text-[10px] opacity-70">{field.help}</span>}
+    </label>
+  );
+
+  if (field.type === "textarea") {
+    return (
+      <div>
+        {label}
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder}
+          rows={3}
+          className="w-full resize-y rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+        />
+      </div>
+    );
+  }
+
+  if (field.type === "select") {
+    return (
+      <div>
+        {label}
+        <div className="flex flex-wrap gap-1.5">
+          {(field.options ?? []).map((opt) => {
+            const active = value === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onChange(opt.value)}
+                className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${
+                  active
+                    ? "border-primary/60 bg-primary/10 text-primary"
+                    : "border-border/60 bg-background/40 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {label}
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={field.placeholder}
+        className="w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+      />
     </div>
   );
 }
