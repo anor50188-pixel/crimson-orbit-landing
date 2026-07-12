@@ -26,6 +26,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
+import {
+  readInstalledToolIds,
+  toolCatalog,
+  type ToolDef,
+} from "@/lib/tools-catalog";
 
 export const Route = createFileRoute("/agentlarim")({
   component: AgentlarimPage,
@@ -67,54 +72,16 @@ const navItems = [
   { icon: Settings, label: "Sozlamalar" },
 ];
 
-type MarketTool = {
-  id: string;
-  name: string;
-  description: string;
-  category: "Recommended" | "Popular";
-  icon: typeof Wrench;
-};
-
-// Faqat Agentus MVP doirasidagi to'g'ri toolar — soxta integratsiyalar yo'q.
-const marketTools: MarketTool[] = [
-  {
-    id: "telegram-bot",
-    name: "Telegram Bot API",
-    description: "Telegram orqali xabar yuborish va qabul qilish.",
-    category: "Recommended",
-    icon: Plug,
-  },
-  {
-    id: "google-sheets",
-    name: "Google Sheets",
-    description: "Jadvallarga yozish va o'qish.",
-    category: "Recommended",
-    icon: Plug,
-  },
-  {
-    id: "http-request",
-    name: "HTTP Request",
-    description: "Har qanday REST endpointga so'rov yuborish.",
-    category: "Popular",
-    icon: Wrench,
-  },
-  {
-    id: "web-scraper",
-    name: "Web Scraper",
-    description: "Sahifadan strukturali ma'lumot yig'ish.",
-    category: "Popular",
-    icon: Wrench,
-  },
-  {
-    id: "pdf-reader",
-    name: "PDF Reader",
-    description: "PDF fayllarni matnga o'qish.",
-    category: "Popular",
-    icon: Wrench,
-  },
-];
-
-const categories = ["Barchasi", "Recommended", "Popular", "O'rnatilgan"] as const;
+// Agent'ga qo'shiladigan toollar — foydalanuvchi "Mening toollarim"ga
+// o'rnatgan toollargina bu yerda ko'rinadi. Marketplace to'g'ridan-to'g'ri
+// agentga o'rnamaydi; oldin foydalanuvchi kutubxonasiga tushishi kerak.
+const categories = [
+  "Barchasi",
+  "Free",
+  "Pro",
+  "Marketplace",
+  "Agentda",
+] as const;
 
 function timeAgo(iso?: string) {
   if (!iso) return "—";
@@ -216,15 +183,21 @@ function AgentlarimPage() {
     [agents, focusedId],
   );
 
+  // Foydalanuvchi kutubxonasi — "Mening toollarim"da o'rnatilgan toollar.
+  const [userTools, setUserTools] = useState<ToolDef[]>([]);
+  useEffect(() => {
+    const ids = new Set(readInstalledToolIds());
+    setUserTools(toolCatalog.filter((t) => ids.has(t.id)));
+  }, [focusedId]);
+
   const filteredTools = useMemo(() => {
-    const installed = new Set(focusedAgent?.tools ?? []);
-    return marketTools.filter((t) => {
-      if (marketCategory === "O'rnatilgan" && !installed.has(t.name)) return false;
-      if (
-        marketCategory !== "Barchasi" &&
-        marketCategory !== "O'rnatilgan" &&
-        t.category !== marketCategory
-      )
+    const agentInstalled = new Set(focusedAgent?.tools ?? []);
+    return userTools.filter((t) => {
+      if (marketCategory === "Agentda" && !agentInstalled.has(t.name))
+        return false;
+      if (marketCategory === "Free" && t.tier !== "free") return false;
+      if (marketCategory === "Pro" && t.tier !== "pro") return false;
+      if (marketCategory === "Marketplace" && t.tier !== "marketplace")
         return false;
       if (marketQuery.trim()) {
         const q = marketQuery.toLowerCase();
@@ -235,9 +208,9 @@ function AgentlarimPage() {
       }
       return true;
     });
-  }, [focusedAgent, marketCategory, marketQuery]);
+  }, [focusedAgent, marketCategory, marketQuery, userTools]);
 
-  const installTool = (tool: MarketTool) => {
+  const installTool = (tool: ToolDef) => {
     if (!focusedAgent) return;
     const already = (focusedAgent.tools ?? []).includes(tool.name);
     if (already) return;
@@ -489,7 +462,19 @@ function AgentlarimPage() {
               </div>
 
               <div className="flex-1 space-y-2 overflow-y-auto px-5 py-4">
-                {filteredTools.length === 0 ? (
+                {userTools.length === 0 ? (
+                  <div className="py-10 text-center text-xs text-muted-foreground">
+                    <p className="mb-3">
+                      Kutubxonangizda hali toollar yo'q.
+                    </p>
+                    <Link
+                      to="/mening-toollarim"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                    >
+                      <Plus className="h-3 w-3" /> Mening toollarimga o'tish
+                    </Link>
+                  </div>
+                ) : filteredTools.length === 0 ? (
                   <p className="py-10 text-center text-xs text-muted-foreground">
                     Hech narsa topilmadi.
                   </p>
@@ -503,7 +488,7 @@ function AgentlarimPage() {
                         className="animate-fade-in rounded-xl border border-border/60 bg-card/40 p-3 transition-colors hover:border-primary/40"
                       >
                         <div className="flex items-start gap-3">
-                          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.accent}`}>
                             <t.icon className="h-4 w-4" />
                           </span>
                           <div className="min-w-0 flex-1">
@@ -552,8 +537,10 @@ function AgentlarimPage() {
               </div>
 
               <div className="border-t border-border/60 px-5 py-3 text-[10px] text-muted-foreground">
-                Demo — toolar faqat agent yozuvida saqlanadi, real integratsiya
-                hozircha yo'q.
+                Faqat "Mening toollarim"da o'rnatilgan toollar ko'rinadi.{" "}
+                <Link to="/mening-toollarim" className="text-primary hover:underline">
+                  Kutubxonaga o'tish →
+                </Link>
               </div>
             </div>
           )}
