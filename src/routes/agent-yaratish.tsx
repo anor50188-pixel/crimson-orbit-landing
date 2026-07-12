@@ -800,35 +800,31 @@ function AgentCreatePage() {
                       </p>
                     </>
                   )}
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <button
-                      type="button"
-                      disabled
-                      title="Sinov muhiti hali ulanmagan (rejalashtirilgan)"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground opacity-80"
-                    >
-                      <Play className="h-3.5 w-3.5" /> Sinab ko'rish
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="Tahrirlash hali ulanmagan (rejalashtirilgan)"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs opacity-80"
-                    >
-                      <Pencil className="h-3.5 w-3.5" /> Tahrirlash
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="Faollashtirish backendi hali ulanmagan (rejalashtirilgan)"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs opacity-80"
-                    >
-                      <Power className="h-3.5 w-3.5" /> Faollashtirish
-                    </button>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    Rejalashtirilgan — haqiqiy backend hali ulanmagan.
-                  </p>
+                  {phase === "done" && (
+                    <div className="flex flex-col items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handleTry}
+                        disabled={savedToAgents}
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        <Play className="h-3.5 w-3.5" /> Sinab ko'rish
+                      </button>
+                      {savedToAgents && (
+                        <div className="animate-fade-in text-center">
+                          <p className="text-sm font-medium text-emerald-400">
+                            Agentingiz Agentlarim bo'limida
+                          </p>
+                          <Link
+                            to="/agentlarim"
+                            className="mt-1 inline-block text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                          >
+                            Agentlarim bo'limiga o'tish
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
