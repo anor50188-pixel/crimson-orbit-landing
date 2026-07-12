@@ -41,10 +41,15 @@ import {
   readInstalledToolIds,
   readToolConfigs,
   writeToolConfigs,
-  isToolConfigured,
-  isToolReady,
+  isToolAuthenticated,
   toolCatalog,
   writeInstalledToolIds,
+  readToolInstances,
+  writeToolInstances,
+  instancesForTool,
+  toolStatus,
+  type InstanceField,
+  type ToolInstance,
   type ConnectionStatus,
   type PermissionKey,
   type ToolConfig,
@@ -132,6 +137,7 @@ function emptyConfig(tool: ToolDef): ToolConfig {
 function MeningToollarimPage() {
   const [installed, setInstalled] = useState<string[]>([]);
   const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
+  const [instances, setInstances] = useState<ToolInstance[]>([]);
   const [tab, setTab] = useState<TabId>("all");
   const [query, setQuery] = useState("");
   const [installing, setInstalling] = useState<string | null>(null);
@@ -141,6 +147,7 @@ function MeningToollarimPage() {
   useEffect(() => {
     setInstalled(readInstalledToolIds());
     setConfigs(readToolConfigs());
+    setInstances(readToolInstances());
   }, []);
 
   useEffect(() => {
@@ -162,6 +169,11 @@ function MeningToollarimPage() {
     writeToolConfigs(next);
   };
 
+  const persistInstances = (list: ToolInstance[]) => {
+    setInstances(list);
+    writeToolInstances(list);
+  };
+
   const install = (tool: ToolDef) => {
     if (installed.includes(tool.id)) return;
     if (tool.tier === "pro" && !USER_IS_PRO) return;
@@ -179,6 +191,7 @@ function MeningToollarimPage() {
     const { [toolId]: _removed, ...rest } = configs;
     setConfigs(rest);
     writeToolConfigs(rest);
+    persistInstances(instances.filter((i) => i.toolId !== toolId));
   };
 
   const filtered = useMemo(() => {
@@ -378,7 +391,7 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
               <ToolGrid>
                 {grouped.free.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
@@ -388,7 +401,7 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-amber-500" title="Pro toollar" count={grouped.pro.length} subtitle="Pro reja bilan ochiladigan kuchli toollar.">
               <ToolGrid>
                 {grouped.pro.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
@@ -398,7 +411,7 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-violet-500" title="Marketplace toollari" count={grouped.marketplace.length} subtitle="Marketplace dan sotib olgan toollaringiz.">
               <ToolGrid>
                 {grouped.marketplace.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
@@ -431,12 +444,17 @@ function MeningToollarimPage() {
               tool={drawerTool}
               installed={installed.includes(drawerTool.id)}
               config={configs[drawerTool.id] ?? emptyConfig(drawerTool)}
+              instances={instancesForTool(instances, drawerTool.id)}
               onClose={() => setDrawerId(null)}
               onUninstall={() => {
                 uninstall(drawerTool.id);
                 setDrawerId(null);
               }}
               onPersist={persistConfig}
+              onPersistInstances={(list) => {
+                const others = instances.filter((i) => i.toolId !== drawerTool.id);
+                persistInstances([...others, ...list]);
+              }}
             />
           )}
         </aside>
@@ -508,11 +526,20 @@ function statusPill(status: ConnectionStatus, configured: boolean) {
   return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Konfiguratsiya kerak" };
 }
 
+// Ikki qatlamli holat: (o'rnatilgan, autentifikatsiya, konfiguratsiyalar soni)
+function statusPillV2(installed: boolean, authed: boolean, instanceCount: number) {
+  if (!installed) return { cls: "bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/60", label: "O'rnatilmagan" };
+  if (!authed) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Autentifikatsiya kerak" };
+  if (instanceCount === 0) return { cls: "bg-sky-500/15 text-sky-400", dot: "bg-sky-400", label: "Konfiguratsiya kerak" };
+  return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" };
+}
+
 function ToolCard({
-  tool, config, installed, installing, isPro, onInstall, onUninstall, onOpenSettings,
+  tool, config, instanceCount, installed, installing, isPro, onInstall, onUninstall, onOpenSettings,
 }: {
   tool: ToolDef;
   config?: ToolConfig;
+  instanceCount: number;
   installed: boolean;
   installing: boolean;
   isPro: boolean;
@@ -522,9 +549,9 @@ function ToolCard({
 }) {
   const Icon = tool.icon;
   const locked = tool.tier === "pro" && !isPro && !installed;
-  const configured = isToolConfigured(tool, config);
-  const ready = isToolReady(tool, config);
-  const pill = installed ? statusPill(config?.connection ?? "unconfigured", configured) : null;
+  const authed = isToolAuthenticated(tool, config);
+  const ready = authed && instanceCount > 0;
+  const pill = installed ? statusPillV2(installed, authed, instanceCount) : null;
 
   return (
     <div
@@ -558,7 +585,7 @@ function ToolCard({
       <p className="mb-3 text-[10px] text-muted-foreground/70">
         v{tool.version}
         <span className="mx-1.5">•</span>
-        <span title="Backend tayyor bo'lgach real ma'lumot chiqadi">Bog'langan agentlar: —</span>
+        <span>Konfiguratsiya: {installed ? instanceCount : 0} ta</span>
       </p>
 
       <div className="mt-auto flex items-center gap-2">
@@ -569,7 +596,7 @@ function ToolCard({
               onClick={onOpenSettings}
               className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
             >
-              {configured ? "Sozlash" : "Konfiguratsiya qilish"}
+              {!authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
             </button>
             <button
               type="button"
@@ -608,13 +635,13 @@ function ToolCard({
 // ————————————————————————————————————————————————————————————————
 // Tool Settings Drawer — production-ready
 // ————————————————————————————————————————————————————————————————
-type DrawerTab = "general" | "auth" | "permissions" | "agents" | "logs";
+type DrawerTab = "general" | "auth" | "instances" | "permissions" | "logs";
 
 const drawerTabs: { id: DrawerTab; label: string; icon: typeof Info }[] = [
   { id: "general", label: "Umumiy", icon: Info },
   { id: "auth", label: "Autentifikatsiya", icon: ShieldCheck },
+  { id: "instances", label: "Konfiguratsiyalar", icon: Settings },
   { id: "permissions", label: "Ruxsatnomalar", icon: Lock },
-  { id: "agents", label: "Bog'langan agentlar", icon: Bot },
   { id: "logs", label: "Yozuvlar", icon: History },
 ];
 
@@ -627,14 +654,16 @@ const permissionMeta: Record<PermissionKey, { label: string; desc: string }> = {
 };
 
 function ToolDrawer({
-  tool, installed, config, onClose, onUninstall, onPersist,
+  tool, installed, config, instances, onClose, onUninstall, onPersist, onPersistInstances,
 }: {
   tool: ToolDef;
   installed: boolean;
   config: ToolConfig;
+  instances: ToolInstance[];
   onClose: () => void;
   onUninstall: () => void;
   onPersist: (cfg: ToolConfig) => void;
+  onPersistInstances: (list: ToolInstance[]) => void;
 }) {
   const Icon = tool.icon;
   const [tab, setTab] = useState<DrawerTab>("general");
@@ -642,6 +671,7 @@ function ToolDrawer({
   const [reveal, setReveal] = useState<Record<string, boolean>>({});
   const [testing, setTesting] = useState<null | "testing" | "ok" | "fail">(null);
   const [oauthLoading, setOauthLoading] = useState(false);
+  const [editingInstance, setEditingInstance] = useState<ToolInstance | null>(null);
 
   useEffect(() => {
     setDraft(config);
@@ -653,11 +683,11 @@ function ToolDrawer({
     if (f.type === "oauth") return draft.connection === "connected";
     return (draft.fields[f.key] ?? "").trim().length > 0;
   });
-  const configured = isToolConfigured(tool, draft);
+  const authed = isToolAuthenticated(tool, draft);
   const dirty = JSON.stringify(draft) !== JSON.stringify(config);
   const canSave = allRequiredFilled && dirty;
 
-  const pill = statusPill(draft.connection, configured);
+  const pill = statusPillV2(installed, authed, instances.length);
 
   const pushActivity = (message: string, kind: "success" | "info" | "error") => {
     setDraft((d) => ({
@@ -736,8 +766,21 @@ function ToolDrawer({
     setDraft(next);
   };
 
+  const saveInstance = (inst: ToolInstance) => {
+    const exists = instances.some((i) => i.id === inst.id);
+    const next = exists
+      ? instances.map((i) => (i.id === inst.id ? inst : i))
+      : [...instances, inst];
+    onPersistInstances(next);
+    setEditingInstance(null);
+  };
+
+  const deleteInstance = (id: string) => {
+    onPersistInstances(instances.filter((i) => i.id !== id));
+  };
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       {/* HEADER */}
       <div className="border-b border-border/60 px-5 py-4">
         <div className="flex items-start justify-between gap-3">
@@ -805,6 +848,26 @@ function ToolDrawer({
             onReconnect={reconnect}
           />
         )}
+        {tab === "instances" && (
+          <InstancesTab
+            tool={tool}
+            authed={authed}
+            instances={instances}
+            onNew={() =>
+              setEditingInstance({
+                id: crypto.randomUUID(),
+                toolId: tool.id,
+                name: "",
+                fields: {},
+                createdAt: new Date().toISOString(),
+                connectedAgentIds: [],
+              })
+            }
+            onEdit={(i) => setEditingInstance(i)}
+            onDelete={deleteInstance}
+            onGoAuth={() => setTab("auth")}
+          />
+        )}
         {tab === "permissions" && (
           <PermissionsTab
             perms={draft.permissions}
@@ -816,7 +879,6 @@ function ToolDrawer({
             }
           />
         )}
-        {tab === "agents" && <AgentsTab />}
         {tab === "logs" && <LogsTab activity={draft.activity} />}
       </div>
 
@@ -839,8 +901,9 @@ function ToolDrawer({
             onClick={onClose}
             className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            Bekor qilish
+            Yopish
           </button>
+          {tab !== "instances" && (
           <button
             type="button"
             onClick={save}
@@ -851,10 +914,21 @@ function ToolDrawer({
                 : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
             }`}
           >
-            <Check className="h-3.5 w-3.5" /> Konfiguratsiyani saqlash
+            <Check className="h-3.5 w-3.5" /> Saqlash
           </button>
+          )}
         </div>
       </div>
+
+      {/* Ichki konfiguratsiya editori — right slide-over */}
+      {editingInstance && (
+        <InstanceEditor
+          tool={tool}
+          instance={editingInstance}
+          onCancel={() => setEditingInstance(null)}
+          onSave={saveInstance}
+        />
+      )}
     </div>
   );
 }
@@ -1101,20 +1175,298 @@ function PermissionsTab({
   );
 }
 
-function AgentsTab() {
+// ————————————————————————————————————————————————————————————————
+// Konfiguratsiyalar tab
+// ————————————————————————————————————————————————————————————————
+function InstancesTab({
+  tool, authed, instances, onNew, onEdit, onDelete, onGoAuth,
+}: {
+  tool: ToolDef;
+  authed: boolean;
+  instances: ToolInstance[];
+  onNew: () => void;
+  onEdit: (i: ToolInstance) => void;
+  onDelete: (id: string) => void;
+  onGoAuth: () => void;
+}) {
+  if (!authed) {
+    return (
+      <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
+        <ShieldCheck className="mx-auto mb-2 h-5 w-5 text-amber-400" />
+        <p className="mb-1 text-sm text-foreground">Avval autentifikatsiyani yakunlang</p>
+        <p className="mb-3">Bir marta ulanganingizdan so'ng, cheksiz konfiguratsiya yaratishingiz mumkin.</p>
+        <button
+          type="button"
+          onClick={onGoAuth}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+        >
+          <ShieldCheck className="h-3.5 w-3.5" /> Autentifikatsiyaga o'tish
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-lg border border-dashed border-border/60 bg-card/30 px-4 py-8 text-center text-xs text-muted-foreground">
-      <Bot className="mx-auto mb-2 h-5 w-5 text-primary/70" />
-      <p>Hozircha bu tool hech qaysi agentga ulanmagan.</p>
-      <p className="mt-1 text-[11px] opacity-70">
-        Ulanish "Agentlarim" sahifasidan amalga oshiriladi. Backend tayyor bo'lgach — real ma'lumot ko'rinadi.
-      </p>
-      <Link
-        to="/agentlarim"
-        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground"
-      >
-        <Bot className="h-3.5 w-3.5" /> Agentlarim
-      </Link>
+    <div className="space-y-3">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium">Konfiguratsiyalar</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">
+            Bir tool uchun bir nechta konfiguratsiya yaratishingiz mumkin.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onNew}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+        >
+          <Plus className="h-3.5 w-3.5" /> Yangi konfiguratsiya
+        </button>
+      </div>
+
+      {instances.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
+          <Settings className="mx-auto mb-2 h-5 w-5 text-primary/70" />
+          <p>Hali konfiguratsiya yo'q.</p>
+          <p className="mt-1 opacity-70">
+            "Yangi konfiguratsiya" bosib birinchi manzilingizni qo'shing.
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {instances.map((inst) => {
+            const target = tool.targetFieldKey ? inst.fields[tool.targetFieldKey] : "";
+            return (
+              <li
+                key={inst.id}
+                className="group flex items-start gap-3 rounded-lg border border-border/60 bg-card/40 p-3"
+              >
+                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
+                  <tool.icon className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-medium">{inst.name || "Nomsiz konfiguratsiya"}</p>
+                    <span className="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                      Tayyor
+                    </span>
+                  </div>
+                  {target && (
+                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{target}</p>
+                  )}
+                  <p className="mt-0.5 text-[10px] text-muted-foreground/80">
+                    Agentlarda: {inst.connectedAgentIds.length} ta
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onEdit(inst)}
+                    className="rounded p-1.5 text-muted-foreground hover:bg-background/60 hover:text-foreground"
+                    aria-label="Tahrirlash"
+                  >
+                    <Settings className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDelete(inst.id)}
+                    className="rounded p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-400"
+                    aria-label="O'chirish"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
+        <div className="mb-1 flex items-center gap-1.5 text-foreground">
+          <Info className="h-3.5 w-3.5 text-primary" /> Eslatma
+        </div>
+        Barcha konfiguratsiyalar bitta ulangan akkaunt va ruxsatlar orqali ishlaydi.
+        API yoki OAuth sozlamalarini o'zgartirish uchun Autentifikatsiya bo'limidan foydalaning.
+      </div>
+    </div>
+  );
+}
+
+function InstanceEditor({
+  tool, instance, onCancel, onSave,
+}: {
+  tool: ToolDef;
+  instance: ToolInstance;
+  onCancel: () => void;
+  onSave: (i: ToolInstance) => void;
+}) {
+  const [draft, setDraft] = useState<ToolInstance>(instance);
+  const fields = tool.instanceFields ?? [];
+  const requiredOk = fields
+    .filter((f) => f.required)
+    .every((f) => (draft.fields[f.key] ?? "").trim().length > 0);
+  const canSave = draft.name.trim().length > 0 && requiredOk;
+
+  const set = (k: string, v: string) =>
+    setDraft((d) => ({ ...d, fields: { ...d.fields, [k]: v } }));
+
+  return (
+    <>
+      <div
+        aria-hidden
+        onClick={onCancel}
+        className="absolute inset-0 z-40 bg-background/50 backdrop-blur-[1px]"
+      />
+      <aside className="absolute inset-y-0 right-0 z-50 flex w-full max-w-[440px] flex-col border-l border-border/60 bg-background shadow-2xl">
+        <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              {tool.name} · Konfiguratsiya
+            </p>
+            <h3 className="mt-0.5 text-base font-semibold">
+              {draft.name.trim() || "Yangi konfiguratsiya"}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground"
+            aria-label="Yopish"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 text-sm">
+          <div>
+            <label className="mb-1 block text-[11px] text-muted-foreground">
+              Konfiguratsiya nomi <span className="text-red-400">*</span>
+            </label>
+            <input
+              value={draft.name}
+              onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+              placeholder="Masalan: Haftalik hisobot"
+              className="w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground/80">
+              Agent ichida shu nom bilan ko'rinadi.
+            </p>
+          </div>
+
+          {fields.map((field) => (
+            <InstanceFieldInput
+              key={field.key}
+              field={field}
+              value={draft.fields[field.key] ?? ""}
+              onChange={(v) => set(field.key, v)}
+            />
+          ))}
+
+          <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
+            <div className="mb-1 flex items-center gap-1.5 text-foreground">
+              <Bot className="h-3.5 w-3.5 text-primary" /> Bog'langan agentlar
+            </div>
+            {draft.connectedAgentIds.length === 0
+              ? "Hozircha hech qaysi agentga biriktirilmagan. Agentlarim sahifasidan biriktiring."
+              : `${draft.connectedAgentIds.length} ta agent foydalanmoqda.`}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 border-t border-border/60 px-5 py-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            Bekor qilish
+          </button>
+          <button
+            type="button"
+            disabled={!canSave}
+            onClick={() => onSave({ ...draft, updatedAt: new Date().toISOString() })}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium ${
+              canSave
+                ? "bg-primary text-primary-foreground hover:opacity-90"
+                : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5" /> Konfiguratsiyani saqlash
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+function InstanceFieldInput({
+  field, value, onChange,
+}: {
+  field: InstanceField;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const label = (
+    <label className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
+      <span>
+        {field.label}
+        {field.required && <span className="ml-1 text-red-400">*</span>}
+      </span>
+      {field.help && <span className="text-[10px] opacity-70">{field.help}</span>}
+    </label>
+  );
+
+  if (field.type === "textarea") {
+    return (
+      <div>
+        {label}
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder}
+          rows={3}
+          className="w-full resize-y rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+        />
+      </div>
+    );
+  }
+
+  if (field.type === "select") {
+    return (
+      <div>
+        {label}
+        <div className="flex flex-wrap gap-1.5">
+          {(field.options ?? []).map((opt) => {
+            const active = value === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onChange(opt.value)}
+                className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${
+                  active
+                    ? "border-primary/60 bg-primary/10 text-primary"
+                    : "border-border/60 bg-background/40 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {label}
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={field.placeholder}
+        className="w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
+      />
     </div>
   );
 }

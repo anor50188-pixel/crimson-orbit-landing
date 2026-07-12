@@ -38,6 +38,18 @@ export type AuthField = {
 
 export type PermissionKey = "read" | "write" | "delete" | "execute" | "admin";
 
+export type InstanceFieldType = "text" | "textarea" | "select";
+
+export type InstanceField = {
+  key: string;
+  label: string;
+  type: InstanceFieldType;
+  placeholder?: string;
+  required?: boolean;
+  help?: string;
+  options?: { value: string; label: string }[];
+};
+
 export type ToolDef = {
   id: string;
   name: string;
@@ -54,10 +66,16 @@ export type ToolDef = {
   updatedAt?: string;
   authFields?: AuthField[];
   defaultPermissions?: PermissionKey[];
+  instanceFields?: InstanceField[];
+  /** Instance kartochkasida ko'rinadigan asosiy "manzil" maydoni kaliti. */
+  targetFieldKey?: string;
+  /** UI'da: "Konfiguratsiya" atamasi tool sohasiga moslashtiriladi. */
+  instanceLabel?: string;
 };
 
 export const INSTALLED_TOOLS_KEY = "agentus:installed-tools";
 export const TOOL_CONFIGS_KEY = "agentus:tool-configs";
+export const TOOL_INSTANCES_KEY = "agentus:tool-instances";
 
 export type ConnectionStatus =
   | "connected"
@@ -111,6 +129,63 @@ export function isToolReady(tool: ToolDef, config?: ToolConfig): boolean {
   return isToolConfigured(tool, config) && config?.connection === "connected";
 }
 
+/** Auth qatlami — bir marta ulanadi. */
+export function isToolAuthenticated(tool: ToolDef, config?: ToolConfig): boolean {
+  const fields = (tool.authFields ?? []);
+  if (fields.length === 0) return true; // auth kerak emas
+  return isToolConfigured(tool, config) && config?.connection === "connected";
+}
+
+// ————— Konfiguratsiya (instance) qatlami ————————————————————————————
+export type ToolInstance = {
+  id: string;
+  toolId: string;
+  name: string;
+  fields: Record<string, string>;
+  createdAt: string;
+  updatedAt?: string;
+  connectedAgentIds: string[];
+};
+
+export function readToolInstances(): ToolInstance[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(TOOL_INSTANCES_KEY);
+    if (raw) return JSON.parse(raw) as ToolInstance[];
+  } catch {
+    /* ignore */
+  }
+  return [];
+}
+
+export function writeToolInstances(list: ToolInstance[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(TOOL_INSTANCES_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function instancesForTool(list: ToolInstance[], toolId: string) {
+  return list.filter((i) => i.toolId === toolId);
+}
+
+/** Ready = auth ulangan VA kamida bitta konfiguratsiya bor. */
+export function toolStatus(
+  tool: ToolDef,
+  config: ToolConfig | undefined,
+  instances: ToolInstance[],
+): "unconfigured" | "auth-needed" | "configs-needed" | "ready" {
+  if (!isToolAuthenticated(tool, config)) {
+    if ((tool.authFields ?? []).length === 0) {
+      return instancesForTool(instances, tool.id).length > 0 ? "ready" : "configs-needed";
+    }
+    return "auth-needed";
+  }
+  return instancesForTool(instances, tool.id).length > 0 ? "ready" : "configs-needed";
+}
+
 const f = {
   apiKey: { key: "api_key", label: "API kaliti", type: "secret" as const, placeholder: "sk_live_••••••••", required: true, help: "Provayder konsolidan yarating." },
   oauth: { key: "oauth", label: "OAuth 2.0 tizimiga kirish", type: "oauth" as const, required: true, help: "Hisobingiz bilan bog'lanish uchun avtorizatsiya oching." },
@@ -124,6 +199,76 @@ const f = {
   spreadsheetId: { key: "spreadsheet_id", label: "Elektron jadval identifikatori", type: "text" as const, placeholder: "1AbC••••XYZ" },
   workspaceId: { key: "workspace_id", label: "Ish maydoni identifikatori", type: "text" as const, placeholder: "ws_••••" },
 };
+
+// Instance (konfiguratsiya) uchun tayyor maydon shablonlari.
+const inst = {
+  notes: {
+    key: "notes", label: "Izohlar", type: "textarea" as const,
+    placeholder: "Bu konfiguratsiya nima uchun ishlatiladi?",
+  } satisfies InstanceField,
+  writeMode: {
+    key: "write_mode", label: "Yozish rejimi", type: "select" as const,
+    options: [
+      { value: "append", label: "Qo'shish" },
+      { value: "replace", label: "Almashtirish" },
+      { value: "update", label: "Yangilash" },
+    ],
+  } satisfies InstanceField,
+};
+
+const sheetsInstanceFields: InstanceField[] = [
+  { key: "spreadsheet", label: "Elektron jadval", type: "text", placeholder: "Hisobot.xlsx", required: true, help: "Fayl nomi yoki Spreadsheet ID." },
+  { key: "sheet", label: "Varaq", type: "text", placeholder: "Sheet1" },
+  { key: "column", label: "Ustun", type: "text", placeholder: "A" },
+  inst.writeMode,
+  { key: "folder", label: "Standart papka", type: "text", placeholder: "Reports/2026" },
+  inst.notes,
+];
+
+const telegramInstanceFields: InstanceField[] = [
+  { key: "chat_id", label: "Chat / kanal", type: "text", placeholder: "@my_channel yoki -1001234567890", required: true },
+  { key: "template", label: "Xabar shabloni", type: "textarea", placeholder: "Assalomu alaykum, {name}..." },
+  inst.notes,
+];
+
+const gmailInstanceFields: InstanceField[] = [
+  { key: "from_alias", label: "Yuboruvchi alias", type: "text", placeholder: "noreply@company.uz", required: true },
+  { key: "subject_template", label: "Mavzu shabloni", type: "text", placeholder: "Haftalik hisobot — {date}" },
+  { key: "body_template", label: "Xabar shabloni", type: "textarea", placeholder: "Salom, ..." },
+  inst.notes,
+];
+
+const calendarInstanceFields: InstanceField[] = [
+  { key: "calendar_id", label: "Kalendar", type: "text", placeholder: "primary yoki calendar@group.calendar.google.com", required: true },
+  { key: "default_duration", label: "Standart davomiylik", type: "text", placeholder: "30 daqiqa" },
+  inst.notes,
+];
+
+const httpInstanceFields: InstanceField[] = [
+  { key: "endpoint", label: "Endpoint", type: "text", placeholder: "/v1/orders", required: true },
+  { key: "method", label: "Method", type: "select", options: [
+    { value: "GET", label: "GET" }, { value: "POST", label: "POST" },
+    { value: "PUT", label: "PUT" }, { value: "DELETE", label: "DELETE" },
+  ]},
+  inst.notes,
+];
+
+const sqlInstanceFields: InstanceField[] = [
+  { key: "table", label: "Jadval", type: "text", placeholder: "orders", required: true },
+  { key: "query_template", label: "Query shabloni", type: "textarea", placeholder: "SELECT * FROM orders WHERE ..." },
+  inst.notes,
+];
+
+const notionInstanceFields: InstanceField[] = [
+  { key: "database_id", label: "Baza ID", type: "text", placeholder: "abc123...", required: true },
+  { key: "default_status", label: "Standart status", type: "text", placeholder: "Yangi" },
+  inst.notes,
+];
+
+const genericInstanceFields: InstanceField[] = [
+  { key: "target", label: "Manzil / resurs", type: "text", placeholder: "Ma'lumot manzili", required: true },
+  inst.notes,
+];
 
 export const toolCatalog: ToolDef[] = [
   {
@@ -291,6 +436,28 @@ export const toolCatalog: ToolDef[] = [
     authFields: [f.apiKey, f.workspaceId],
   },
 ];
+
+// Instance shablonlari va "manzil" maydonini har bir toolga biriktiramiz.
+const instanceMap: Record<string, { fields: InstanceField[]; targetKey: string }> = {
+  "google-sheets": { fields: sheetsInstanceFields, targetKey: "spreadsheet" },
+  "telegram-bot": { fields: telegramInstanceFields, targetKey: "chat_id" },
+  gmail: { fields: gmailInstanceFields, targetKey: "from_alias" },
+  "google-calendar": { fields: calendarInstanceFields, targetKey: "calendar_id" },
+  "http-request": { fields: httpInstanceFields, targetKey: "endpoint" },
+  "sql-database": { fields: sqlInstanceFields, targetKey: "table" },
+  "notion-integration": { fields: notionInstanceFields, targetKey: "database_id" },
+};
+
+for (const t of toolCatalog) {
+  const m = instanceMap[t.id];
+  if (m) {
+    t.instanceFields = m.fields;
+    t.targetFieldKey = m.targetKey;
+  } else {
+    t.instanceFields = genericInstanceFields;
+    t.targetFieldKey = "target";
+  }
+}
 
 export function readInstalledToolIds(): string[] {
   if (typeof window === "undefined") return [];
