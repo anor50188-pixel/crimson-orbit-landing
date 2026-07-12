@@ -191,9 +191,14 @@ function AgentlarimPage() {
 
   // Foydalanuvchi kutubxonasi — "Mening toollarim"da o'rnatilgan toollar.
   const [userTools, setUserTools] = useState<ToolDef[]>([]);
+  const [toolConfigs, setToolConfigs] = useState(() => readToolConfigs());
+  const [toolInstances, setToolInstances] = useState<ToolInstance[]>([]);
+  const [expandedTool, setExpandedTool] = useState<string | null>(null);
   useEffect(() => {
     const ids = new Set(readInstalledToolIds());
     setUserTools(toolCatalog.filter((t) => ids.has(t.id)));
+    setToolConfigs(readToolConfigs());
+    setToolInstances(readToolInstances());
   }, [focusedId]);
 
   const filteredTools = useMemo(() => {
@@ -216,19 +221,20 @@ function AgentlarimPage() {
     });
   }, [focusedAgent, marketCategory, marketQuery, userTools]);
 
-  const installTool = (tool: ToolDef) => {
+  const attachInstance = (tool: ToolDef, inst: ToolInstance) => {
     if (!focusedAgent) return;
-    const already = (focusedAgent.tools ?? []).includes(tool.name);
+    const label = `${tool.name} · ${inst.name}`;
+    const already = (focusedAgent.tools ?? []).includes(label);
     if (already) return;
-    setInstalling(tool.id);
+    setInstalling(inst.id);
     setTimeout(() => {
-      const next = [...(focusedAgent.tools ?? []), tool.name];
+      const next = [...(focusedAgent.tools ?? []), label];
       updateAgent(focusedAgent.id, {
         tools: next,
         lastActivity: new Date().toISOString(),
       });
       setInstalling(null);
-    }, 700);
+    }, 400);
   };
 
   return (
