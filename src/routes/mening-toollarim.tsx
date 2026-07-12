@@ -529,10 +529,11 @@ function statusPill(status: ConnectionStatus, configured: boolean) {
 }
 
 function ToolCard({
-  tool, config, installed, installing, isPro, onInstall, onUninstall, onOpenSettings,
+  tool, config, instanceCount, installed, installing, isPro, onInstall, onUninstall, onOpenSettings,
 }: {
   tool: ToolDef;
   config?: ToolConfig;
+  instanceCount: number;
   installed: boolean;
   installing: boolean;
   isPro: boolean;
@@ -542,9 +543,9 @@ function ToolCard({
 }) {
   const Icon = tool.icon;
   const locked = tool.tier === "pro" && !isPro && !installed;
-  const configured = isToolConfigured(tool, config);
-  const ready = isToolReady(tool, config);
-  const pill = installed ? statusPill(config?.connection ?? "unconfigured", configured) : null;
+  const authed = isToolAuthenticated(tool, config);
+  const ready = authed && instanceCount > 0;
+  const pill = installed ? statusPillV2(installed, authed, instanceCount) : null;
 
   return (
     <div
@@ -578,7 +579,7 @@ function ToolCard({
       <p className="mb-3 text-[10px] text-muted-foreground/70">
         v{tool.version}
         <span className="mx-1.5">•</span>
-        <span title="Backend tayyor bo'lgach real ma'lumot chiqadi">Bog'langan agentlar: —</span>
+        <span>Konfiguratsiya: {installed ? instanceCount : 0} ta</span>
       </p>
 
       <div className="mt-auto flex items-center gap-2">
@@ -589,7 +590,7 @@ function ToolCard({
               onClick={onOpenSettings}
               className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
             >
-              {configured ? "Sozlash" : "Konfiguratsiya qilish"}
+              {!authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
             </button>
             <button
               type="button"
