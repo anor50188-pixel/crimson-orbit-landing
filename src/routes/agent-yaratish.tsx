@@ -454,6 +454,10 @@ function AgentCreatePage() {
                   <p className="truncate text-sm font-medium">Agentus Brain</p>
                   <p className="text-[11px] text-muted-foreground">Suhbat orqali yaratish (demo)</p>
                 </div>
+                <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                  Onlayn
+                </span>
               </header>
               <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
                 {messages.map((m, i) => (
