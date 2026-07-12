@@ -113,7 +113,7 @@ function AgentCreatePage() {
       </aside>
 
       {/* Main */}
-      <main className="relative flex-1 overflow-hidden">
+      <main className="relative isolate flex-1 overflow-hidden">
         {/* Katta qizil sayyora — pastdagi horizont. Barcha ekranlarda pastga
             joylashib, ufq chizig'i ekranning pastki 40–45% qismida turadi. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[45vh] sm:h-[52vh] lg:h-[60vh]">
