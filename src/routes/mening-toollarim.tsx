@@ -528,6 +528,14 @@ function statusPill(status: ConnectionStatus, configured: boolean) {
   return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Konfiguratsiya kerak" };
 }
 
+// Ikki qatlamli holat: (o'rnatilgan, autentifikatsiya, konfiguratsiyalar soni)
+function statusPillV2(installed: boolean, authed: boolean, instanceCount: number) {
+  if (!installed) return { cls: "bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/60", label: "O'rnatilmagan" };
+  if (!authed) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Autentifikatsiya kerak" };
+  if (instanceCount === 0) return { cls: "bg-sky-500/15 text-sky-400", dot: "bg-sky-400", label: "Konfiguratsiya kerak" };
+  return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" };
+}
+
 function ToolCard({
   tool, config, instanceCount, installed, installing, isPro, onInstall, onUninstall, onOpenSettings,
 }: {
