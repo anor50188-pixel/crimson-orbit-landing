@@ -41,8 +41,6 @@ import {
   readInstalledToolIds,
   readToolConfigs,
   writeToolConfigs,
-  isToolConfigured,
-  isToolReady,
   isToolAuthenticated,
   toolCatalog,
   writeInstalledToolIds,
