@@ -393,7 +393,7 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
               <ToolGrid>
                 {grouped.free.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
@@ -403,7 +403,7 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-amber-500" title="Pro toollar" count={grouped.pro.length} subtitle="Pro reja bilan ochiladigan kuchli toollar.">
               <ToolGrid>
                 {grouped.pro.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
@@ -413,7 +413,7 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-violet-500" title="Marketplace toollari" count={grouped.marketplace.length} subtitle="Marketplace dan sotib olgan toollaringiz.">
               <ToolGrid>
                 {grouped.marketplace.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
@@ -446,12 +446,17 @@ function MeningToollarimPage() {
               tool={drawerTool}
               installed={installed.includes(drawerTool.id)}
               config={configs[drawerTool.id] ?? emptyConfig(drawerTool)}
+              instances={instancesForTool(instances, drawerTool.id)}
               onClose={() => setDrawerId(null)}
               onUninstall={() => {
                 uninstall(drawerTool.id);
                 setDrawerId(null);
               }}
               onPersist={persistConfig}
+              onPersistInstances={(list) => {
+                const others = instances.filter((i) => i.toolId !== drawerTool.id);
+                persistInstances([...others, ...list]);
+              }}
             />
           )}
         </aside>
