@@ -253,6 +253,9 @@ function AgentCreatePage() {
         description:
           "Telegram orqali ma'lumot yig'adi, Sheets ga yozadi va hisobot yuboradi.",
         createdAt: new Date().toISOString(),
+        status: "active",
+        tools: ["Telegram Bot API", "Google Sheets"],
+        lastActivity: new Date().toISOString(),
       });
       localStorage.setItem("agentus:agents", JSON.stringify(list));
     } catch {
