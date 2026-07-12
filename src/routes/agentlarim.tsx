@@ -492,56 +492,106 @@ function AgentlarimPage() {
                   </p>
                 ) : (
                   filteredTools.map((t) => {
-                    const installed = (focusedAgent.tools ?? []).includes(t.name);
-                    const isInstalling = installing === t.id;
+                    const authed = isToolAuthenticated(t, toolConfigs[t.id]);
+                    const insts = toolInstances.filter((i) => i.toolId === t.id);
+                    const expanded = expandedTool === t.id;
                     return (
                       <div
                         key={t.id}
-                        className="animate-fade-in rounded-xl border border-border/60 bg-card/40 p-3 transition-colors hover:border-primary/40"
+                        className="animate-fade-in rounded-xl border border-border/60 bg-card/40 transition-colors hover:border-primary/40"
                       >
-                        <div className="flex items-start gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setExpandedTool(expanded ? null : t.id)}
+                          className="flex w-full items-start gap-3 rounded-xl p-3 text-left"
+                        >
                           <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.accent}`}>
                             <t.icon className="h-4 w-4" />
                           </span>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <p className="truncate text-sm font-medium">
-                                {t.name}
-                              </p>
+                              <p className="truncate text-sm font-medium">{t.name}</p>
                               <span className="rounded-full border border-border/60 px-1.5 py-[1px] text-[9px] uppercase tracking-wider text-muted-foreground">
                                 {t.category}
                               </span>
                             </div>
-                            <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                              {t.description}
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
+                              {!authed
+                                ? "Autentifikatsiya kerak"
+                                : insts.length === 0
+                                  ? "Konfiguratsiya kerak"
+                                  : `${insts.length} ta konfiguratsiya`}
                             </p>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => installTool(t)}
-                            disabled={installed || isInstalling}
-                            className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                              installed
-                                ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                                : isInstalling
-                                  ? "bg-primary/70 text-primary-foreground"
-                                  : "bg-primary text-primary-foreground hover:brightness-110"
-                            }`}
-                          >
-                            {installed ? (
-                              <span className="inline-flex items-center gap-1">
-                                <Check className="h-3 w-3" /> O'rnatilgan
-                              </span>
-                            ) : isInstalling ? (
-                              <span className="inline-flex items-center gap-1">
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                                O'rnatilmoqda
-                              </span>
+                          {expanded ? (
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </button>
+                        {expanded && (
+                          <div className="border-t border-border/60 px-3 pb-3 pt-2">
+                            {!authed ? (
+                              <div className="rounded-lg border border-dashed border-border/60 bg-background/40 p-3 text-center text-[11px] text-muted-foreground">
+                                Avval "Mening toollarim"da ulanishni yakunlang.{" "}
+                                <Link to="/mening-toollarim" className="text-primary hover:underline">
+                                  O'tish →
+                                </Link>
+                              </div>
+                            ) : insts.length === 0 ? (
+                              <div className="rounded-lg border border-dashed border-border/60 bg-background/40 p-3 text-center text-[11px] text-muted-foreground">
+                                Hali konfiguratsiya yo'q.{" "}
+                                <Link to="/mening-toollarim" className="text-primary hover:underline">
+                                  Yaratish →
+                                </Link>
+                              </div>
                             ) : (
-                              "O'rnatish"
+                              <ul className="space-y-1.5">
+                                {insts.map((inst) => {
+                                  const label = `${t.name} · ${inst.name}`;
+                                  const attached = (focusedAgent.tools ?? []).includes(label);
+                                  const isBusy = installing === inst.id;
+                                  const target = t.targetFieldKey ? inst.fields[t.targetFieldKey] : "";
+                                  return (
+                                    <li
+                                      key={inst.id}
+                                      className="flex items-center gap-2 rounded-lg border border-border/60 bg-background/40 px-2.5 py-2"
+                                    >
+                                      <div className="min-w-0 flex-1">
+                                        <p className="truncate text-xs font-medium">{inst.name}</p>
+                                        {target && (
+                                          <p className="truncate text-[10px] text-muted-foreground">
+                                            {target}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => attachInstance(t, inst)}
+                                        disabled={attached || isBusy}
+                                        className={`shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all ${
+                                          attached
+                                            ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                                            : isBusy
+                                              ? "bg-primary/70 text-primary-foreground"
+                                              : "bg-primary text-primary-foreground hover:brightness-110"
+                                        }`}
+                                      >
+                                        {attached ? (
+                                          <span className="inline-flex items-center gap-1"><Check className="h-3 w-3" /> Ulangan</span>
+                                        ) : isBusy ? (
+                                          <span className="inline-flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> ...</span>
+                                        ) : (
+                                          "Ulash"
+                                        )}
+                                      </button>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
                             )}
-                          </button>
-                        </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })
