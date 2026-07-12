@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bot, Wrench, ShieldCheck, Store } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
@@ -90,15 +90,13 @@ function Landing() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              disabled
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground opacity-70"
-              title="Bu funksiya hali ishlab chiqilmoqda"
+            <Link
+              to="/agent-yaratish"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
             >
               Birinchi agentni yarating
               <ArrowRight className="h-4 w-4" />
-            </button>
+            </Link>
             <button
               type="button"
               disabled
