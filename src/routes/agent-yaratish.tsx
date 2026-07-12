@@ -106,7 +106,14 @@ function AgentCreatePage() {
   const [activeStep, setActiveStep] = useState<number>(-1);
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
   const [agentName, setAgentName] = useState("");
+  const [logs, setLogs] = useState<{ time: string; text: string }[]>([]);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+
+  const addLog = (text: string) => {
+    const d = new Date();
+    const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    setLogs((l) => [...l, { time, text }]);
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -132,6 +139,7 @@ function AgentCreatePage() {
         n.add("name");
         return n;
       });
+      addLog("Maqsad tahlili yakunlandi");
     });
     at(2300, () =>
       setRevealed((r) => {
@@ -147,6 +155,7 @@ function AgentCreatePage() {
         return n;
       }),
     );
+    at(3200, () => addLog("Asboblar tanlandi"));
     at(3700, () => {
       setMessages((m) => [
         ...m,
@@ -168,6 +177,7 @@ function AgentCreatePage() {
         n.add("codex");
         return n;
       });
+      addLog("Kodex yaratildi");
     });
     at(1100, () => {
       setActiveStep(3);
@@ -176,6 +186,7 @@ function AgentCreatePage() {
         n.add("memory");
         return n;
       });
+      addLog("Xotira sozlandi");
     });
     at(1900, () => {
       setActiveStep(4);
@@ -184,6 +195,7 @@ function AgentCreatePage() {
         n.add("workflow");
         return n;
       });
+      addLog("Ish oqimi tuzildi");
     });
     at(2700, () => {
       setActiveStep(5);
@@ -192,6 +204,7 @@ function AgentCreatePage() {
         n.add("capabilities");
         return n;
       });
+      addLog("Imkoniyatlar aniqlandi");
     });
     at(3500, () => {
       setActiveStep(6);
@@ -199,6 +212,7 @@ function AgentCreatePage() {
         ...m,
         { role: "brain", text: "Agent tayyor. O'ng tomonda ko'rib chiqishingiz mumkin." },
       ]);
+      addLog("Tekshiruv muvaffaqiyatli o'tdi");
       setPhase("done");
     });
   };
