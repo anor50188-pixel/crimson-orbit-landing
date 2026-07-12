@@ -304,6 +304,18 @@ function AgentCreatePage() {
                 </Link>
               );
             }
+            if (label === "Mening toollarim") {
+              return (
+                <Link
+                  key={label}
+                  to="/mening-toollarim"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </Link>
+              );
+            }
             return (
               <button
                 key={label}
