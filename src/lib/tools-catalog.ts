@@ -437,6 +437,28 @@ export const toolCatalog: ToolDef[] = [
   },
 ];
 
+// Instance shablonlari va "manzil" maydonini har bir toolga biriktiramiz.
+const instanceMap: Record<string, { fields: InstanceField[]; targetKey: string }> = {
+  "google-sheets": { fields: sheetsInstanceFields, targetKey: "spreadsheet" },
+  "telegram-bot": { fields: telegramInstanceFields, targetKey: "chat_id" },
+  gmail: { fields: gmailInstanceFields, targetKey: "from_alias" },
+  "google-calendar": { fields: calendarInstanceFields, targetKey: "calendar_id" },
+  "http-request": { fields: httpInstanceFields, targetKey: "endpoint" },
+  "sql-database": { fields: sqlInstanceFields, targetKey: "table" },
+  "notion-integration": { fields: notionInstanceFields, targetKey: "database_id" },
+};
+
+for (const t of toolCatalog) {
+  const m = instanceMap[t.id];
+  if (m) {
+    t.instanceFields = m.fields;
+    t.targetFieldKey = m.targetKey;
+  } else {
+    t.instanceFields = genericInstanceFields;
+    t.targetFieldKey = "target";
+  }
+}
+
 export function readInstalledToolIds(): string[] {
   if (typeof window === "undefined") return [];
   try {
