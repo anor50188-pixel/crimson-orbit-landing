@@ -59,7 +59,7 @@ const navItems = [
   { icon: Home, label: "Asosiy", to: "/" as const },
   { icon: Bot, label: "Agentlarim", to: "/agentlarim" as const, active: true },
   { icon: Store, label: "Marketplace" },
-  { icon: Wrench, label: "Mening toolarim" },
+  { icon: Wrench, label: "Mening toollarim", to: "/mening-toollarim" as const },
   { icon: Plug, label: "Integratsiyalar" },
   { icon: BookOpen, label: "Kodex" },
   { icon: BarChart3, label: "Analytics" },
