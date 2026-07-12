@@ -462,7 +462,19 @@ function AgentlarimPage() {
               </div>
 
               <div className="flex-1 space-y-2 overflow-y-auto px-5 py-4">
-                {filteredTools.length === 0 ? (
+                {userTools.length === 0 ? (
+                  <div className="py-10 text-center text-xs text-muted-foreground">
+                    <p className="mb-3">
+                      Kutubxonangizda hali toollar yo'q.
+                    </p>
+                    <Link
+                      to="/mening-toollarim"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
+                    >
+                      <Plus className="h-3 w-3" /> Mening toollarimga o'tish
+                    </Link>
+                  </div>
+                ) : filteredTools.length === 0 ? (
                   <p className="py-10 text-center text-xs text-muted-foreground">
                     Hech narsa topilmadi.
                   </p>
@@ -476,7 +488,7 @@ function AgentlarimPage() {
                         className="animate-fade-in rounded-xl border border-border/60 bg-card/40 p-3 transition-colors hover:border-primary/40"
                       >
                         <div className="flex items-start gap-3">
-                          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+                          <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${t.accent}`}>
                             <t.icon className="h-4 w-4" />
                           </span>
                           <div className="min-w-0 flex-1">
