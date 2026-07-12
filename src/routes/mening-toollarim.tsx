@@ -683,7 +683,7 @@ function ToolDrawer({
           {
             at: new Date().toISOString(),
             message: ok ? "Sinov ulanishi muvaffaqiyatli" : "Ulanish amalga oshmadi",
-            kind: ok ? "success" : "error",
+            kind: (ok ? "success" : "error") as ActivityKind,
           },
           ...d.activity,
         ].slice(0, 25),
@@ -715,7 +715,7 @@ function ToolDrawer({
         },
         lastTestedAt: new Date().toISOString(),
         activity: [
-          { at: new Date().toISOString(), message: "OAuth avtorizatsiya bajarildi (Demo rejimi)", kind: "success" },
+          { at: new Date().toISOString(), message: "OAuth avtorizatsiya bajarildi (Demo rejimi)", kind: "success" as ActivityKind },
           ...d.activity,
         ].slice(0, 25),
       }));
@@ -727,7 +727,7 @@ function ToolDrawer({
     const next: ToolConfig = {
       ...draft,
       activity: [
-        { at: new Date().toISOString(), message: "Konfiguratsiya saqlandi", kind: "success" },
+        { at: new Date().toISOString(), message: "Konfiguratsiya saqlandi", kind: "success" as ActivityKind },
         ...draft.activity,
       ].slice(0, 25),
     };
