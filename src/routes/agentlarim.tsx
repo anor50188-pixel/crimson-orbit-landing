@@ -203,8 +203,12 @@ function AgentlarimPage() {
 
   const filteredTools = useMemo(() => {
     const agentInstalled = new Set(focusedAgent?.tools ?? []);
+    const hasAttachedInstance = (tool: ToolDef) =>
+      toolInstances
+        .filter((i) => i.toolId === tool.id)
+        .some((i) => agentInstalled.has(`${tool.name} · ${i.name}`));
     return userTools.filter((t) => {
-      if (marketCategory === "Agentda" && !agentInstalled.has(t.name))
+      if (marketCategory === "Agentda" && !hasAttachedInstance(t))
         return false;
       if (marketCategory === "Free" && t.tier !== "free") return false;
       if (marketCategory === "Pro" && t.tier !== "pro") return false;
@@ -219,7 +223,7 @@ function AgentlarimPage() {
       }
       return true;
     });
-  }, [focusedAgent, marketCategory, marketQuery, userTools]);
+  }, [focusedAgent, marketCategory, marketQuery, userTools, toolInstances]);
 
   const attachInstance = (tool: ToolDef, inst: ToolInstance) => {
     if (!focusedAgent) return;
