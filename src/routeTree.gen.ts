@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SellerRouteImport } from './routes/seller'
 import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
 import { Route as AgentlarimRouteImport } from './routes/agentlarim'
 import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SellerRoute = SellerRouteImport.update({
+  id: '/seller',
+  path: '/seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeningToollarimRoute = MeningToollarimRouteImport.update({
   id: '/mening-toollarim',
   path: '/mening-toollarim',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
+  '/seller': typeof SellerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
+  '/seller': typeof SellerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,25 @@ export interface FileRoutesById {
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
+  '/seller': typeof SellerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agent-yaratish' | '/agentlarim' | '/mening-toollarim'
+  fullPaths:
+    | '/'
+    | '/agent-yaratish'
+    | '/agentlarim'
+    | '/mening-toollarim'
+    | '/seller'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agent-yaratish' | '/agentlarim' | '/mening-toollarim'
-  id: '__root__' | '/' | '/agent-yaratish' | '/agentlarim' | '/mening-toollarim'
+  to: '/' | '/agent-yaratish' | '/agentlarim' | '/mening-toollarim' | '/seller'
+  id:
+    | '__root__'
+    | '/'
+    | '/agent-yaratish'
+    | '/agentlarim'
+    | '/mening-toollarim'
+    | '/seller'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +87,18 @@ export interface RootRouteChildren {
   AgentYaratishRoute: typeof AgentYaratishRoute
   AgentlarimRoute: typeof AgentlarimRoute
   MeningToollarimRoute: typeof MeningToollarimRoute
+  SellerRoute: typeof SellerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/seller': {
+      id: '/seller'
+      path: '/seller'
+      fullPath: '/seller'
+      preLoaderRoute: typeof SellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mening-toollarim': {
       id: '/mening-toollarim'
       path: '/mening-toollarim'
@@ -107,6 +135,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgentYaratishRoute: AgentYaratishRoute,
   AgentlarimRoute: AgentlarimRoute,
   MeningToollarimRoute: MeningToollarimRoute,
+  SellerRoute: SellerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
