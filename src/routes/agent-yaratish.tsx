@@ -528,14 +528,44 @@ function AgentCreatePage() {
 
             {/* O'ng: builder ish maydoni */}
             <section className="flex h-[calc(100vh-160px)] flex-col gap-4 overflow-y-auto rounded-2xl border border-border bg-card/70 p-5 backdrop-blur">
+              {(() => {
+                const completed = phase === "done" ? buildSteps.length : Math.max(activeStep, 0);
+                const percent = Math.round((completed / buildSteps.length) * 100);
+                return (
+                  <div>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <h2 className="text-lg font-semibold tracking-tight">
+                          {phase === "done" ? "Agent yaratildi" : "Agent yaratilmoqda"}
+                        </h2>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {phase === "done"
+                            ? "Demo simulyatsiya yakunlandi."
+                            : "Agentus Brain hozir agentingizni yaratmoqda."}
+                        </p>
+                      </div>
+                      {phase === "done" ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          Agent yaratildi
+                        </span>
+                      ) : (
+                        <span className="text-xs tabular-nums text-muted-foreground">{percent}%</span>
+                      )}
+                    </div>
+                    {phase !== "done" && (
+                      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-border/50">
+                        <div
+                          className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
               <div>
-                <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-sm font-semibold">Yaratish jarayoni</h2>
-                  <span className="text-[11px] text-muted-foreground">
-                    {Math.min(Math.max(activeStep, 0) + (phase === "done" ? 0 : 1), buildSteps.length)}/
-                    {buildSteps.length}
-                  </span>
-                </div>
                 <ul className="space-y-1.5">
                   {buildSteps.map((s, i) => {
                     const done = i < activeStep || phase === "done";
@@ -570,7 +600,7 @@ function AgentCreatePage() {
               <div className="rounded-xl border border-border/60 bg-background/40 p-4">
                 <div className="mb-3 flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-semibold">Jonli ko'rib chiqish</h3>
+                  <h3 className="text-sm font-semibold">Agent qurilishi</h3>
                   <span className="ml-auto rounded-full border border-border/60 px-2 py-0.5 text-[10px] text-muted-foreground">
                     Demo ma'lumot
                   </span>
@@ -620,40 +650,62 @@ function AgentCreatePage() {
                 </div>
               </div>
 
+              {/* Missiya jurnali */}
+              <div className="rounded-xl border border-border/60 bg-background/40 p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold">Jonli jurnal</h3>
+                  <span className="ml-auto text-[10px] text-muted-foreground">
+                    {logs.length} voqea
+                  </span>
+                </div>
+                {logs.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Voqealar shu yerda paydo bo'ladi.</p>
+                ) : (
+                  <ol className="space-y-2">
+                    {logs.map((l, i) => (
+                      <li
+                        key={i}
+                        className="flex animate-fade-in items-start gap-3 text-xs"
+                      >
+                        <span className="w-10 shrink-0 tabular-nums text-muted-foreground">
+                          {l.time}
+                        </span>
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" />
+                        <span className="text-foreground/90">{l.text}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+
               {phase === "done" && (
-                <div className="animate-fade-in rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-emerald-500" />
-                    <p className="text-sm font-medium">Agent muvaffaqiyatli yaratildi.</p>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      disabled
-                      title="Sinov muhiti hali ulanmagan"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs opacity-70"
-                    >
-                      <Play className="h-3.5 w-3.5" /> Sinov agenti
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="Tahrirlash oqimi hali ulanmagan"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs opacity-70"
-                    >
-                      <Pencil className="h-3.5 w-3.5" /> Tahrirlash
-                    </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="Faollashtirish backendi hali ulanmagan"
-                      className="inline-flex cursor-not-allowed items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground opacity-80"
-                    >
-                      <Power className="h-3.5 w-3.5" /> Faollashtirish
-                    </button>
-                  </div>
-                  <p className="mt-2 text-[11px] text-muted-foreground">
-                    Bu jarayon demo simulyatsiya. Haqiqiy agent yaratish backendi hali ulanmagan.
+                <div className="animate-fade-in flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled
+                    title="Sinov muhiti hali ulanmagan (rejalashtirilgan)"
+                    className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm opacity-70 transition-opacity"
+                  >
+                    <Play className="h-4 w-4" /> Sinab ko'rish
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    title="Tahrirlash oqimi hali ulanmagan (rejalashtirilgan)"
+                    className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm opacity-70 transition-opacity"
+                  >
+                    <Pencil className="h-4 w-4" /> Tahrirlash
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    title="Faollashtirish backendi hali ulanmagan (rejalashtirilgan)"
+                    className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground opacity-80"
+                  >
+                    <Power className="h-4 w-4" /> Faollashtirish
+                  </button>
+                  <p className="w-full text-[11px] text-muted-foreground">
+                    Rejalashtirilgan: haqiqiy agent yaratish backendi hali ulanmagan.
                   </p>
                 </div>
               )}
