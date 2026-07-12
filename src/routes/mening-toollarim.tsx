@@ -637,13 +637,13 @@ function ToolCard({
 // ————————————————————————————————————————————————————————————————
 // Tool Settings Drawer — production-ready
 // ————————————————————————————————————————————————————————————————
-type DrawerTab = "general" | "auth" | "permissions" | "agents" | "logs";
+type DrawerTab = "general" | "auth" | "instances" | "permissions" | "logs";
 
 const drawerTabs: { id: DrawerTab; label: string; icon: typeof Info }[] = [
   { id: "general", label: "Umumiy", icon: Info },
   { id: "auth", label: "Autentifikatsiya", icon: ShieldCheck },
+  { id: "instances", label: "Konfiguratsiyalar", icon: Settings },
   { id: "permissions", label: "Ruxsatnomalar", icon: Lock },
-  { id: "agents", label: "Bog'langan agentlar", icon: Bot },
   { id: "logs", label: "Yozuvlar", icon: History },
 ];
 
@@ -656,14 +656,16 @@ const permissionMeta: Record<PermissionKey, { label: string; desc: string }> = {
 };
 
 function ToolDrawer({
-  tool, installed, config, onClose, onUninstall, onPersist,
+  tool, installed, config, instances, onClose, onUninstall, onPersist, onPersistInstances,
 }: {
   tool: ToolDef;
   installed: boolean;
   config: ToolConfig;
+  instances: ToolInstance[];
   onClose: () => void;
   onUninstall: () => void;
   onPersist: (cfg: ToolConfig) => void;
+  onPersistInstances: (list: ToolInstance[]) => void;
 }) {
   const Icon = tool.icon;
   const [tab, setTab] = useState<DrawerTab>("general");
@@ -671,6 +673,7 @@ function ToolDrawer({
   const [reveal, setReveal] = useState<Record<string, boolean>>({});
   const [testing, setTesting] = useState<null | "testing" | "ok" | "fail">(null);
   const [oauthLoading, setOauthLoading] = useState(false);
+  const [editingInstance, setEditingInstance] = useState<ToolInstance | null>(null);
 
   useEffect(() => {
     setDraft(config);
@@ -682,11 +685,11 @@ function ToolDrawer({
     if (f.type === "oauth") return draft.connection === "connected";
     return (draft.fields[f.key] ?? "").trim().length > 0;
   });
-  const configured = isToolConfigured(tool, draft);
+  const authed = isToolAuthenticated(tool, draft);
   const dirty = JSON.stringify(draft) !== JSON.stringify(config);
   const canSave = allRequiredFilled && dirty;
 
-  const pill = statusPill(draft.connection, configured);
+  const pill = statusPillV2(installed, authed, instances.length);
 
   const pushActivity = (message: string, kind: "success" | "info" | "error") => {
     setDraft((d) => ({
@@ -765,6 +768,19 @@ function ToolDrawer({
     setDraft(next);
   };
 
+  const saveInstance = (inst: ToolInstance) => {
+    const exists = instances.some((i) => i.id === inst.id);
+    const next = exists
+      ? instances.map((i) => (i.id === inst.id ? inst : i))
+      : [...instances, inst];
+    onPersistInstances(next);
+    setEditingInstance(null);
+  };
+
+  const deleteInstance = (id: string) => {
+    onPersistInstances(instances.filter((i) => i.id !== id));
+  };
+
   return (
     <div className="flex h-full flex-col">
       {/* HEADER */}
@@ -834,6 +850,26 @@ function ToolDrawer({
             onReconnect={reconnect}
           />
         )}
+        {tab === "instances" && (
+          <InstancesTab
+            tool={tool}
+            authed={authed}
+            instances={instances}
+            onNew={() =>
+              setEditingInstance({
+                id: crypto.randomUUID(),
+                toolId: tool.id,
+                name: "",
+                fields: {},
+                createdAt: new Date().toISOString(),
+                connectedAgentIds: [],
+              })
+            }
+            onEdit={(i) => setEditingInstance(i)}
+            onDelete={deleteInstance}
+            onGoAuth={() => setTab("auth")}
+          />
+        )}
         {tab === "permissions" && (
           <PermissionsTab
             perms={draft.permissions}
@@ -845,7 +881,6 @@ function ToolDrawer({
             }
           />
         )}
-        {tab === "agents" && <AgentsTab />}
         {tab === "logs" && <LogsTab activity={draft.activity} />}
       </div>
 
@@ -868,8 +903,9 @@ function ToolDrawer({
             onClick={onClose}
             className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            Bekor qilish
+            Yopish
           </button>
+          {tab !== "instances" && (
           <button
             type="button"
             onClick={save}
@@ -880,10 +916,21 @@ function ToolDrawer({
                 : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
             }`}
           >
-            <Check className="h-3.5 w-3.5" /> Konfiguratsiyani saqlash
+            <Check className="h-3.5 w-3.5" /> Saqlash
           </button>
+          )}
         </div>
       </div>
+
+      {/* Ichki konfiguratsiya editori — right slide-over */}
+      {editingInstance && (
+        <InstanceEditor
+          tool={tool}
+          instance={editingInstance}
+          onCancel={() => setEditingInstance(null)}
+          onSave={saveInstance}
+        />
+      )}
     </div>
   );
 }
