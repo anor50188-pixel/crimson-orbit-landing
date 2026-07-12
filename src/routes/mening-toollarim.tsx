@@ -782,7 +782,7 @@ function ToolDrawer({
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       {/* HEADER */}
       <div className="border-b border-border/60 px-5 py-4">
         <div className="flex items-start justify-between gap-3">
