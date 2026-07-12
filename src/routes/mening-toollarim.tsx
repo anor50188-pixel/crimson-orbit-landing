@@ -100,13 +100,7 @@ function MeningToollarimPage() {
 
   // localStorage — brauzerda saqlanuvchi demo holat
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(INSTALLED_KEY);
-      if (raw) setInstalled(JSON.parse(raw));
-      else setInstalled(["telegram-bot", "google-sheets", "gmail"]);
-    } catch {
-      /* ignore */
-    }
+    setInstalled(readInstalledToolIds());
   }, []);
 
   useEffect(() => {
@@ -119,11 +113,7 @@ function MeningToollarimPage() {
 
   const persistInstalled = (next: string[]) => {
     setInstalled(next);
-    try {
-      localStorage.setItem(INSTALLED_KEY, JSON.stringify(next));
-    } catch {
-      /* ignore */
-    }
+    writeInstalledToolIds(next);
   };
 
   const install = (tool: ToolDef) => {
