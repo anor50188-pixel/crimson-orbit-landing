@@ -114,32 +114,36 @@ function AgentCreatePage() {
 
       {/* Main */}
       <main className="relative flex-1 overflow-hidden">
-        {/* Katta qizil sayyora — pastdagi horizont */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[65vh]">
+        {/* Katta qizil sayyora — pastdagi horizont. Barcha ekranlarda pastga
+            joylashib, ufq chizig'i ekranning pastki 40–45% qismida turadi. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[45vh] sm:h-[52vh] lg:h-[60vh]">
           <img
             src={heroPlanet}
             alt=""
             className="h-full w-full object-cover object-top"
           />
-          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-background to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent" />
+          {/* Yuqoridan pastga silliq o'tish, sayyora ufqi ochiq qoladi */}
+          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
+          {/* Pastdan biroz qoraytirish — matn ustidan ko'chirish uchun */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background/80 to-transparent" />
         </div>
 
-        {/* Yulduzli kosmik fon */}
+        {/* Yulduzli kosmik fon — o'ng yuqori burchakdagi red glow rasmga mos */}
         <div
           className="pointer-events-none absolute inset-0 -z-20"
           style={{
             background:
-              "radial-gradient(ellipse at 80% 20%, oklch(0.18 0.12 25 / 0.5), transparent 55%), radial-gradient(ellipse at 20% 10%, oklch(0.12 0.08 25 / 0.35), transparent 60%), var(--background)",
+              "radial-gradient(ellipse 60% 50% at 90% 15%, oklch(0.22 0.14 25 / 0.55), transparent 60%), radial-gradient(ellipse 50% 40% at 10% 10%, oklch(0.14 0.08 25 / 0.3), transparent 65%), var(--background)",
           }}
         />
 
-        {/* O'ng tomondagi kichik sayyora */}
+        {/* O'ng tomondagi kichik sayyora — kichik ekranda yashiriladi,
+            planshetdan boshlab yarim chetdan chiqib turadi. */}
         <img
           src={planetSmall}
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute -right-24 top-1/2 -z-10 w-72 -translate-y-1/2 opacity-90 md:w-96"
+          className="pointer-events-none absolute -z-10 hidden opacity-90 md:block md:-right-20 md:top-[42%] md:w-56 md:-translate-y-1/2 lg:-right-28 lg:w-72 xl:-right-32 xl:w-80"
           style={{ filter: "drop-shadow(0 0 60px oklch(0.5 0.2 25 / 0.6))" }}
         />
 
