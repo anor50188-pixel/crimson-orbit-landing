@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   CheckCircle2,
   User,
+  Crown,
 } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
@@ -57,6 +58,7 @@ const navItems = [
   { icon: Bot, label: "Agentlarim" },
   { icon: Store, label: "Marketplace" },
   { icon: Wrench, label: "Mening toollarim", to: "/mening-toollarim" as const },
+  { icon: Crown, label: "Sotuvchi paneli", to: "/seller" as const },
   { icon: Plug, label: "Integratsiyalar" },
   { icon: BookOpen, label: "Kodex" },
   { icon: BarChart3, label: "Analytics" },
@@ -309,6 +311,18 @@ function AgentCreatePage() {
                 <Link
                   key={label}
                   to="/mening-toollarim"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </Link>
+              );
+            }
+            if (label === "Sotuvchi paneli") {
+              return (
+                <Link
+                  key={label}
+                  to="/seller"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
                 >
                   <Icon className="h-4 w-4" />
