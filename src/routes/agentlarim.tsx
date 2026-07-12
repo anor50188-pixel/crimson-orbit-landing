@@ -26,6 +26,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
+import {
+  readInstalledToolIds,
+  toolCatalog,
+  type ToolDef,
+} from "@/lib/tools-catalog";
 
 export const Route = createFileRoute("/agentlarim")({
   component: AgentlarimPage,
@@ -67,54 +72,16 @@ const navItems = [
   { icon: Settings, label: "Sozlamalar" },
 ];
 
-type MarketTool = {
-  id: string;
-  name: string;
-  description: string;
-  category: "Recommended" | "Popular";
-  icon: typeof Wrench;
-};
-
-// Faqat Agentus MVP doirasidagi to'g'ri toolar — soxta integratsiyalar yo'q.
-const marketTools: MarketTool[] = [
-  {
-    id: "telegram-bot",
-    name: "Telegram Bot API",
-    description: "Telegram orqali xabar yuborish va qabul qilish.",
-    category: "Recommended",
-    icon: Plug,
-  },
-  {
-    id: "google-sheets",
-    name: "Google Sheets",
-    description: "Jadvallarga yozish va o'qish.",
-    category: "Recommended",
-    icon: Plug,
-  },
-  {
-    id: "http-request",
-    name: "HTTP Request",
-    description: "Har qanday REST endpointga so'rov yuborish.",
-    category: "Popular",
-    icon: Wrench,
-  },
-  {
-    id: "web-scraper",
-    name: "Web Scraper",
-    description: "Sahifadan strukturali ma'lumot yig'ish.",
-    category: "Popular",
-    icon: Wrench,
-  },
-  {
-    id: "pdf-reader",
-    name: "PDF Reader",
-    description: "PDF fayllarni matnga o'qish.",
-    category: "Popular",
-    icon: Wrench,
-  },
-];
-
-const categories = ["Barchasi", "Recommended", "Popular", "O'rnatilgan"] as const;
+// Agent'ga qo'shiladigan toollar — foydalanuvchi "Mening toollarim"ga
+// o'rnatgan toollargina bu yerda ko'rinadi. Marketplace to'g'ridan-to'g'ri
+// agentga o'rnamaydi; oldin foydalanuvchi kutubxonasiga tushishi kerak.
+const categories = [
+  "Barchasi",
+  "Free",
+  "Pro",
+  "Marketplace",
+  "Agentda",
+] as const;
 
 function timeAgo(iso?: string) {
   if (!iso) return "—";
