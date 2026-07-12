@@ -117,6 +117,7 @@ function AgentCreatePage() {
   const [activeStep, setActiveStep] = useState<number>(-1);
   const [logs, setLogs] = useState<{ time: string; text: string }[]>([]);
   const [clarifyStage, setClarifyStage] = useState<0 | 1 | 2>(0);
+  const [savedToAgents, setSavedToAgents] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const addLog = (text: string) => setLogs((l) => [...l, { time: nowTime(), text }]);
@@ -241,6 +242,26 @@ function AgentCreatePage() {
       },
     ]);
     setFollowUp("");
+  };
+
+  const handleTry = () => {
+    if (savedToAgents) return;
+    try {
+      const raw = localStorage.getItem("agentus:agents");
+      const list = raw ? JSON.parse(raw) : [];
+      list.push({
+        id: `${Date.now()}`,
+        name: "Hisobot Yig'uvchi",
+        description:
+          "Telegram orqali ma'lumot yig'adi, Sheets ga yozadi va hisobot yuboradi.",
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem("agentus:agents", JSON.stringify(list));
+    } catch {
+      // ignore storage errors
+    }
+    setSavedToAgents(true);
+    addLog("Agent Agentlarim bo'limiga qo'shildi");
   };
 
   const isSplit = phase !== "hero";
