@@ -200,6 +200,76 @@ const f = {
   workspaceId: { key: "workspace_id", label: "Ish maydoni identifikatori", type: "text" as const, placeholder: "ws_••••" },
 };
 
+// Instance (konfiguratsiya) uchun tayyor maydon shablonlari.
+const inst = {
+  notes: {
+    key: "notes", label: "Izohlar", type: "textarea" as const,
+    placeholder: "Bu konfiguratsiya nima uchun ishlatiladi?",
+  } satisfies InstanceField,
+  writeMode: {
+    key: "write_mode", label: "Yozish rejimi", type: "select" as const,
+    options: [
+      { value: "append", label: "Qo'shish" },
+      { value: "replace", label: "Almashtirish" },
+      { value: "update", label: "Yangilash" },
+    ],
+  } satisfies InstanceField,
+};
+
+const sheetsInstanceFields: InstanceField[] = [
+  { key: "spreadsheet", label: "Elektron jadval", type: "text", placeholder: "Hisobot.xlsx", required: true, help: "Fayl nomi yoki Spreadsheet ID." },
+  { key: "sheet", label: "Varaq", type: "text", placeholder: "Sheet1" },
+  { key: "column", label: "Ustun", type: "text", placeholder: "A" },
+  inst.writeMode,
+  { key: "folder", label: "Standart papka", type: "text", placeholder: "Reports/2026" },
+  inst.notes,
+];
+
+const telegramInstanceFields: InstanceField[] = [
+  { key: "chat_id", label: "Chat / kanal", type: "text", placeholder: "@my_channel yoki -1001234567890", required: true },
+  { key: "template", label: "Xabar shabloni", type: "textarea", placeholder: "Assalomu alaykum, {name}..." },
+  inst.notes,
+];
+
+const gmailInstanceFields: InstanceField[] = [
+  { key: "from_alias", label: "Yuboruvchi alias", type: "text", placeholder: "noreply@company.uz", required: true },
+  { key: "subject_template", label: "Mavzu shabloni", type: "text", placeholder: "Haftalik hisobot — {date}" },
+  { key: "body_template", label: "Xabar shabloni", type: "textarea", placeholder: "Salom, ..." },
+  inst.notes,
+];
+
+const calendarInstanceFields: InstanceField[] = [
+  { key: "calendar_id", label: "Kalendar", type: "text", placeholder: "primary yoki calendar@group.calendar.google.com", required: true },
+  { key: "default_duration", label: "Standart davomiylik", type: "text", placeholder: "30 daqiqa" },
+  inst.notes,
+];
+
+const httpInstanceFields: InstanceField[] = [
+  { key: "endpoint", label: "Endpoint", type: "text", placeholder: "/v1/orders", required: true },
+  { key: "method", label: "Method", type: "select", options: [
+    { value: "GET", label: "GET" }, { value: "POST", label: "POST" },
+    { value: "PUT", label: "PUT" }, { value: "DELETE", label: "DELETE" },
+  ]},
+  inst.notes,
+];
+
+const sqlInstanceFields: InstanceField[] = [
+  { key: "table", label: "Jadval", type: "text", placeholder: "orders", required: true },
+  { key: "query_template", label: "Query shabloni", type: "textarea", placeholder: "SELECT * FROM orders WHERE ..." },
+  inst.notes,
+];
+
+const notionInstanceFields: InstanceField[] = [
+  { key: "database_id", label: "Baza ID", type: "text", placeholder: "abc123...", required: true },
+  { key: "default_status", label: "Standart status", type: "text", placeholder: "Yangi" },
+  inst.notes,
+];
+
+const genericInstanceFields: InstanceField[] = [
+  { key: "target", label: "Manzil / resurs", type: "text", placeholder: "Ma'lumot manzili", required: true },
+  inst.notes,
+];
+
 export const toolCatalog: ToolDef[] = [
   {
     id: "telegram-bot",
