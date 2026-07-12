@@ -1,35 +1,55 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  AlertCircle,
   BarChart3,
   Bot,
   BookOpen,
   Check,
   ChevronDown,
+  Copy,
+  ExternalLink,
+  Eye,
+  EyeOff,
   Home,
+  Info,
+  Link2,
   Loader2,
   Lock,
   Plug,
   Plus,
   Search,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Store,
   Trash2,
+  Unplug,
   Wallet,
   Wrench,
   X,
   Bell,
   HelpCircle,
+  RefreshCw,
+  Zap,
+  History,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
 import {
   INSTALLED_TOOLS_KEY,
   readInstalledToolIds,
+  readToolConfigs,
+  writeToolConfigs,
+  isToolConfigured,
+  isToolReady,
   toolCatalog,
   writeInstalledToolIds,
+  type ConnectionStatus,
+  type PermissionKey,
+  type ToolConfig,
   type ToolDef,
+  type ActivityKind,
 } from "@/lib/tools-catalog";
 
 export const Route = createFileRoute("/mening-toollarim")({
@@ -46,9 +66,6 @@ export const Route = createFileRoute("/mening-toollarim")({
   }),
 });
 
-// ————————————————————————————————————————————————————————————————
-// Nav
-// ————————————————————————————————————————————————————————————————
 const navItems = [
   { icon: Home, label: "Asosiy", to: "/" as const },
   { icon: Bot, label: "Agentlarim", to: "/agentlarim" as const },
@@ -66,9 +83,7 @@ const navItems = [
   { icon: Settings, label: "Sozlamalar" },
 ];
 
-// Katalog va localStorage helper'lari `@/lib/tools-catalog` ichida.
 const catalog = toolCatalog;
-// Pro rejasi — hozircha demo (backend yo'q).
 const USER_IS_PRO = false;
 
 const tabs = [
@@ -90,17 +105,42 @@ function formatDate(iso?: string) {
   });
 }
 
+function formatDateTime(iso?: string) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleString("uz-UZ", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function emptyConfig(tool: ToolDef): ToolConfig {
+  const perms: Partial<Record<PermissionKey, boolean>> = {};
+  (tool.defaultPermissions ?? []).forEach((p) => (perms[p] = true));
+  return {
+    toolId: tool.id,
+    fields: {},
+    permissions: perms,
+    connection: "unconfigured",
+    activity: [],
+  };
+}
+
 function MeningToollarimPage() {
   const [installed, setInstalled] = useState<string[]>([]);
+  const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
   const [tab, setTab] = useState<TabId>("all");
   const [query, setQuery] = useState("");
   const [installing, setInstalling] = useState<string | null>(null);
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // localStorage — brauzerda saqlanuvchi demo holat
   useEffect(() => {
     setInstalled(readInstalledToolIds());
+    setConfigs(readToolConfigs());
   }, []);
 
   useEffect(() => {
@@ -116,6 +156,12 @@ function MeningToollarimPage() {
     writeInstalledToolIds(next);
   };
 
+  const persistConfig = (cfg: ToolConfig) => {
+    const next = { ...configs, [cfg.toolId]: cfg };
+    setConfigs(next);
+    writeToolConfigs(next);
+  };
+
   const install = (tool: ToolDef) => {
     if (installed.includes(tool.id)) return;
     if (tool.tier === "pro" && !USER_IS_PRO) return;
@@ -123,14 +169,18 @@ function MeningToollarimPage() {
     setTimeout(() => {
       persistInstalled([...installed, tool.id]);
       setInstalling(null);
-    }, 750);
+      // Konfiguratsiya kerak bo'lsa darrov panelni ochamiz
+      if ((tool.authFields ?? []).length > 0) setDrawerId(tool.id);
+    }, 600);
   };
 
   const uninstall = (toolId: string) => {
     persistInstalled(installed.filter((id) => id !== toolId));
+    const { [toolId]: _removed, ...rest } = configs;
+    setConfigs(rest);
+    writeToolConfigs(rest);
   };
 
-  // Filtered by tab + query
   const filtered = useMemo(() => {
     return catalog.filter((t) => {
       if (tab === "free" && t.tier !== "free") return false;
@@ -148,13 +198,14 @@ function MeningToollarimPage() {
     });
   }, [tab, query, installed]);
 
-  const grouped = useMemo(() => {
-    return {
+  const grouped = useMemo(
+    () => ({
       free: filtered.filter((t) => t.tier === "free"),
       pro: filtered.filter((t) => t.tier === "pro"),
       marketplace: filtered.filter((t) => t.tier === "marketplace"),
-    };
-  }, [filtered]);
+    }),
+    [filtered],
+  );
 
   const stats = {
     total: catalog.length,
@@ -170,16 +221,10 @@ function MeningToollarimPage() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* SIDEBAR */}
       <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border/60 bg-background lg:flex">
         <div className="px-6 py-6">
           <Link to="/" className="inline-flex">
-            <img
-              src={wordmark}
-              alt="AGENTUS"
-              className="h-6 w-auto"
-              draggable={false}
-            />
+            <img src={wordmark} alt="AGENTUS" className="h-6 w-auto" draggable={false} />
           </Link>
         </div>
         <nav className="flex-1 space-y-0.5 px-3">
@@ -237,9 +282,7 @@ function MeningToollarimPage() {
         </div>
       </aside>
 
-      {/* MAIN */}
       <main className="relative flex-1 overflow-hidden">
-        {/* Top bar */}
         <header className="flex items-center justify-between border-b border-border/60 px-6 py-4">
           <div />
           <div className="flex items-center gap-3">
@@ -272,17 +315,13 @@ function MeningToollarimPage() {
             drawerId ? "blur-[1px]" : ""
           }`}
         >
-          {/* Title */}
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Mening toollarim
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Mening toollarim</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Toollaringizni boshqaring va agentlaringizga ulang.
             </p>
           </div>
 
-          {/* Tabs */}
           <div className="mb-5 flex flex-wrap gap-2">
             {tabs.map((t) => {
               const active = tab === t.id;
@@ -297,50 +336,20 @@ function MeningToollarimPage() {
                       : "border-border/60 text-muted-foreground hover:bg-card/60 hover:text-foreground"
                   }`}
                 >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      active ? "bg-primary" : "bg-muted-foreground/40"
-                    }`}
-                  />
+                  <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-primary" : "bg-muted-foreground/40"}`} />
                   {t.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Stats */}
           <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard
-              icon={<Wrench className="h-4 w-4" />}
-              accent="bg-primary/15 text-primary"
-              label="Jami toollar"
-              value={String(stats.total)}
-              hint="Barcha toollaringiz"
-            />
-            <StatCard
-              icon={<Check className="h-4 w-4" />}
-              accent="bg-emerald-500/15 text-emerald-400"
-              label="O'rnatilgan"
-              value={String(stats.installed)}
-              hint="Foydalanishga tayyor"
-            />
-            <StatCard
-              icon={<Sparkles className="h-4 w-4" />}
-              accent="bg-amber-500/15 text-amber-400"
-              label="Pro toollar"
-              value={String(stats.pro)}
-              hint={USER_IS_PRO ? "Pro reja bilan ochildi" : "Pro reja kerak"}
-            />
-            <StatCard
-              icon={<ShoppingBag className="h-4 w-4" />}
-              accent="bg-violet-500/15 text-violet-400"
-              label="Marketplace"
-              value={String(stats.marketplace)}
-              hint="Sotib olingan toollar"
-            />
+            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label="Jami toollar" value={String(stats.total)} hint="Barcha toollaringiz" />
+            <StatCard icon={<Check className="h-4 w-4" />} accent="bg-emerald-500/15 text-emerald-400" label="O'rnatilgan" value={String(stats.installed)} hint="Foydalanishga tayyor" />
+            <StatCard icon={<Sparkles className="h-4 w-4" />} accent="bg-amber-500/15 text-amber-400" label="Pro toollar" value={String(stats.pro)} hint={USER_IS_PRO ? "Pro reja bilan ochildi" : "Pro reja kerak"} />
+            <StatCard icon={<ShoppingBag className="h-4 w-4" />} accent="bg-violet-500/15 text-violet-400" label="Marketplace" value={String(stats.marketplace)} hint="Sotib olingan toollar" />
           </div>
 
-          {/* Search + filters */}
           <div className="mb-6 flex flex-col gap-3 rounded-xl border border-border/60 bg-card/40 p-3 md:flex-row md:items-center">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -365,90 +374,43 @@ function MeningToollarimPage() {
             </div>
           </div>
 
-          {/* Sections */}
           {(tab === "all" || tab === "free") && grouped.free.length > 0 && (
-            <ToolSection
-              dotClass="bg-emerald-500"
-              title="Free toollar"
-              count={grouped.free.length}
-              subtitle="Agentus tomonidan bepul beriladigan asosiy toollar."
-            >
+            <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
               <ToolGrid>
                 {grouped.free.map((t) => (
-                  <ToolCard
-                    key={t.id}
-                    tool={t}
-                    installed={installed.includes(t.id)}
-                    installing={installing === t.id}
-                    isPro={USER_IS_PRO}
-                    onInstall={() => install(t)}
-                    onUninstall={() => uninstall(t.id)}
-                    onOpenSettings={() => setDrawerId(t.id)}
-                  />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
           )}
 
           {(tab === "all" || tab === "pro") && grouped.pro.length > 0 && (
-            <ToolSection
-              dotClass="bg-amber-500"
-              title="Pro toollar"
-              count={grouped.pro.length}
-              subtitle="Pro reja bilan ochiladigan kuchli toollar."
-            >
+            <ToolSection dotClass="bg-amber-500" title="Pro toollar" count={grouped.pro.length} subtitle="Pro reja bilan ochiladigan kuchli toollar.">
               <ToolGrid>
                 {grouped.pro.map((t) => (
-                  <ToolCard
-                    key={t.id}
-                    tool={t}
-                    installed={installed.includes(t.id)}
-                    installing={installing === t.id}
-                    isPro={USER_IS_PRO}
-                    onInstall={() => install(t)}
-                    onUninstall={() => uninstall(t.id)}
-                    onOpenSettings={() => setDrawerId(t.id)}
-                  />
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
             </ToolSection>
           )}
 
-          {(tab === "all" || tab === "marketplace") &&
-            grouped.marketplace.length > 0 && (
-              <ToolSection
-                dotClass="bg-violet-500"
-                title="Marketplace toollari"
-                count={grouped.marketplace.length}
-                subtitle="Marketplace dan sotib olgan toollaringiz."
-              >
-                <ToolGrid>
-                  {grouped.marketplace.map((t) => (
-                    <ToolCard
-                      key={t.id}
-                      tool={t}
-                      installed={installed.includes(t.id)}
-                      installing={installing === t.id}
-                      isPro={USER_IS_PRO}
-                      onInstall={() => install(t)}
-                      onUninstall={() => uninstall(t.id)}
-                      onOpenSettings={() => setDrawerId(t.id)}
-                    />
-                  ))}
-                </ToolGrid>
-              </ToolSection>
-            )}
+          {(tab === "all" || tab === "marketplace") && grouped.marketplace.length > 0 && (
+            <ToolSection dotClass="bg-violet-500" title="Marketplace toollari" count={grouped.marketplace.length} subtitle="Marketplace dan sotib olgan toollaringiz.">
+              <ToolGrid>
+                {grouped.marketplace.map((t) => (
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                ))}
+              </ToolGrid>
+            </ToolSection>
+          )}
 
           {filtered.length === 0 && (
             <div className="rounded-xl border border-dashed border-border/60 bg-card/30 px-6 py-16 text-center">
-              <p className="text-sm text-muted-foreground">
-                Hech narsa topilmadi.
-              </p>
+              <p className="text-sm text-muted-foreground">Hech narsa topilmadi.</p>
             </div>
           )}
         </div>
 
-        {/* Drawer overlay */}
         {drawerId && (
           <div
             aria-hidden
@@ -457,22 +419,24 @@ function MeningToollarimPage() {
           />
         )}
 
-        {/* Tool Settings Drawer */}
         <aside
-          className={`fixed inset-y-0 right-0 z-40 w-full max-w-md border-l border-border/60 bg-background/95 backdrop-blur transition-transform duration-300 ease-out ${
+          className={`fixed inset-y-0 right-0 z-40 flex w-full max-w-[520px] flex-col border-l border-border/60 bg-background/95 backdrop-blur transition-transform duration-300 ease-out ${
             drawerId ? "translate-x-0" : "translate-x-full"
           }`}
           aria-hidden={!drawerId}
         >
           {drawerTool && (
             <ToolDrawer
+              key={drawerTool.id}
               tool={drawerTool}
               installed={installed.includes(drawerTool.id)}
+              config={configs[drawerTool.id] ?? emptyConfig(drawerTool)}
               onClose={() => setDrawerId(null)}
               onUninstall={() => {
                 uninstall(drawerTool.id);
                 setDrawerId(null);
               }}
+              onPersist={persistConfig}
             />
           )}
         </aside>
@@ -482,36 +446,18 @@ function MeningToollarimPage() {
 }
 
 // ————————————————————————————————————————————————————————————————
-// Small subcomponents
+// Kartochka va boshqa yordamchi komponentlar
 // ————————————————————————————————————————————————————————————————
-function StatCard({
-  icon,
-  accent,
-  label,
-  value,
-  hint,
-}: {
-  icon: React.ReactNode;
-  accent: string;
-  label: string;
-  value: string;
-  hint: string;
-}) {
+function StatCard({ icon, accent, label, value, hint }: { icon: React.ReactNode; accent: string; label: string; value: string; hint: string }) {
   return (
     <div className="rounded-xl border border-border/60 bg-card/40 p-4">
       <div className="flex items-start gap-3">
-        <span
-          className={`grid h-9 w-9 place-items-center rounded-lg ${accent}`}
-        >
-          {icon}
-        </span>
+        <span className={`grid h-9 w-9 place-items-center rounded-lg ${accent}`}>{icon}</span>
         <div className="min-w-0">
           <p className="text-xs text-muted-foreground">{label}</p>
           <p className="mt-0.5 text-xl font-semibold">
             {value}
-            <span className="ml-1 text-xs font-normal text-muted-foreground">
-              ta
-            </span>
+            <span className="ml-1 text-xs font-normal text-muted-foreground">ta</span>
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>
         </div>
@@ -522,46 +468,25 @@ function StatCard({
 
 function FilterPill({ label }: { label: string }) {
   return (
-    <button
-      type="button"
-      disabled
-      className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm text-muted-foreground opacity-80"
-    >
+    <button type="button" disabled className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm text-muted-foreground opacity-80">
       {label}
       <ChevronDown className="h-3.5 w-3.5" />
     </button>
   );
 }
 
-function ToolSection({
-  dotClass,
-  title,
-  count,
-  subtitle,
-  children,
-}: {
-  dotClass: string;
-  title: string;
-  count: number;
-  subtitle: string;
-  children: React.ReactNode;
-}) {
+function ToolSection({ dotClass, title, count, subtitle, children }: { dotClass: string; title: string; count: number; subtitle: string; children: React.ReactNode }) {
   return (
     <section className="mb-8">
       <div className="mb-3 flex items-end justify-between gap-4">
         <div>
           <h2 className="flex items-center gap-2 text-base font-semibold">
             <span className={`h-2 w-2 rounded-full ${dotClass}`} />
-            {title}{" "}
-            <span className="text-muted-foreground">({count})</span>
+            {title} <span className="text-muted-foreground">({count})</span>
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
         </div>
-        <button
-          type="button"
-          disabled
-          className="cursor-not-allowed text-xs text-primary/80 opacity-80"
-        >
+        <button type="button" disabled className="cursor-not-allowed text-xs text-primary/80 opacity-80">
           Barchasini ko'rish →
         </button>
       </div>
@@ -571,23 +496,23 @@ function ToolSection({
 }
 
 function ToolGrid({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-      {children}
-    </div>
-  );
+  return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">{children}</div>;
+}
+
+function statusPill(status: ConnectionStatus, configured: boolean) {
+  if (!configured) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Konfiguratsiya kerak" };
+  if (status === "connected") return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" };
+  if (status === "expired") return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Muddati tugagan" };
+  if (status === "invalid") return { cls: "bg-red-500/15 text-red-400", dot: "bg-red-400", label: "Noto'g'ri hisob" };
+  if (status === "disconnected") return { cls: "bg-red-500/15 text-red-400", dot: "bg-red-400", label: "Ulanish amalga oshmadi" };
+  return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Konfiguratsiya kerak" };
 }
 
 function ToolCard({
-  tool,
-  installed,
-  installing,
-  isPro,
-  onInstall,
-  onUninstall,
-  onOpenSettings,
+  tool, config, installed, installing, isPro, onInstall, onUninstall, onOpenSettings,
 }: {
   tool: ToolDef;
+  config?: ToolConfig;
   installed: boolean;
   installing: boolean;
   isPro: boolean;
@@ -597,57 +522,43 @@ function ToolCard({
 }) {
   const Icon = tool.icon;
   const locked = tool.tier === "pro" && !isPro && !installed;
+  const configured = isToolConfigured(tool, config);
+  const ready = isToolReady(tool, config);
+  const pill = installed ? statusPill(config?.connection ?? "unconfigured", configured) : null;
+
   return (
     <div
       className={`group relative flex flex-col rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40 hover:bg-card/60 ${
-        installed ? "ring-1 ring-primary/20" : ""
+        ready ? "ring-1 ring-primary/20" : ""
       }`}
     >
       <div className="mb-3 flex items-start gap-3">
-        <span
-          className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tool.accent}`}
-        >
-          {locked ? (
-            <Lock className="h-4 w-4" />
-          ) : (
-            <Icon className="h-5 w-5" />
-          )}
+        <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
+          {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p className="truncate text-sm font-semibold">{tool.name}</p>
-          </div>
-          {installed && (
-            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
-              <Check className="h-3 w-3" /> O'rnatilgan
+          <p className="truncate text-sm font-semibold">{tool.name}</p>
+          {installed && pill && (
+            <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium ${pill.cls}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${pill.dot}`} />
+              {pill.label}
             </span>
           )}
-          {tool.tier === "pro" && !installed && (
-            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
-              Pro
-            </span>
+          {!installed && tool.tier === "pro" && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">Pro</span>
           )}
-          {tool.tier === "free" && !installed && (
-            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
-              Bepul
-            </span>
+          {!installed && tool.tier === "free" && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">Bepul</span>
           )}
         </div>
       </div>
 
-      <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-        {tool.description}
-      </p>
+      <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{tool.description}</p>
 
-      {/* Placeholder for future backend metric — currently unknown, kept honest */}
       <p className="mb-3 text-[10px] text-muted-foreground/70">
-        {tool.purchasedAt
-          ? `Sotib olingan: ${formatDate(tool.purchasedAt)}`
-          : `v${tool.version}`}
+        v{tool.version}
         <span className="mx-1.5">•</span>
-        <span title="Backend tayyor bo'lgach real ma'lumot chiqadi">
-          Bog'langan agentlar: —
-        </span>
+        <span title="Backend tayyor bo'lgach real ma'lumot chiqadi">Bog'langan agentlar: —</span>
       </p>
 
       <div className="mt-auto flex items-center gap-2">
@@ -655,26 +566,22 @@ function ToolCard({
           <>
             <button
               type="button"
-              onClick={onUninstall}
-              className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-red-500/40 hover:text-red-400"
+              onClick={onOpenSettings}
+              className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
             >
-              Olib tashlash
+              {configured ? "Sozlash" : "Konfiguratsiya qilish"}
             </button>
             <button
               type="button"
-              onClick={onOpenSettings}
-              className="rounded-lg border border-border/60 bg-background/40 p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label="Sozlamalar"
+              onClick={onUninstall}
+              className="rounded-lg border border-border/60 bg-background/40 p-1.5 text-muted-foreground transition-colors hover:border-red-500/40 hover:text-red-400"
+              aria-label="Olib tashlash"
             >
-              <Settings className="h-3.5 w-3.5" />
+              <Trash2 className="h-3.5 w-3.5" />
             </button>
           </>
         ) : locked ? (
-          <button
-            type="button"
-            disabled
-            className="flex-1 cursor-not-allowed rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground opacity-70"
-          >
+          <button type="button" disabled className="flex-1 cursor-not-allowed rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground opacity-70">
             <Lock className="mr-1 inline h-3 w-3" /> Pro Reja
           </button>
         ) : (
@@ -698,116 +605,547 @@ function ToolCard({
   );
 }
 
+// ————————————————————————————————————————————————————————————————
+// Tool Settings Drawer — production-ready
+// ————————————————————————————————————————————————————————————————
+type DrawerTab = "general" | "auth" | "permissions" | "agents" | "logs";
+
+const drawerTabs: { id: DrawerTab; label: string; icon: typeof Info }[] = [
+  { id: "general", label: "Umumiy", icon: Info },
+  { id: "auth", label: "Autentifikatsiya", icon: ShieldCheck },
+  { id: "permissions", label: "Ruxsatnomalar", icon: Lock },
+  { id: "agents", label: "Bog'langan agentlar", icon: Bot },
+  { id: "logs", label: "Yozuvlar", icon: History },
+];
+
+const permissionMeta: Record<PermissionKey, { label: string; desc: string }> = {
+  read: { label: "O'qish", desc: "Tool ma'lumotlarini o'qishga ruxsat beradi." },
+  write: { label: "Yozish", desc: "Yangi ma'lumot yaratish va yangilash imkonini beradi." },
+  delete: { label: "O'chirish", desc: "Ma'lumotlarni tanlab o'chirishga ruxsat beradi." },
+  execute: { label: "Bajarish", desc: "Tool amallari va workflow'larni ishga tushiradi." },
+  admin: { label: "Administrator", desc: "To'liq boshqaruv — ehtiyot bo'lib ishlating." },
+};
+
 function ToolDrawer({
-  tool,
-  installed,
-  onClose,
-  onUninstall,
+  tool, installed, config, onClose, onUninstall, onPersist,
 }: {
   tool: ToolDef;
   installed: boolean;
+  config: ToolConfig;
   onClose: () => void;
   onUninstall: () => void;
+  onPersist: (cfg: ToolConfig) => void;
 }) {
   const Icon = tool.icon;
+  const [tab, setTab] = useState<DrawerTab>("general");
+  const [draft, setDraft] = useState<ToolConfig>(config);
+  const [reveal, setReveal] = useState<Record<string, boolean>>({});
+  const [testing, setTesting] = useState<null | "testing" | "ok" | "fail">(null);
+  const [oauthLoading, setOauthLoading] = useState(false);
+
+  useEffect(() => {
+    setDraft(config);
+  }, [config.toolId]);
+
+  const fields = tool.authFields ?? [];
+  const requiredFields = fields.filter((f) => f.required !== false);
+  const allRequiredFilled = requiredFields.every((f) => {
+    if (f.type === "oauth") return draft.connection === "connected";
+    return (draft.fields[f.key] ?? "").trim().length > 0;
+  });
+  const configured = isToolConfigured(tool, draft);
+  const dirty = JSON.stringify(draft) !== JSON.stringify(config);
+  const canSave = allRequiredFilled && dirty;
+
+  const pill = statusPill(draft.connection, configured);
+
+  const pushActivity = (message: string, kind: "success" | "info" | "error") => {
+    setDraft((d) => ({
+      ...d,
+      activity: [
+        { at: new Date().toISOString(), message, kind },
+        ...d.activity,
+      ].slice(0, 25),
+    }));
+  };
+
+  const testConnection = () => {
+    if (!allRequiredFilled) return;
+    setTesting("testing");
+    setTimeout(() => {
+      // Demo: to'ldirilgan bo'lsa muvaffaqiyatli deb hisoblaymiz.
+      const ok = allRequiredFilled;
+      setTesting(ok ? "ok" : "fail");
+      setDraft((d) => ({
+        ...d,
+        connection: ok ? "connected" : "invalid",
+        lastTestedAt: new Date().toISOString(),
+        activity: [
+          {
+            at: new Date().toISOString(),
+            message: ok ? "Sinov ulanishi muvaffaqiyatli" : "Ulanish amalga oshmadi",
+            kind: (ok ? "success" : "error") as ActivityKind,
+          },
+          ...d.activity,
+        ].slice(0, 25),
+      }));
+      setTimeout(() => setTesting(null), 1600);
+    }, 900);
+  };
+
+  const disconnect = () => {
+    setDraft((d) => ({ ...d, connection: "disconnected" }));
+    pushActivity("Ulanish uzildi", "info");
+  };
+
+  const reconnect = () => {
+    setDraft((d) => ({ ...d, connection: "unconfigured" }));
+    pushActivity("Qayta ulanish talab qilindi", "info");
+  };
+
+  const startOauth = () => {
+    setOauthLoading(true);
+    setTimeout(() => {
+      setOauthLoading(false);
+      setDraft((d) => ({
+        ...d,
+        connection: "connected",
+        fields: {
+          ...d.fields,
+          client_id: d.fields.client_id || "demo-client.apps.googleusercontent.com",
+        },
+        lastTestedAt: new Date().toISOString(),
+        activity: [
+          { at: new Date().toISOString(), message: "OAuth avtorizatsiya bajarildi (Demo rejimi)", kind: "success" as ActivityKind },
+          ...d.activity,
+        ].slice(0, 25),
+      }));
+    }, 1100);
+  };
+
+  const save = () => {
+    if (!canSave) return;
+    const next: ToolConfig = {
+      ...draft,
+      activity: [
+        { at: new Date().toISOString(), message: "Konfiguratsiya saqlandi", kind: "success" as ActivityKind },
+        ...draft.activity,
+      ].slice(0, 25),
+    };
+    onPersist(next);
+    setDraft(next);
+  };
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
-        <div className="flex items-start gap-3">
-          <span
-            className={`grid h-10 w-10 place-items-center rounded-lg ${tool.accent}`}
-          >
-            <Icon className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Tool sozlamalari
-            </p>
-            <h2 className="mt-0.5 text-lg font-semibold">{tool.name}</h2>
-            <p className="text-xs text-muted-foreground">v{tool.version}</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground"
-          aria-label="Yopish"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-
-      <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5 text-sm">
-        <section>
-          <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-            Tavsif
-          </p>
-          <p className="text-sm leading-relaxed">{tool.description}</p>
-        </section>
-
-        <section>
-          <p className="mb-2 text-[10px] uppercase tracking-wider text-muted-foreground">
-            Ruxsatnomalar
-          </p>
-          <ul className="space-y-1.5">
-            {tool.permissions.map((p) => (
-              <li
-                key={p}
-                className="flex items-center gap-2 rounded-md border border-border/60 bg-card/40 px-2.5 py-1.5 text-xs"
-              >
-                <Check className="h-3.5 w-3.5 text-emerald-400" /> {p}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <p className="mb-2 text-[10px] uppercase tracking-wider text-muted-foreground">
-            Bog'langan agentlar
-          </p>
-          <div className="rounded-md border border-dashed border-border/60 bg-card/30 px-3 py-4 text-center text-xs text-muted-foreground">
-            Hozircha bu tool hech qaysi agentga ulanmagan.
-            <br />
-            <span className="text-[10px] opacity-70">
-              (Backend tayyor bo'lgach real ma'lumot chiqadi.)
+      {/* HEADER */}
+      <div className="border-b border-border/60 px-5 py-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <span className={`grid h-11 w-11 place-items-center rounded-xl ${tool.accent}`}>
+              <Icon className="h-5 w-5" />
             </span>
-          </div>
-        </section>
-
-        {tool.purchasedAt && (
-          <section>
-            <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-              Marketplace
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Sotib olingan sana:{" "}
-              <span className="text-foreground">
-                {formatDate(tool.purchasedAt)}
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Tool sozlamalari</p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <h2 className="truncate text-lg font-semibold">{tool.name}</h2>
+                <span className="rounded-md border border-border/60 bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                  v{tool.version}
+                </span>
+              </div>
+              <span className={`mt-1.5 inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium ${pill.cls}`}>
+                <span className={`h-1.5 w-1.5 animate-pulse rounded-full ${pill.dot}`} />
+                {pill.label}
               </span>
-            </p>
-          </section>
-        )}
+            </div>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground" aria-label="Yopish">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="mt-4 flex gap-1 overflow-x-auto">
+          {drawerTabs.map((t) => {
+            const active = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTab(t.id)}
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs transition-colors ${
+                  active
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                }`}
+              >
+                <t.icon className="h-3.5 w-3.5" /> {t.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-border/60 px-5 py-4">
-        <button
-          type="button"
-          disabled
-          title="Rejalashtirilgan"
-          className="flex-1 cursor-not-allowed rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground opacity-80"
-        >
-          Yangilash
-        </button>
-        {installed && (
+      {/* BODY */}
+      <div className="flex-1 overflow-y-auto px-5 py-5 text-sm">
+        {tab === "general" && <GeneralTab tool={tool} config={draft} />}
+        {tab === "auth" && (
+          <AuthTab
+            tool={tool}
+            draft={draft}
+            reveal={reveal}
+            setReveal={setReveal}
+            onField={(k, v) => setDraft((d) => ({ ...d, fields: { ...d.fields, [k]: v } }))}
+            onOauth={startOauth}
+            oauthLoading={oauthLoading}
+            testing={testing}
+            allRequiredFilled={allRequiredFilled}
+            onTest={testConnection}
+            onDisconnect={disconnect}
+            onReconnect={reconnect}
+          />
+        )}
+        {tab === "permissions" && (
+          <PermissionsTab
+            perms={draft.permissions}
+            onToggle={(k) =>
+              setDraft((d) => ({
+                ...d,
+                permissions: { ...d.permissions, [k]: !d.permissions[k] },
+              }))
+            }
+          />
+        )}
+        {tab === "agents" && <AgentsTab />}
+        {tab === "logs" && <LogsTab activity={draft.activity} />}
+      </div>
+
+      {/* FOOTER */}
+      <div className="flex items-center justify-between gap-2 border-t border-border/60 bg-background/80 px-5 py-3">
+        {installed ? (
           <button
             type="button"
             onClick={onUninstall}
             className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-400 transition-colors hover:bg-red-500/20"
           >
-            <Trash2 className="h-3.5 w-3.5" /> Olib tashlash
+            <Trash2 className="h-3.5 w-3.5" /> O'chirish
           </button>
+        ) : (
+          <span />
         )}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
+          >
+            Bekor qilish
+          </button>
+          <button
+            type="button"
+            onClick={save}
+            disabled={!canSave}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-medium transition-colors ${
+              canSave
+                ? "bg-primary text-primary-foreground hover:opacity-90"
+                : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5" /> Konfiguratsiyani saqlash
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+
+function GeneralTab({ tool, config }: { tool: ToolDef; config: ToolConfig }) {
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Tavsif</p>
+        <p className="leading-relaxed">{tool.description}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <InfoCell label="Dasturchi" value={tool.developer ?? "Agentus"} />
+        <InfoCell label="Versiya" value={`v${tool.version}`} />
+        <InfoCell label="Kategoriya" value={tool.category} />
+        <InfoCell label="Oxirgi yangilanish" value={formatDate(tool.updatedAt)} />
+        {tool.purchasedAt && <InfoCell label="Sotib olingan" value={formatDate(tool.purchasedAt)} />}
+        <InfoCell label="Oxirgi sinov" value={formatDateTime(config.lastTestedAt)} />
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {tool.docsUrl ? (
+          <a
+            href={tool.docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/40 hover:text-foreground"
+          >
+            <BookOpen className="h-3.5 w-3.5" /> Hujjatlar <ExternalLink className="h-3 w-3" />
+          </a>
+        ) : (
+          <button type="button" disabled className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground opacity-70">
+            <BookOpen className="h-3.5 w-3.5" /> Hujjatlar — Backend kutilmoqda
+          </button>
+        )}
+      </div>
+      <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
+        <div className="mb-1 flex items-center gap-1.5 text-foreground">
+          <Info className="h-3.5 w-3.5 text-primary" /> Demo rejimi
+        </div>
+        Backend hozircha ulanmagan. Kiritilgan qiymatlar faqat brauzeringizda saqlanadi va real API'larga yuborilmaydi.
+      </div>
+    </div>
+  );
+}
+
+function InfoCell({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-card/30 px-3 py-2">
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-0.5 truncate text-sm">{value}</p>
+    </div>
+  );
+}
+
+function AuthTab({
+  tool, draft, reveal, setReveal, onField, onOauth, oauthLoading, testing, allRequiredFilled, onTest, onDisconnect, onReconnect,
+}: {
+  tool: ToolDef;
+  draft: ToolConfig;
+  reveal: Record<string, boolean>;
+  setReveal: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  onField: (k: string, v: string) => void;
+  onOauth: () => void;
+  oauthLoading: boolean;
+  testing: null | "testing" | "ok" | "fail";
+  allRequiredFilled: boolean;
+  onTest: () => void;
+  onDisconnect: () => void;
+  onReconnect: () => void;
+}) {
+  const fields = tool.authFields ?? [];
+  if (fields.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
+        <Zap className="mx-auto mb-2 h-4 w-4 text-primary" />
+        Bu tool uchun autentifikatsiya talab qilinmaydi. Darrov foydalanishingiz mumkin.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {fields.map((field) => {
+        if (field.type === "oauth") {
+          const connected = draft.connection === "connected";
+          return (
+            <div key={field.key} className="rounded-lg border border-border/60 bg-card/40 p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium">{field.label}</p>
+                  {field.help && <p className="mt-0.5 text-[11px] text-muted-foreground">{field.help}</p>}
+                </div>
+                {connected ? (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-0.5 text-[11px] text-emerald-400">
+                    <Check className="h-3 w-3" /> Ulangan
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-[11px] text-amber-400">
+                    <AlertCircle className="h-3 w-3" /> Sozlanmagan
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={onOauth}
+                disabled={oauthLoading}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary hover:bg-primary/20 disabled:opacity-70"
+              >
+                {oauthLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Link2 className="h-3.5 w-3.5" />}
+                {connected ? "Qayta avtorizatsiya" : "Avtorizatsiya oching"}
+              </button>
+            </div>
+          );
+        }
+        const isSecret = field.type === "secret";
+        const shown = !!reveal[field.key];
+        return (
+          <div key={field.key}>
+            <label className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>
+                {field.label}
+                {field.required !== false && <span className="ml-1 text-red-400">*</span>}
+              </span>
+              {field.help && <span className="text-[10px] opacity-70">{field.help}</span>}
+            </label>
+            <div className="relative">
+              <input
+                type={isSecret && !shown ? "password" : "text"}
+                value={draft.fields[field.key] ?? ""}
+                onChange={(e) => onField(field.key, e.target.value)}
+                placeholder={field.placeholder}
+                className="w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2 pr-16 text-sm outline-none placeholder:text-muted-foreground/60 focus:border-primary/60"
+              />
+              <div className="absolute inset-y-0 right-1.5 flex items-center gap-1">
+                {isSecret && (
+                  <button
+                    type="button"
+                    onClick={() => setReveal((r) => ({ ...r, [field.key]: !r[field.key] }))}
+                    className="rounded p-1 text-muted-foreground hover:text-foreground"
+                    aria-label="Ko'rsatish/yashirish"
+                  >
+                    {shown ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const v = draft.fields[field.key];
+                    if (v && typeof navigator !== "undefined" && navigator.clipboard) {
+                      navigator.clipboard.writeText(v).catch(() => {});
+                    }
+                  }}
+                  className="rounded p-1 text-muted-foreground hover:text-foreground"
+                  aria-label="Nusxa olish"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      <div className="rounded-lg border border-border/60 bg-card/40 p-3">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-xs font-medium">Ulanish holati</p>
+          <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium ${statusPill(draft.connection, allRequiredFilled).cls}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${statusPill(draft.connection, allRequiredFilled).dot}`} />
+            {statusPill(draft.connection, allRequiredFilled).label}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onTest}
+            disabled={!allRequiredFilled || testing === "testing"}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
+              testing === "ok"
+                ? "bg-emerald-500/20 text-emerald-400"
+                : testing === "fail"
+                  ? "bg-red-500/20 text-red-400"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
+            } disabled:cursor-not-allowed disabled:opacity-60`}
+          >
+            {testing === "testing" ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : testing === "ok" ? (
+              <Check className="h-3.5 w-3.5" />
+            ) : (
+              <Zap className="h-3.5 w-3.5" />
+            )}
+            {testing === "ok" ? "Muvaffaqiyatli" : testing === "fail" ? "Qayta urinib ko'ring" : "Sinov ulanishi"}
+          </button>
+          <button
+            type="button"
+            onClick={onReconnect}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCw className="h-3.5 w-3.5" /> Qayta ulaning
+          </button>
+          <button
+            type="button"
+            onClick={onDisconnect}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:border-red-500/40 hover:text-red-400"
+          >
+            <Unplug className="h-3.5 w-3.5" /> Uzish
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PermissionsTab({
+  perms, onToggle,
+}: {
+  perms: Partial<Record<PermissionKey, boolean>>;
+  onToggle: (k: PermissionKey) => void;
+}) {
+  const keys: PermissionKey[] = ["read", "write", "delete", "execute", "admin"];
+  return (
+    <div className="space-y-2">
+      {keys.map((k) => {
+        const on = !!perms[k];
+        return (
+          <div key={k} className="flex items-start justify-between rounded-lg border border-border/60 bg-card/40 px-3 py-2.5">
+            <div className="min-w-0 pr-3">
+              <p className="text-sm">{permissionMeta[k].label}</p>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">{permissionMeta[k].desc}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onToggle(k)}
+              role="switch"
+              aria-checked={on}
+              className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${on ? "bg-primary" : "bg-border/80"}`}
+            >
+              <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-background transition-transform ${on ? "translate-x-[18px]" : "translate-x-0.5"}`} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function AgentsTab() {
+  return (
+    <div className="rounded-lg border border-dashed border-border/60 bg-card/30 px-4 py-8 text-center text-xs text-muted-foreground">
+      <Bot className="mx-auto mb-2 h-5 w-5 text-primary/70" />
+      <p>Hozircha bu tool hech qaysi agentga ulanmagan.</p>
+      <p className="mt-1 text-[11px] opacity-70">
+        Ulanish "Agentlarim" sahifasidan amalga oshiriladi. Backend tayyor bo'lgach — real ma'lumot ko'rinadi.
+      </p>
+      <Link
+        to="/agentlarim"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-[11px] text-muted-foreground hover:text-foreground"
+      >
+        <Bot className="h-3.5 w-3.5" /> Agentlarim
+      </Link>
+    </div>
+  );
+}
+
+function LogsTab({ activity }: { activity: ToolConfig["activity"] }) {
+  if (activity.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed border-border/60 bg-card/30 px-4 py-8 text-center text-xs text-muted-foreground">
+        <History className="mx-auto mb-2 h-5 w-5 text-primary/70" />
+        Hozircha faoliyat qayd etilmagan.
+      </div>
+    );
+  }
+  return (
+    <ul className="space-y-1.5">
+      {activity.map((a, i) => {
+        const dot =
+          a.kind === "success" ? "bg-emerald-400" : a.kind === "error" ? "bg-red-400" : "bg-muted-foreground/50";
+        return (
+          <li key={i} className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-card/40 px-3 py-2">
+            <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs">{a.message}</p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">{formatDateTime(a.at)}</p>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+// Yordamchi eksport — bo'lib ketishi ehtimoli uchun ishlatilmagan symbol'lar.
+export const _drawerConst = INSTALLED_TOOLS_KEY;
