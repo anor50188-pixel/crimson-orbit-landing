@@ -1320,7 +1320,7 @@ function InstanceEditor({
         onClick={onCancel}
         className="absolute inset-0 z-40 bg-background/50 backdrop-blur-[1px]"
       />
-      <aside className="absolute inset-y-0 right-0 z-50 flex w-full max-w-[440px] flex-col border-l border-border/60 bg-background shadow-2xl duration-300 animate-in slide-in-from-right">
+      <aside className="absolute inset-y-0 right-0 z-50 flex w-full max-w-[440px] flex-col border-l border-border/60 bg-background shadow-2xl">
         <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
