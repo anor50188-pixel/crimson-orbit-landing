@@ -23,8 +23,6 @@ import {
   Circle,
   Brain,
   Play,
-  Pencil,
-  Power,
   Sun,
   Box,
   Target,
