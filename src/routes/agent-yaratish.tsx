@@ -279,16 +279,31 @@ function AgentCreatePage() {
         </div>
 
         <nav className="flex-1 space-y-0.5 px-3">
-          {navItems.map(({ icon: Icon, label, active }) =>
-            active ? (
-              <span
-                key={label}
-                className="flex items-center gap-3 rounded-lg bg-primary/15 px-3 py-2.5 text-sm font-medium text-foreground"
-              >
-                <Icon className="h-4 w-4 text-primary" />
-                {label}
-              </span>
-            ) : (
+          {navItems.map(({ icon: Icon, label, active }) => {
+            if (active) {
+              return (
+                <span
+                  key={label}
+                  className="flex items-center gap-3 rounded-lg bg-primary/15 px-3 py-2.5 text-sm font-medium text-foreground"
+                >
+                  <Icon className="h-4 w-4 text-primary" />
+                  {label}
+                </span>
+              );
+            }
+            if (label === "Agentlarim") {
+              return (
+                <Link
+                  key={label}
+                  to="/agentlarim"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </Link>
+              );
+            }
+            return (
               <button
                 key={label}
                 type="button"
@@ -299,8 +314,8 @@ function AgentCreatePage() {
                 <Icon className="h-4 w-4" />
                 {label}
               </button>
-            ),
-          )}
+            );
+          })}
         </nav>
 
         {/* Pro Plan card (demo — plan tizimi hali ulanmagan) */}
