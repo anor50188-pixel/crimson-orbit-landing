@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
+import planetSmall from "@/assets/planet-small.png";
 
 export const Route = createFileRoute("/agent-yaratish")({
   component: AgentCreatePage,
@@ -113,16 +114,34 @@ function AgentCreatePage() {
 
       {/* Main */}
       <main className="relative flex-1 overflow-hidden">
-        {/* Planet background */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55vh]">
+        {/* Katta qizil sayyora — pastdagi horizont */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[65vh]">
           <img
             src={heroPlanet}
             alt=""
             className="h-full w-full object-cover object-top"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/40 to-background/95" />
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-background to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-transparent" />
         </div>
+
+        {/* Yulduzli kosmik fon */}
+        <div
+          className="pointer-events-none absolute inset-0 -z-20"
+          style={{
+            background:
+              "radial-gradient(ellipse at 80% 20%, oklch(0.18 0.12 25 / 0.5), transparent 55%), radial-gradient(ellipse at 20% 10%, oklch(0.12 0.08 25 / 0.35), transparent 60%), var(--background)",
+          }}
+        />
+
+        {/* O'ng tomondagi kichik sayyora */}
+        <img
+          src={planetSmall}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 top-1/2 -z-10 w-72 -translate-y-1/2 opacity-90 md:w-96"
+          style={{ filter: "drop-shadow(0 0 60px oklch(0.5 0.2 25 / 0.6))" }}
+        />
 
         {/* Top bar */}
         <div className="flex items-center justify-between px-8 py-5">
