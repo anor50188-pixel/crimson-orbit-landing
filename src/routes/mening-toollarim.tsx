@@ -49,6 +49,7 @@ import {
   type PermissionKey,
   type ToolConfig,
   type ToolDef,
+  type ActivityKind,
 } from "@/lib/tools-catalog";
 
 export const Route = createFileRoute("/mening-toollarim")({
