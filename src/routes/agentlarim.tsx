@@ -183,15 +183,21 @@ function AgentlarimPage() {
     [agents, focusedId],
   );
 
+  // Foydalanuvchi kutubxonasi — "Mening toollarim"da o'rnatilgan toollar.
+  const [userTools, setUserTools] = useState<ToolDef[]>([]);
+  useEffect(() => {
+    const ids = new Set(readInstalledToolIds());
+    setUserTools(toolCatalog.filter((t) => ids.has(t.id)));
+  }, [focusedId]);
+
   const filteredTools = useMemo(() => {
-    const installed = new Set(focusedAgent?.tools ?? []);
-    return marketTools.filter((t) => {
-      if (marketCategory === "O'rnatilgan" && !installed.has(t.name)) return false;
-      if (
-        marketCategory !== "Barchasi" &&
-        marketCategory !== "O'rnatilgan" &&
-        t.category !== marketCategory
-      )
+    const agentInstalled = new Set(focusedAgent?.tools ?? []);
+    return userTools.filter((t) => {
+      if (marketCategory === "Agentda" && !agentInstalled.has(t.name))
+        return false;
+      if (marketCategory === "Free" && t.tier !== "free") return false;
+      if (marketCategory === "Pro" && t.tier !== "pro") return false;
+      if (marketCategory === "Marketplace" && t.tier !== "marketplace")
         return false;
       if (marketQuery.trim()) {
         const q = marketQuery.toLowerCase();
@@ -202,9 +208,9 @@ function AgentlarimPage() {
       }
       return true;
     });
-  }, [focusedAgent, marketCategory, marketQuery]);
+  }, [focusedAgent, marketCategory, marketQuery, userTools]);
 
-  const installTool = (tool: MarketTool) => {
+  const installTool = (tool: ToolDef) => {
     if (!focusedAgent) return;
     const already = (focusedAgent.tools ?? []).includes(tool.name);
     if (already) return;
