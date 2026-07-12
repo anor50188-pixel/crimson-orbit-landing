@@ -537,8 +537,10 @@ function AgentlarimPage() {
               </div>
 
               <div className="border-t border-border/60 px-5 py-3 text-[10px] text-muted-foreground">
-                Demo — toolar faqat agent yozuvida saqlanadi, real integratsiya
-                hozircha yo'q.
+                Faqat "Mening toollarim"da o'rnatilgan toollar ko'rinadi.{" "}
+                <Link to="/mening-toollarim" className="text-primary hover:underline">
+                  Kutubxonaga o'tish →
+                </Link>
               </div>
             </div>
           )}
