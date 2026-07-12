@@ -6,12 +6,9 @@ import {
   BookOpen,
   Check,
   ChevronDown,
-  FileText,
-  Globe,
   Home,
   Loader2,
   Lock,
-  Mail,
   Plug,
   Plus,
   Search,
@@ -25,18 +22,15 @@ import {
   X,
   Bell,
   HelpCircle,
-  Calendar,
-  Table2,
-  Send,
-  Eye,
-  Database,
-  Instagram,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  StickyNote,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
+import {
+  INSTALLED_TOOLS_KEY,
+  readInstalledToolIds,
+  toolCatalog,
+  writeInstalledToolIds,
+  type ToolDef,
+} from "@/lib/tools-catalog";
 
 export const Route = createFileRoute("/mening-toollarim")({
   component: MeningToollarimPage,
