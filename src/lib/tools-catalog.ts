@@ -1,17 +1,13 @@
 import type { ComponentType } from "react";
 import {
   Calendar,
-  Database,
-  Eye,
   FileText,
   Globe,
   Instagram,
   Mail,
   Package,
-  Search,
   Send,
   ShoppingBag,
-  Sparkles,
   StickyNote,
   Table2,
   TrendingUp,
