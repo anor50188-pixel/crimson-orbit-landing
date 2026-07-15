@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import {
   Calendar,
   Database,
@@ -16,6 +17,14 @@ import {
   TrendingUp,
   Wrench,
 } from "lucide-react";
+import {
+  TelegramIcon,
+  GoogleSheetsIcon,
+  GmailIcon,
+  GoogleCalendarIcon,
+  ApiConnectorIcon,
+  PdfReaderIcon,
+} from "@/components/tool-icons";
 
 export type ToolTier = "free" | "pro" | "marketplace";
 export type ToolCategory =
