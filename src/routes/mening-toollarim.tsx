@@ -575,7 +575,7 @@ function ToolCard({
               onClick={onOpenSettings}
               className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
             >
-              {!authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
+              {tool.tier === "free" ? "Sozlash" : !authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
             </button>
             <button
               type="button"
