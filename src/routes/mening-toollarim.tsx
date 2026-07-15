@@ -96,9 +96,6 @@ const USER_IS_PRO = false;
 const tabs = [
   { id: "all", label: "Barcha toollar" },
   { id: "free", label: "Free toollar" },
-  { id: "pro", label: "Pro toollar" },
-  { id: "marketplace", label: "Marketplace toollari" },
-  { id: "installed", label: "O'rnatilgan toollar" },
 ] as const;
 type TabId = (typeof tabs)[number]["id"];
 
