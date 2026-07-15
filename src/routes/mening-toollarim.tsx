@@ -537,6 +537,7 @@ function ToolCard({
 }) {
   const Icon = tool.icon;
   const locked = tool.tier === "pro" && !isPro && !installed;
+  const isProImg = tool.tier === "pro" && tool.accent === "bg-transparent";
   const authed = isToolAuthenticated(tool, config);
   const ready = authed && instanceCount > 0;
   const pill =
@@ -553,9 +554,21 @@ function ToolCard({
       }`}
     >
       <div className="mb-3 flex items-start gap-3">
-        <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
-          {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
-        </span>
+        {isProImg ? (
+          <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden">
+            {locked ? (
+              <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
+                <Lock className="h-4 w-4" />
+              </span>
+            ) : (
+              <Icon className="h-14 w-14" />
+            )}
+          </span>
+        ) : (
+          <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
+            {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
+          </span>
+        )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold">{tool.name}</p>
           {tool.tier === "free" && pill && (
