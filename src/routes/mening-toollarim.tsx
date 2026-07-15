@@ -522,7 +522,12 @@ function ToolCard({
   const locked = tool.tier === "pro" && !isPro && !installed;
   const authed = isToolAuthenticated(tool, config);
   const ready = authed && instanceCount > 0;
-  const pill = installed ? statusPillV2(installed, authed, instanceCount) : null;
+  const pill =
+    tool.tier === "free"
+      ? { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" }
+      : installed
+        ? statusPillV2(installed, authed, instanceCount)
+        : null;
 
   return (
     <div
@@ -536,7 +541,13 @@ function ToolCard({
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{tool.name}</p>
-          {installed && pill && (
+          {tool.tier === "free" && pill && (
+            <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium ${pill.cls}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${pill.dot}`} />
+              {pill.label}
+            </span>
+          )}
+          {tool.tier !== "free" && installed && pill && (
             <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium ${pill.cls}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${pill.dot}`} />
               {pill.label}
@@ -544,9 +555,6 @@ function ToolCard({
           )}
           {!installed && tool.tier === "pro" && (
             <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">Pro</span>
-          )}
-          {!installed && tool.tier === "free" && (
-            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">Bepul</span>
           )}
         </div>
       </div>
