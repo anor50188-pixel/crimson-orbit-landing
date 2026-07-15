@@ -539,7 +539,7 @@ function ToolCard({
           {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{tool.name}</p>
+          <p className="truncate text-sm font-bold">{tool.name}</p>
           {tool.tier === "free" && pill && (
             <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium ${pill.cls}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${pill.dot}`} />
