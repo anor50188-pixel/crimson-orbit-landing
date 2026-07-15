@@ -90,11 +90,12 @@ const navItems = [
 ];
 
 const catalog = toolCatalog;
-const USER_IS_PRO = false;
+const USER_IS_PRO = true;
 
 const tabs = [
   { id: "all", label: "Barcha toollar" },
   { id: "free", label: "Free toollar" },
+  { id: "pro", label: "Pro toollar" },
 ] as const;
 type TabId = (typeof tabs)[number]["id"];
 
@@ -193,9 +194,15 @@ function MeningToollarimPage() {
   };
 
   const freeCatalog = useMemo(() => catalog.filter((t) => t.tier === "free"), []);
+  const proCatalog = useMemo(() => catalog.filter((t) => t.tier === "pro"), []);
+  const activeCatalog = useMemo(() => {
+    if (tab === "pro") return proCatalog;
+    if (tab === "free") return freeCatalog;
+    return [...freeCatalog, ...proCatalog];
+  }, [tab, freeCatalog, proCatalog]);
 
   const filtered = useMemo(() => {
-    return freeCatalog.filter((t) => {
+    return activeCatalog.filter((t) => {
       if (query.trim()) {
         const q = query.toLowerCase();
         return (
@@ -205,11 +212,12 @@ function MeningToollarimPage() {
       }
       return true;
     });
-  }, [freeCatalog, query]);
+  }, [activeCatalog, query]);
 
   const grouped = useMemo(
     () => ({
-      free: filtered,
+      free: filtered.filter((t) => t.tier === "free"),
+      pro: filtered.filter((t) => t.tier === "pro"),
     }),
     [filtered],
   );
@@ -387,6 +395,16 @@ function MeningToollarimPage() {
             </ToolSection>
           )}
 
+          {grouped.pro.length > 0 && (
+            <ToolSection dotClass="bg-primary" title="Pro toollar" count={grouped.pro.length} subtitle="Kengaytirilgan imkoniyatlar — Pro rejasi uchun.">
+              <ToolGrid>
+                {grouped.pro.map((t) => (
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                ))}
+              </ToolGrid>
+            </ToolSection>
+          )}
+
           {filtered.length === 0 && (
             <div className="rounded-xl border border-dashed border-border/60 bg-card/30 px-6 py-16 text-center">
               <p className="text-sm text-muted-foreground">Hech narsa topilmadi.</p>
@@ -519,6 +537,7 @@ function ToolCard({
 }) {
   const Icon = tool.icon;
   const locked = tool.tier === "pro" && !isPro && !installed;
+  const isProImg = tool.tier === "pro" && tool.accent === "bg-transparent";
   const authed = isToolAuthenticated(tool, config);
   const ready = authed && instanceCount > 0;
   const pill =
@@ -535,9 +554,21 @@ function ToolCard({
       }`}
     >
       <div className="mb-3 flex items-start gap-3">
-        <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
-          {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
-        </span>
+        {isProImg ? (
+          <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden">
+            {locked ? (
+              <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary">
+                <Lock className="h-4 w-4" />
+              </span>
+            ) : (
+              <Icon className="h-14 w-14" />
+            )}
+          </span>
+        ) : (
+          <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-lg ${tool.accent}`}>
+            {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
+          </span>
+        )}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold">{tool.name}</p>
           {tool.tier === "free" && pill && (
