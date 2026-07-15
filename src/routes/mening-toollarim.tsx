@@ -22,7 +22,6 @@ import {
   Search,
   Settings,
   ShieldCheck,
-  ShoppingBag,
   Sparkles,
   Store,
   Trash2,
