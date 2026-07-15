@@ -95,6 +95,7 @@ const USER_IS_PRO = false;
 const tabs = [
   { id: "all", label: "Barcha toollar" },
   { id: "free", label: "Free toollar" },
+  { id: "pro", label: "Pro toollar" },
 ] as const;
 type TabId = (typeof tabs)[number]["id"];
 
@@ -193,9 +194,15 @@ function MeningToollarimPage() {
   };
 
   const freeCatalog = useMemo(() => catalog.filter((t) => t.tier === "free"), []);
+  const proCatalog = useMemo(() => catalog.filter((t) => t.tier === "pro"), []);
+  const activeCatalog = useMemo(() => {
+    if (tab === "pro") return proCatalog;
+    if (tab === "free") return freeCatalog;
+    return [...freeCatalog, ...proCatalog];
+  }, [tab, freeCatalog, proCatalog]);
 
   const filtered = useMemo(() => {
-    return freeCatalog.filter((t) => {
+    return activeCatalog.filter((t) => {
       if (query.trim()) {
         const q = query.toLowerCase();
         return (
@@ -205,11 +212,12 @@ function MeningToollarimPage() {
       }
       return true;
     });
-  }, [freeCatalog, query]);
+  }, [activeCatalog, query]);
 
   const grouped = useMemo(
     () => ({
-      free: filtered,
+      free: filtered.filter((t) => t.tier === "free"),
+      pro: filtered.filter((t) => t.tier === "pro"),
     }),
     [filtered],
   );
@@ -381,6 +389,16 @@ function MeningToollarimPage() {
             <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
               <ToolGrid>
                 {grouped.free.map((t) => (
+                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
+                ))}
+              </ToolGrid>
+            </ToolSection>
+          )}
+
+          {grouped.pro.length > 0 && (
+            <ToolSection dotClass="bg-primary" title="Pro toollar" count={grouped.pro.length} subtitle="Kengaytirilgan imkoniyatlar — Pro rejasi uchun.">
+              <ToolGrid>
+                {grouped.pro.map((t) => (
                   <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
