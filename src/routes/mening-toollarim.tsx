@@ -90,7 +90,7 @@ const navItems = [
 ];
 
 const catalog = toolCatalog;
-const USER_IS_PRO = false;
+const USER_IS_PRO = true;
 
 const tabs = [
   { id: "all", label: "Barcha toollar" },
