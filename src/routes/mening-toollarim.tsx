@@ -193,12 +193,10 @@ function MeningToollarimPage() {
     persistInstances(instances.filter((i) => i.toolId !== toolId));
   };
 
+  const freeCatalog = useMemo(() => catalog.filter((t) => t.tier === "free"), []);
+
   const filtered = useMemo(() => {
-    return catalog.filter((t) => {
-      if (tab === "free" && t.tier !== "free") return false;
-      if (tab === "pro" && t.tier !== "pro") return false;
-      if (tab === "marketplace" && t.tier !== "marketplace") return false;
-      if (tab === "installed" && !installed.includes(t.id)) return false;
+    return freeCatalog.filter((t) => {
       if (query.trim()) {
         const q = query.toLowerCase();
         return (
@@ -208,22 +206,18 @@ function MeningToollarimPage() {
       }
       return true;
     });
-  }, [tab, query, installed]);
+  }, [freeCatalog, query]);
 
   const grouped = useMemo(
     () => ({
-      free: filtered.filter((t) => t.tier === "free"),
-      pro: filtered.filter((t) => t.tier === "pro"),
-      marketplace: filtered.filter((t) => t.tier === "marketplace"),
+      free: filtered,
     }),
     [filtered],
   );
 
   const stats = {
-    total: catalog.length,
-    installed: installed.length,
-    pro: catalog.filter((t) => t.tier === "pro").length,
-    marketplace: catalog.filter((t) => t.tier === "marketplace").length,
+    total: freeCatalog.length,
+    installed: installed.filter((id) => freeCatalog.some((t) => t.id === id)).length,
   };
 
   const drawerTool = useMemo(
