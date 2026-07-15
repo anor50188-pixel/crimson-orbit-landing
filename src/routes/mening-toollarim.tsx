@@ -349,11 +349,9 @@ function MeningToollarimPage() {
             })}
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label="Jami toollar" value={String(stats.total)} hint="Barcha toollaringiz" />
+          <div className="mb-5 grid grid-cols-2 gap-3">
+            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label="Jami toollar" value={String(stats.total)} hint="Barcha bepul toollaringiz" />
             <StatCard icon={<Check className="h-4 w-4" />} accent="bg-emerald-500/15 text-emerald-400" label="O'rnatilgan" value={String(stats.installed)} hint="Foydalanishga tayyor" />
-            <StatCard icon={<Sparkles className="h-4 w-4" />} accent="bg-amber-500/15 text-amber-400" label="Pro toollar" value={String(stats.pro)} hint={USER_IS_PRO ? "Pro reja bilan ochildi" : "Pro reja kerak"} />
-            <StatCard icon={<ShoppingBag className="h-4 w-4" />} accent="bg-violet-500/15 text-violet-400" label="Marketplace" value={String(stats.marketplace)} hint="Sotib olingan toollar" />
           </div>
 
           <div className="mb-6 flex flex-col gap-3 rounded-xl border border-border/60 bg-card/40 p-3 md:flex-row md:items-center">
@@ -380,30 +378,10 @@ function MeningToollarimPage() {
             </div>
           </div>
 
-          {(tab === "all" || tab === "free") && grouped.free.length > 0 && (
+          {grouped.free.length > 0 && (
             <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
               <ToolGrid>
                 {grouped.free.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
-                ))}
-              </ToolGrid>
-            </ToolSection>
-          )}
-
-          {(tab === "all" || tab === "pro") && grouped.pro.length > 0 && (
-            <ToolSection dotClass="bg-amber-500" title="Pro toollar" count={grouped.pro.length} subtitle="Pro reja bilan ochiladigan kuchli toollar.">
-              <ToolGrid>
-                {grouped.pro.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
-                ))}
-              </ToolGrid>
-            </ToolSection>
-          )}
-
-          {(tab === "all" || tab === "marketplace") && grouped.marketplace.length > 0 && (
-            <ToolSection dotClass="bg-violet-500" title="Marketplace toollari" count={grouped.marketplace.length} subtitle="Marketplace dan sotib olgan toollaringiz.">
-              <ToolGrid>
-                {grouped.marketplace.map((t) => (
                   <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
