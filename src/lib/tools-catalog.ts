@@ -65,7 +65,7 @@ export type ToolDef = {
   description: string;
   tier: ToolTier;
   category: ToolCategory;
-  icon: typeof Wrench;
+  icon: ComponentType<{ className?: string }>;
   accent: string;
   version: string;
   permissions: string[];
