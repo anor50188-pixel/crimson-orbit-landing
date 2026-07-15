@@ -476,7 +476,7 @@ export function readInstalledToolIds(): string[] {
   } catch {
     /* ignore */
   }
-  return ["telegram-bot", "google-sheets", "gmail"];
+  return ["telegram-bot", "google-sheets", "gmail", "google-calendar", "http-request", "pdf-reader"];
 }
 
 export function writeInstalledToolIds(ids: string[]) {
