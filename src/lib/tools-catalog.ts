@@ -25,6 +25,15 @@ import {
   ApiConnectorIcon,
   PdfReaderIcon,
 } from "@/components/tool-icons";
+import {
+  BrowserAiIcon,
+  VisionAiIcon,
+  CodeRunnerIcon,
+  DatabaseStudioIcon,
+  CloudWorkspaceIcon,
+  AiStudioIcon,
+  AutomationHubIcon,
+} from "@/components/pro-tool-icons";
 
 export type ToolTier = "free" | "pro" | "marketplace";
 export type ToolCategory =
@@ -389,6 +398,72 @@ export const toolCatalog: ToolDef[] = [
     developer: "Agentus Labs", updatedAt: "2025-06-10",
     defaultPermissions: ["read", "execute"],
     authFields: [f.apiKey, f.webhook],
+  },
+  {
+    id: "browser-ai", name: "Browser AI",
+    description: "Internetda qidirish, saytlarni o'qish, forma to'ldirish va ma'lumot yig'ish.",
+    tier: "pro", category: "Automation", icon: BrowserAiIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Web navigatsiya", "DOM o'qish"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["read", "execute"], authFields: [f.apiKey],
+  },
+  {
+    id: "vision-ai", name: "Vision AI",
+    description: "Rasmlar, screenshotlar, PDF, diagrammalar va kamerani tahlil qilish.",
+    tier: "pro", category: "AI", icon: VisionAiIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Rasm tahlili"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["read", "execute"], authFields: [f.apiKey],
+  },
+  {
+    id: "code-runner", name: "Code Runner",
+    description: "Python, JavaScript va boshqa kodlarni yozish, ishga tushirish va natija olish.",
+    tier: "pro", category: "Automation", icon: CodeRunnerIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Kod ishga tushirish"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["execute"], authFields: [f.apiKey],
+  },
+  {
+    id: "database-studio", name: "Database Studio",
+    description: "SQL ma'lumotlar bazalarini boshqarish, o'qish, yozish va tahlil qilish.",
+    tier: "pro", category: "Data", icon: DatabaseStudioIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Query bajarish"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["read", "write", "execute"],
+    authFields: [
+      { key: "conn_string", label: "Ulanish satri", type: "secret", placeholder: "postgres://user:pass@host:5432/db", required: true },
+    ],
+  },
+  {
+    id: "cloud-workspace", name: "Cloud Workspace",
+    description: "Google Drive, Dropbox, OneDrive va boshqa bulutli xotiralar bilan ishlash.",
+    tier: "pro", category: "Files", icon: CloudWorkspaceIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Fayl o'qish", "Fayl yozish"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["read", "write"], authFields: [f.oauth, f.clientId, f.clientSecret],
+  },
+  {
+    id: "ai-studio", name: "AI Studio",
+    description: "Turli AI modellardan foydalanish va ularni birgalikda ishlatish (Claude, GPT, Gemini va boshqalar).",
+    tier: "pro", category: "AI", icon: AiStudioIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Model chaqirish"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["execute"], authFields: [f.apiKey],
+  },
+  {
+    id: "automation-hub", name: "Automation Hub",
+    description: "Triggerlar, schedule, webhook, HTTP so'rovlar va jarayonlarni avtomatlashtirish.",
+    tier: "pro", category: "Automation", icon: AutomationHubIcon,
+    accent: "bg-transparent", version: "1.0.0",
+    permissions: ["Workflow ishga tushirish"],
+    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    defaultPermissions: ["read", "execute"], authFields: [f.apiKey, f.webhook],
   },
   {
     id: "instagram-poster", name: "Instagram Auto Poster",
