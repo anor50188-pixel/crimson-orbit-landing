@@ -137,7 +137,7 @@ function MeningToollarimPage() {
   const [installed, setInstalled] = useState<string[]>([]);
   const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
   const [instances, setInstances] = useState<ToolInstance[]>([]);
-  const [tab, setTab] = useState<TabId>("all");
+  const [tab, setTab] = useState<TabId>("free");
   const [query, setQuery] = useState("");
   const [installing, setInstalling] = useState<string | null>(null);
   const [drawerId, setDrawerId] = useState<string | null>(null);
