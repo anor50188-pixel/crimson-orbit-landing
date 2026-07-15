@@ -22,7 +22,6 @@ import {
   Search,
   Settings,
   ShieldCheck,
-  ShoppingBag,
   Sparkles,
   Store,
   Trash2,
@@ -96,9 +95,6 @@ const USER_IS_PRO = false;
 const tabs = [
   { id: "all", label: "Barcha toollar" },
   { id: "free", label: "Free toollar" },
-  { id: "pro", label: "Pro toollar" },
-  { id: "marketplace", label: "Marketplace toollari" },
-  { id: "installed", label: "O'rnatilgan toollar" },
 ] as const;
 type TabId = (typeof tabs)[number]["id"];
 
@@ -140,7 +136,7 @@ function MeningToollarimPage() {
   const [installed, setInstalled] = useState<string[]>([]);
   const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
   const [instances, setInstances] = useState<ToolInstance[]>([]);
-  const [tab, setTab] = useState<TabId>("all");
+  const [tab, setTab] = useState<TabId>("free");
   const [query, setQuery] = useState("");
   const [installing, setInstalling] = useState<string | null>(null);
   const [drawerId, setDrawerId] = useState<string | null>(null);
@@ -196,12 +192,10 @@ function MeningToollarimPage() {
     persistInstances(instances.filter((i) => i.toolId !== toolId));
   };
 
+  const freeCatalog = useMemo(() => catalog.filter((t) => t.tier === "free"), []);
+
   const filtered = useMemo(() => {
-    return catalog.filter((t) => {
-      if (tab === "free" && t.tier !== "free") return false;
-      if (tab === "pro" && t.tier !== "pro") return false;
-      if (tab === "marketplace" && t.tier !== "marketplace") return false;
-      if (tab === "installed" && !installed.includes(t.id)) return false;
+    return freeCatalog.filter((t) => {
       if (query.trim()) {
         const q = query.toLowerCase();
         return (
@@ -211,22 +205,18 @@ function MeningToollarimPage() {
       }
       return true;
     });
-  }, [tab, query, installed]);
+  }, [freeCatalog, query]);
 
   const grouped = useMemo(
     () => ({
-      free: filtered.filter((t) => t.tier === "free"),
-      pro: filtered.filter((t) => t.tier === "pro"),
-      marketplace: filtered.filter((t) => t.tier === "marketplace"),
+      free: filtered,
     }),
     [filtered],
   );
 
   const stats = {
-    total: catalog.length,
-    installed: installed.length,
-    pro: catalog.filter((t) => t.tier === "pro").length,
-    marketplace: catalog.filter((t) => t.tier === "marketplace").length,
+    total: freeCatalog.length,
+    installed: installed.filter((id) => freeCatalog.some((t) => t.id === id)).length,
   };
 
   const drawerTool = useMemo(
@@ -358,11 +348,9 @@ function MeningToollarimPage() {
             })}
           </div>
 
-          <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label="Jami toollar" value={String(stats.total)} hint="Barcha toollaringiz" />
+          <div className="mb-5 grid grid-cols-2 gap-3">
+            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label="Jami toollar" value={String(stats.total)} hint="Barcha bepul toollaringiz" />
             <StatCard icon={<Check className="h-4 w-4" />} accent="bg-emerald-500/15 text-emerald-400" label="O'rnatilgan" value={String(stats.installed)} hint="Foydalanishga tayyor" />
-            <StatCard icon={<Sparkles className="h-4 w-4" />} accent="bg-amber-500/15 text-amber-400" label="Pro toollar" value={String(stats.pro)} hint={USER_IS_PRO ? "Pro reja bilan ochildi" : "Pro reja kerak"} />
-            <StatCard icon={<ShoppingBag className="h-4 w-4" />} accent="bg-violet-500/15 text-violet-400" label="Marketplace" value={String(stats.marketplace)} hint="Sotib olingan toollar" />
           </div>
 
           <div className="mb-6 flex flex-col gap-3 rounded-xl border border-border/60 bg-card/40 p-3 md:flex-row md:items-center">
@@ -389,30 +377,10 @@ function MeningToollarimPage() {
             </div>
           </div>
 
-          {(tab === "all" || tab === "free") && grouped.free.length > 0 && (
+          {grouped.free.length > 0 && (
             <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
               <ToolGrid>
                 {grouped.free.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
-                ))}
-              </ToolGrid>
-            </ToolSection>
-          )}
-
-          {(tab === "all" || tab === "pro") && grouped.pro.length > 0 && (
-            <ToolSection dotClass="bg-amber-500" title="Pro toollar" count={grouped.pro.length} subtitle="Pro reja bilan ochiladigan kuchli toollar.">
-              <ToolGrid>
-                {grouped.pro.map((t) => (
-                  <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
-                ))}
-              </ToolGrid>
-            </ToolSection>
-          )}
-
-          {(tab === "all" || tab === "marketplace") && grouped.marketplace.length > 0 && (
-            <ToolSection dotClass="bg-violet-500" title="Marketplace toollari" count={grouped.marketplace.length} subtitle="Marketplace dan sotib olgan toollaringiz.">
-              <ToolGrid>
-                {grouped.marketplace.map((t) => (
                   <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
                 ))}
               </ToolGrid>
@@ -516,7 +484,7 @@ function ToolSection({ dotClass, title, count, subtitle, children }: { dotClass:
 }
 
 function ToolGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">{children}</div>;
+  return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{children}</div>;
 }
 
 function statusPill(status: ConnectionStatus, configured: boolean) {
@@ -553,7 +521,12 @@ function ToolCard({
   const locked = tool.tier === "pro" && !isPro && !installed;
   const authed = isToolAuthenticated(tool, config);
   const ready = authed && instanceCount > 0;
-  const pill = installed ? statusPillV2(installed, authed, instanceCount) : null;
+  const pill =
+    tool.tier === "free"
+      ? { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" }
+      : installed
+        ? statusPillV2(installed, authed, instanceCount)
+        : null;
 
   return (
     <div
@@ -566,8 +539,14 @@ function ToolCard({
           {locked ? <Lock className="h-4 w-4" /> : <Icon className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold">{tool.name}</p>
-          {installed && pill && (
+          <p className="truncate text-sm font-bold">{tool.name}</p>
+          {tool.tier === "free" && pill && (
+            <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium ${pill.cls}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${pill.dot}`} />
+              {pill.label}
+            </span>
+          )}
+          {tool.tier !== "free" && installed && pill && (
             <span className={`mt-1 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium ${pill.cls}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${pill.dot}`} />
               {pill.label}
@@ -575,9 +554,6 @@ function ToolCard({
           )}
           {!installed && tool.tier === "pro" && (
             <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">Pro</span>
-          )}
-          {!installed && tool.tier === "free" && (
-            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">Bepul</span>
           )}
         </div>
       </div>
@@ -598,7 +574,7 @@ function ToolCard({
               onClick={onOpenSettings}
               className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
             >
-              {!authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
+              {tool.tier === "free" ? "Sozlash" : !authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
             </button>
             <button
               type="button"

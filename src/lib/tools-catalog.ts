@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import {
   Calendar,
   Database,
@@ -16,6 +17,14 @@ import {
   TrendingUp,
   Wrench,
 } from "lucide-react";
+import {
+  TelegramIcon,
+  GoogleSheetsIcon,
+  GmailIcon,
+  GoogleCalendarIcon,
+  ApiConnectorIcon,
+  PdfReaderIcon,
+} from "@/components/tool-icons";
 
 export type ToolTier = "free" | "pro" | "marketplace";
 export type ToolCategory =
@@ -56,7 +65,7 @@ export type ToolDef = {
   description: string;
   tier: ToolTier;
   category: ToolCategory;
-  icon: typeof Wrench;
+  icon: ComponentType<{ className?: string }>;
   accent: string;
   version: string;
   permissions: string[];
@@ -274,8 +283,8 @@ export const toolCatalog: ToolDef[] = [
   {
     id: "telegram-bot",
     name: "Telegram Bot API",
-    description: "Telegram orqali xabarlarni yuborish va qabul qilish.",
-    tier: "free", category: "Communication", icon: Send,
+    description: "Telegram orqali xabar yuborish, qabul qilish va botlarni boshqarish.",
+    tier: "free", category: "Communication", icon: TelegramIcon,
     accent: "bg-sky-500/15 text-sky-400", version: "1.0.0",
     permissions: ["Xabar yuborish", "Xabar qabul qilish"],
     developer: "Agentus", docsUrl: "https://core.telegram.org/bots/api",
@@ -285,8 +294,8 @@ export const toolCatalog: ToolDef[] = [
   {
     id: "google-sheets",
     name: "Google Sheets",
-    description: "Google Sheets ga yozish va o'qish.",
-    tier: "free", category: "Data", icon: Table2,
+    description: "Google Sheets jadvaliga ma'lumot yozish, o'qish va yangilash.",
+    tier: "free", category: "Data", icon: GoogleSheetsIcon,
     accent: "bg-emerald-500/15 text-emerald-400", version: "1.0.0",
     permissions: ["Sheet o'qish", "Sheet yozish"],
     developer: "Google", docsUrl: "https://developers.google.com/sheets/api",
@@ -295,8 +304,8 @@ export const toolCatalog: ToolDef[] = [
   },
   {
     id: "gmail", name: "Gmail API",
-    description: "Email yuborish va qabul qilish.",
-    tier: "free", category: "Communication", icon: Mail,
+    description: "Email yuborish, qabul qilish va avtomatik javob berish.",
+    tier: "free", category: "Communication", icon: GmailIcon,
     accent: "bg-red-500/15 text-red-400", version: "1.0.0",
     permissions: ["Email yuborish", "Inbox o'qish"],
     developer: "Google", docsUrl: "https://developers.google.com/gmail/api",
@@ -305,8 +314,8 @@ export const toolCatalog: ToolDef[] = [
   },
   {
     id: "google-calendar", name: "Google Calendar",
-    description: "Tadbirlar yaratish va boshqarish.",
-    tier: "free", category: "Automation", icon: Calendar,
+    description: "Tadbirlar yaratish, uchrashuvlarni boshqarish va eslatmalar qo'shish.",
+    tier: "free", category: "Automation", icon: GoogleCalendarIcon,
     accent: "bg-blue-500/15 text-blue-400", version: "1.0.0",
     permissions: ["Event yaratish", "Event o'qish"],
     developer: "Google", docsUrl: "https://developers.google.com/calendar",
@@ -315,17 +324,17 @@ export const toolCatalog: ToolDef[] = [
   },
   {
     id: "pdf-reader", name: "PDF Reader",
-    description: "PDF fayllarni o'qish va tahlil qilish.",
-    tier: "free", category: "Files", icon: FileText,
+    description: "PDF hujjatlarini o'qish va matnni ajratib olish.",
+    tier: "free", category: "Files", icon: PdfReaderIcon,
     accent: "bg-rose-500/15 text-rose-400", version: "1.0.0",
     permissions: ["Fayl o'qish"],
     developer: "Agentus", updatedAt: "2025-04-18",
     defaultPermissions: ["read"], authFields: [],
   },
   {
-    id: "http-request", name: "HTTP Request",
-    description: "REST API ga so'rov yuborish.",
-    tier: "free", category: "Data", icon: Globe,
+    id: "http-request", name: "API Connector",
+    description: "REST API orqali tashqi servislar bilan ma'lumot almashish.",
+    tier: "free", category: "Data", icon: ApiConnectorIcon,
     accent: "bg-indigo-500/15 text-indigo-400", version: "1.0.0",
     permissions: ["HTTP so'rov yuborish"],
     developer: "Agentus", updatedAt: "2025-05-10",
@@ -467,7 +476,7 @@ export function readInstalledToolIds(): string[] {
   } catch {
     /* ignore */
   }
-  return ["telegram-bot", "google-sheets", "gmail"];
+  return ["telegram-bot", "google-sheets", "gmail", "google-calendar", "http-request", "pdf-reader"];
 }
 
 export function writeInstalledToolIds(ids: string[]) {
