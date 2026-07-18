@@ -45,9 +45,6 @@ function Landing() {
             <a href="#xususiyatlar" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               Xususiyatlar
             </a>
-            <a href="#holat" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Holat
-            </a>
           </nav>
         </div>
       </header>
@@ -101,9 +98,6 @@ function Landing() {
             </button>
           </div>
 
-          <p id="holat" className="mt-6 text-xs text-muted-foreground">
-            Platforma ishlab chiqilmoqda — tugmalar hali faol emas.
-          </p>
         </div>
       </section>
 
