@@ -26,6 +26,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
+import planet from "@/assets/hero-planet.jpg";
 import {
   readInstalledToolIds,
   readToolConfigs,
@@ -306,8 +307,28 @@ function AgentlarimPage() {
 
       {/* MAIN */}
       <main className="relative flex-1 overflow-hidden">
+        {/* Cinematic red/black space background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <img
+            src={planet}
+            alt=""
+            className="absolute right-[-14%] top-[-12%] h-[85%] w-auto opacity-55 mix-blend-screen"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(1200px 600px at 88% 8%, oklch(0.58 0.22 25 / 0.28), transparent 60%), radial-gradient(900px 500px at 10% 90%, oklch(0.58 0.22 25 / 0.14), transparent 60%), linear-gradient(180deg, oklch(0.06 0.02 20) 0%, oklch(0.05 0.015 20) 100%)",
+            }}
+          />
+          <AgentlarimStars />
+          {/* distant small planets */}
+          <div className="absolute left-[16%] top-[24%] h-20 w-20 rounded-full bg-gradient-to-br from-[oklch(0.35_0.12_25)] to-[oklch(0.15_0.05_25)] opacity-70 blur-[1px] shadow-[0_0_60px_-10px_oklch(0.5_0.2_25/0.5)]" />
+          <div className="absolute left-[8%] bottom-[14%] h-14 w-14 rounded-full bg-gradient-to-br from-[oklch(0.3_0.1_25)] to-[oklch(0.12_0.04_25)] opacity-60 shadow-[0_0_40px_-8px_oklch(0.5_0.2_25/0.4)]" />
+        </div>
+        <div className="relative flex h-full flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between border-b border-border/60 px-6 py-4">
+        <header className="relative flex items-center justify-between border-b border-border/60 px-6 py-4">
           <Link
             to="/agent-yaratish"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
