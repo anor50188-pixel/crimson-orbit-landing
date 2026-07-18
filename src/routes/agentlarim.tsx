@@ -53,6 +53,37 @@ export const Route = createFileRoute("/agentlarim")({
 
 type AgentStatus = "active" | "paused" | "error";
 
+function AgentlarimStars() {
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 70 }, (_, i) => ({
+        id: i,
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        size: Math.random() * 2 + 0.5,
+        opacity: Math.random() * 0.6 + 0.2,
+      })),
+    [],
+  );
+  return (
+    <div className="absolute inset-0">
+      {stars.map((s) => (
+        <span
+          key={s.id}
+          className="absolute rounded-full bg-white"
+          style={{
+            top: `${s.top}%`,
+            left: `${s.left}%`,
+            width: s.size,
+            height: s.size,
+            opacity: s.opacity,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 type SavedAgent = {
   id: string;
   name: string;
