@@ -49,13 +49,6 @@ function Landing() {
               Holat
             </a>
           </nav>
-          <span
-            aria-disabled="true"
-            className="cursor-not-allowed rounded-md bg-primary/90 px-5 py-2.5 text-sm font-semibold text-primary-foreground opacity-70"
-            title="Ro'yxatdan o'tish hali ochiq emas"
-          >
-            Tez orada
-          </span>
         </div>
       </header>
 
