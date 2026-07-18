@@ -2,9 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Bell,
-  BarChart3,
   Bot,
-  BookOpen,
   CircleHelp,
   Copy,
   CreditCard,
@@ -19,7 +17,6 @@ import {
   MoreVertical,
   Package,
   Pencil,
-  Plug,
   Plus,
   Search,
   Settings,
@@ -69,9 +66,6 @@ const mainNav = [
   { icon: Bot, label: "Agentlarim", to: "/agentlarim" as const },
   { icon: Store, label: "Marketplace", to: null },
   { icon: Wrench, label: "Mening toollarim", to: "/mening-toollarim" as const },
-  { icon: Plug, label: "Integratsiyalar", to: null },
-  { icon: BookOpen, label: "Kodex", to: null },
-  { icon: BarChart3, label: "Analytics", to: null },
   { icon: Wallet, label: "To'lovlar", to: null },
   { icon: Settings, label: "Sozlamalar", to: null },
 ] as const;

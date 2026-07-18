@@ -2,9 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
-  BarChart3,
   Bot,
-  BookOpen,
   Check,
   ChevronDown,
   Copy,
@@ -17,7 +15,6 @@ import {
   Link2,
   Loader2,
   Lock,
-  Plug,
   Plus,
   Search,
   Settings,
@@ -82,9 +79,6 @@ const navItems = [
     active: true,
   },
   { icon: Crown, label: "Sotuvchi paneli", to: "/seller" as const },
-  { icon: Plug, label: "Integratsiyalar" },
-  { icon: BookOpen, label: "Kodex" },
-  { icon: BarChart3, label: "Analytics" },
   { icon: Wallet, label: "To'lovlar" },
   { icon: Settings, label: "Sozlamalar" },
 ];
@@ -965,11 +959,11 @@ function GeneralTab({ tool, config }: { tool: ToolDef; config: ToolConfig }) {
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/40 hover:text-foreground"
           >
-            <BookOpen className="h-3.5 w-3.5" /> Hujjatlar <ExternalLink className="h-3 w-3" />
+            <ExternalLink className="h-3.5 w-3.5" /> Hujjatlar <ExternalLink className="h-3 w-3" />
           </a>
         ) : (
           <button type="button" disabled className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground opacity-70">
-            <BookOpen className="h-3.5 w-3.5" /> Hujjatlar — Backend kutilmoqda
+            <ExternalLink className="h-3.5 w-3.5" /> Hujjatlar — Backend kutilmoqda
           </button>
         )}
       </div>
