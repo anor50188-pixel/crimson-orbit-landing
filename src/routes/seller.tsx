@@ -10,6 +10,8 @@ import {
   FileText,
   Home,
   Phone,
+  Rocket,
+  Sun,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -173,7 +175,7 @@ function Shell({ children }: { children: React.ReactNode }) {
               to="/"
               className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition hover:text-foreground"
             >
-              ← Sotuvchi paneli
+              ← Orqaga
             </Link>
           </div>
           <div className="flex items-center gap-2">
