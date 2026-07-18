@@ -6,7 +6,6 @@ import {
   Bot,
   Check,
   CircleHelp,
-  Crown,
   FileText,
   Home,
   Phone,
