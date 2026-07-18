@@ -372,7 +372,7 @@ function MeningToollarimPage() {
 
         <div
           ref={scrollRef}
-          className={`h-[calc(100vh-65px)] overflow-y-auto px-6 pb-24 pt-6 transition-[filter] duration-300 ${
+          className={`relative h-[calc(100vh-65px)] overflow-y-auto px-6 pb-24 pt-6 transition-[filter] duration-300 ${
             drawerId ? "blur-[1px]" : ""
           }`}
         >
