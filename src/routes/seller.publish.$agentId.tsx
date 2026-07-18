@@ -451,7 +451,7 @@ function WizardNav({
 }
 
 // —————— Step 1 ——————
-function Step1Basic() {
+function Step1Basic({ onNext }: { onNext: () => void }) {
   const [name, setName] = useState("Trading Assistant");
   const [slug, setSlug] = useState("trading-assistant");
   const [category, setCategory] = useState("Moliyaviy (Trading)");
@@ -518,7 +518,7 @@ function Step1Basic() {
         />
       </div>
 
-      <NextButton />
+      <WizardNav onNext={onNext} />
     </Card>
   );
 }
