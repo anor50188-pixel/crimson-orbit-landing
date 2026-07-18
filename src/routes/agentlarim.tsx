@@ -628,6 +628,7 @@ function AgentlarimPage() {
             </div>
           )}
         </aside>
+        </div>
       </main>
     </div>
   );
