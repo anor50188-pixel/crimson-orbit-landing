@@ -732,6 +732,8 @@ function SellerDashboard({
           <Link
             to="/agentlarim"
             className="relative mx-auto mt-10 flex h-14 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] px-6 text-base font-semibold text-primary-foreground shadow-[0_20px_60px_-15px_oklch(0.58_0.22_25/0.9)] transition hover:brightness-110"
+            to="/seller/publish/$agentId"
+            params={{ agentId: "new" }}
           >
             <Rocket className="h-5 w-5" />
             <span className="flex-1 text-center">Agent tanlash</span>
