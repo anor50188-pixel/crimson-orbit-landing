@@ -23,7 +23,7 @@ import {
 import wordmark from "@/assets/agentus-wordmark.png";
 import planet from "@/assets/hero-planet.jpg";
 
-export const Route = createFileRoute("/seller")({
+export const Route = createFileRoute("/seller/")({
   component: SellerPage,
   head: () => ({
     meta: [

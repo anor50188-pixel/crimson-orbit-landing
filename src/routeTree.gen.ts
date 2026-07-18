@@ -9,18 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SellerRouteImport } from './routes/seller'
 import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
 import { Route as AgentlarimRouteImport } from './routes/agentlarim'
 import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SellerIndexRouteImport } from './routes/seller.index'
 import { Route as SellerPublishAgentIdRouteImport } from './routes/seller.publish.$agentId'
 
-const SellerRoute = SellerRouteImport.update({
-  id: '/seller',
-  path: '/seller',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MeningToollarimRoute = MeningToollarimRouteImport.update({
   id: '/mening-toollarim',
   path: '/mening-toollarim',
@@ -41,10 +36,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellerIndexRoute = SellerIndexRouteImport.update({
+  id: '/seller/',
+  path: '/seller/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SellerPublishAgentIdRoute = SellerPublishAgentIdRouteImport.update({
-  id: '/publish/$agentId',
-  path: '/publish/$agentId',
-  getParentRoute: () => SellerRoute,
+  id: '/seller/publish/$agentId',
+  path: '/seller/publish/$agentId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -52,7 +52,7 @@ export interface FileRoutesByFullPath {
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
-  '/seller': typeof SellerRouteWithChildren
+  '/seller/': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
 }
 export interface FileRoutesByTo {
@@ -60,7 +60,7 @@ export interface FileRoutesByTo {
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
-  '/seller': typeof SellerRouteWithChildren
+  '/seller': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
 }
 export interface FileRoutesById {
@@ -69,7 +69,7 @@ export interface FileRoutesById {
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
-  '/seller': typeof SellerRouteWithChildren
+  '/seller/': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
 }
 export interface FileRouteTypes {
@@ -79,7 +79,7 @@ export interface FileRouteTypes {
     | '/agent-yaratish'
     | '/agentlarim'
     | '/mening-toollarim'
-    | '/seller'
+    | '/seller/'
     | '/seller/publish/$agentId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -95,7 +95,7 @@ export interface FileRouteTypes {
     | '/agent-yaratish'
     | '/agentlarim'
     | '/mening-toollarim'
-    | '/seller'
+    | '/seller/'
     | '/seller/publish/$agentId'
   fileRoutesById: FileRoutesById
 }
@@ -104,18 +104,12 @@ export interface RootRouteChildren {
   AgentYaratishRoute: typeof AgentYaratishRoute
   AgentlarimRoute: typeof AgentlarimRoute
   MeningToollarimRoute: typeof MeningToollarimRoute
-  SellerRoute: typeof SellerRouteWithChildren
+  SellerIndexRoute: typeof SellerIndexRoute
+  SellerPublishAgentIdRoute: typeof SellerPublishAgentIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/seller': {
-      id: '/seller'
-      path: '/seller'
-      fullPath: '/seller'
-      preLoaderRoute: typeof SellerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/mening-toollarim': {
       id: '/mening-toollarim'
       path: '/mening-toollarim'
@@ -144,33 +138,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/seller/': {
+      id: '/seller/'
+      path: '/seller'
+      fullPath: '/seller/'
+      preLoaderRoute: typeof SellerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/seller/publish/$agentId': {
       id: '/seller/publish/$agentId'
-      path: '/publish/$agentId'
+      path: '/seller/publish/$agentId'
       fullPath: '/seller/publish/$agentId'
       preLoaderRoute: typeof SellerPublishAgentIdRouteImport
-      parentRoute: typeof SellerRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface SellerRouteChildren {
-  SellerPublishAgentIdRoute: typeof SellerPublishAgentIdRoute
-}
-
-const SellerRouteChildren: SellerRouteChildren = {
-  SellerPublishAgentIdRoute: SellerPublishAgentIdRoute,
-}
-
-const SellerRouteWithChildren =
-  SellerRoute._addFileChildren(SellerRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentYaratishRoute: AgentYaratishRoute,
   AgentlarimRoute: AgentlarimRoute,
   MeningToollarimRoute: MeningToollarimRoute,
-  SellerRoute: SellerRouteWithChildren,
+  SellerIndexRoute: SellerIndexRoute,
+  SellerPublishAgentIdRoute: SellerPublishAgentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
