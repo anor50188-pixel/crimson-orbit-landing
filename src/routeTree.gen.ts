@@ -14,7 +14,6 @@ import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
 import { Route as AgentlarimRouteImport } from './routes/agentlarim'
 import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SellerPublishAgentIdRouteImport } from './routes/seller.publish.$agentId'
 
 const SellerRoute = SellerRouteImport.update({
   id: '/seller',
@@ -41,27 +40,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellerPublishAgentIdRoute = SellerPublishAgentIdRouteImport.update({
-  id: '/publish/$agentId',
-  path: '/publish/$agentId',
-  getParentRoute: () => SellerRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
-  '/seller': typeof SellerRouteWithChildren
-  '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
+  '/seller': typeof SellerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
-  '/seller': typeof SellerRouteWithChildren
-  '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
+  '/seller': typeof SellerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +61,7 @@ export interface FileRoutesById {
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
   '/mening-toollarim': typeof MeningToollarimRoute
-  '/seller': typeof SellerRouteWithChildren
-  '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
+  '/seller': typeof SellerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -80,15 +71,8 @@ export interface FileRouteTypes {
     | '/agentlarim'
     | '/mening-toollarim'
     | '/seller'
-    | '/seller/publish/$agentId'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/agent-yaratish'
-    | '/agentlarim'
-    | '/mening-toollarim'
-    | '/seller'
-    | '/seller/publish/$agentId'
+  to: '/' | '/agent-yaratish' | '/agentlarim' | '/mening-toollarim' | '/seller'
   id:
     | '__root__'
     | '/'
@@ -96,7 +80,6 @@ export interface FileRouteTypes {
     | '/agentlarim'
     | '/mening-toollarim'
     | '/seller'
-    | '/seller/publish/$agentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -104,7 +87,7 @@ export interface RootRouteChildren {
   AgentYaratishRoute: typeof AgentYaratishRoute
   AgentlarimRoute: typeof AgentlarimRoute
   MeningToollarimRoute: typeof MeningToollarimRoute
-  SellerRoute: typeof SellerRouteWithChildren
+  SellerRoute: typeof SellerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -144,44 +127,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/seller/publish/$agentId': {
-      id: '/seller/publish/$agentId'
-      path: '/publish/$agentId'
-      fullPath: '/seller/publish/$agentId'
-      preLoaderRoute: typeof SellerPublishAgentIdRouteImport
-      parentRoute: typeof SellerRoute
-    }
   }
 }
-
-interface SellerRouteChildren {
-  SellerPublishAgentIdRoute: typeof SellerPublishAgentIdRoute
-}
-
-const SellerRouteChildren: SellerRouteChildren = {
-  SellerPublishAgentIdRoute: SellerPublishAgentIdRoute,
-}
-
-const SellerRouteWithChildren =
-  SellerRoute._addFileChildren(SellerRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentYaratishRoute: AgentYaratishRoute,
   AgentlarimRoute: AgentlarimRoute,
   MeningToollarimRoute: MeningToollarimRoute,
-  SellerRoute: SellerRouteWithChildren,
+  SellerRoute: SellerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
