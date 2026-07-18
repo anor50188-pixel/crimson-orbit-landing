@@ -834,6 +834,7 @@ function Step4Media({ onBack }: { onBack: () => void }) {
           </div>
         </div>
       </div>
+      <WizardNav onBack={onBack} />
     </Card>
   );
 }
