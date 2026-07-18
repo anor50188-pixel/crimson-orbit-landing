@@ -560,7 +560,7 @@ function TypeCard({
 }
 
 // —————— Step 2 ——————
-function Step2Pricing() {
+function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [price, setPrice] = useState("15");
   const [source, setSource] = useState<"own" | "agentus">("own");
   const income = useMemo(() => {
@@ -631,7 +631,7 @@ function Step2Pricing() {
         </div>
       </div>
 
-      <NextButton />
+      <WizardNav onBack={onBack} onNext={onNext} />
     </Card>
   );
 }
@@ -682,7 +682,7 @@ function SourceCard({
 }
 
 // —————— Step 3 ——————
-function Step3Description() {
+function Step3Description({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   const [short, setShort] = useState(
     "Trading Assistant kriptovalyuta bozorini tahlil qiladi va savdolar bo'yicha tavsiyalar beradi.",
   );
@@ -759,13 +759,13 @@ function Step3Description() {
         </div>
       </div>
 
-      <NextButton />
+      <WizardNav onBack={onBack} onNext={onNext} />
     </Card>
   );
 }
 
 // —————— Step 4 ——————
-function Step4Media() {
+function Step4Media({ onBack }: { onBack: () => void }) {
   return (
     <Card n={4} title="Rasm va ikonka" subtitle="Agentingiz uchun rasm va ikonka yuklang">
       <div>
