@@ -33,6 +33,7 @@ import {
   History,
 } from "lucide-react";
 import wordmark from "@/assets/agentus-wordmark.png";
+import planet from "@/assets/hero-planet.jpg";
 import {
   INSTALLED_TOOLS_KEY,
   readInstalledToolIds,
