@@ -343,18 +343,9 @@ function AgentlarimPage() {
           <img
             src={planet}
             alt=""
-            className="absolute right-[-20%] top-[-16%] h-[105%] w-auto opacity-65 mix-blend-screen"
+            className="absolute right-[-20%] top-[-16%] h-[105%] w-auto opacity-60 mix-blend-screen"
             style={{
-              filter: "saturate(1.45) contrast(1.08) brightness(1.05)",
-            }}
-          />
-          {/* Red atmosphere tint over the planet */}
-          <div
-            className="absolute right-[-20%] top-[-16%] h-[105%] w-auto opacity-40 mix-blend-overlay"
-            style={{
-              aspectRatio: "1 / 1",
-              background:
-                "radial-gradient(circle at 35% 40%, oklch(0.62 0.26 22 / 0.55), oklch(0.55 0.22 25 / 0.25) 45%, transparent 70%)",
+              filter: "saturate(1.65) contrast(1.12) brightness(1.08) hue-rotate(-12deg)",
             }}
           />
           <div
