@@ -216,7 +216,17 @@ function BottomBar() {
 }
 
 // —————————————————————— Wizard ——————————————————————
+const STEP_LABELS = [
+  "Asosiy ma'lumotlar",
+  "To'lov va harajatlar",
+  "Tavsif va to'ollar",
+  "Rasm va ikonka",
+] as const;
+
 function PublishWizard() {
+  const [step, setStep] = useState(0);
+  const next = () => setStep((s) => Math.min(3, s + 1));
+  const prev = () => setStep((s) => Math.max(0, s - 1));
   return (
     <>
       {/* Background planet + glow */}
@@ -245,57 +255,75 @@ function PublishWizard() {
         </p>
 
         {/* Stepper */}
-        <Stepper />
+        <Stepper current={step} onJump={(i) => i < step && setStep(i)} />
 
-        {/* 4 columns */}
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-4">
-          <Step1Basic />
-          <Step2Pricing />
-          <Step3Description />
-          <Step4Media />
+        {/* Sequential step card */}
+        <div className="mt-8 flex justify-center">
+          <div className="w-full max-w-2xl">
+            {step === 0 ? <Step1Basic onNext={next} /> : null}
+            {step === 1 ? <Step2Pricing onNext={next} onBack={prev} /> : null}
+            {step === 2 ? <Step3Description onNext={next} onBack={prev} /> : null}
+            {step === 3 ? <Step4Media onBack={prev} /> : null}
+          </div>
         </div>
       </div>
     </>
   );
 }
 
-function Stepper() {
-  const steps = [
-    { n: 1, label: "Asosiy ma'lumotlar", active: true },
-    { n: 2, label: "To'lov va harajatlar" },
-    { n: 3, label: "Tavsif va to'ollar" },
-    { n: 4, label: "Rasm va ikonka" },
-  ];
+function Stepper({
+  current,
+  onJump,
+}: {
+  current: number;
+  onJump: (i: number) => void;
+}) {
   return (
     <div className="mt-10 grid grid-cols-4 items-start gap-4">
-      {steps.map((s, i) => (
-        <div key={s.n} className="relative flex flex-col items-center">
-          {/* connector line to next */}
-          {i < steps.length - 1 ? (
+      {STEP_LABELS.map((label, i) => {
+        const done = i < current;
+        const active = i === current;
+        const canJump = i < current;
+        return (
+          <button
+            type="button"
+            key={label}
+            disabled={!canJump}
+            onClick={() => onJump(i)}
+            className={`relative flex flex-col items-center ${canJump ? "cursor-pointer" : "cursor-default"}`}
+          >
+            {i < STEP_LABELS.length - 1 ? (
+              <div
+                className={`absolute left-1/2 top-5 h-[2px] w-full ${
+                  done ? "bg-primary" : active ? "bg-primary/40" : "bg-border/60"
+                }`}
+              />
+            ) : null}
             <div
-              className={`absolute left-1/2 top-5 h-[2px] w-full ${
-                s.active ? "bg-primary/70" : "bg-border/60"
+              className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition ${
+                active
+                  ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_oklch(0.58_0.22_25/0.2)]"
+                  : done
+                    ? "bg-primary/90 text-primary-foreground"
+                    : "border border-border/70 bg-card/60 text-muted-foreground"
               }`}
-            />
-          ) : null}
-          <div
-            className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold ${
-              s.active
-                ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_oklch(0.58_0.22_25/0.2)]"
-                : "border border-border/70 bg-card/60 text-muted-foreground"
-            }`}
-          >
-            {s.n}
-          </div>
-          <div
-            className={`mt-3 text-xs ${
-              s.active ? "font-semibold text-primary" : "text-muted-foreground"
-            }`}
-          >
-            {s.label}
-          </div>
-        </div>
-      ))}
+            >
+              {done ? <Check className="h-4 w-4" /> : i + 1}
+            </div>
+            <div
+              className={`mt-3 text-xs ${
+                active
+                  ? "font-semibold text-primary"
+                  : done
+                    ? "text-foreground/80"
+                    : "text-muted-foreground"
+              }`}
+            >
+              {label}
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }
