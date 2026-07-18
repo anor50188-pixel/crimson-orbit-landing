@@ -416,15 +416,37 @@ function Select({
   );
 }
 
-function NextButton() {
+function WizardNav({
+  onBack,
+  onNext,
+  nextLabel = "Keyingi",
+}: {
+  onBack?: () => void;
+  onNext?: () => void;
+  nextLabel?: string;
+}) {
   return (
-    <button
-      type="button"
-      className="mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground shadow-[0_10px_30px_-10px_oklch(0.58_0.22_25/0.7)] transition hover:brightness-110"
-    >
-      Keyingi
-      <ArrowRight className="h-4 w-4" />
-    </button>
+    <div className="mt-2 flex items-center gap-2">
+      {onBack ? (
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border/60 bg-card/60 px-4 text-sm font-medium text-foreground transition hover:bg-accent/40"
+        >
+          ← Orqaga
+        </button>
+      ) : null}
+      {onNext ? (
+        <button
+          type="button"
+          onClick={onNext}
+          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-primary-foreground shadow-[0_10px_30px_-10px_oklch(0.58_0.22_25/0.7)] transition hover:brightness-110"
+        >
+          {nextLabel}
+          <ArrowRight className="h-4 w-4" />
+        </button>
+      ) : null}
+    </div>
   );
 }
 
