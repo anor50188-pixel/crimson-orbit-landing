@@ -166,6 +166,35 @@ function Shell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+
+        {/* Bottom cards */}
+        <div className="space-y-2 border-t border-border/60 p-3">
+          <div className="rounded-2xl border border-border/60 bg-card/60 p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 text-sm font-semibold text-primary ring-1 ring-inset ring-primary/25">
+                A
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium text-foreground">Azizbek</div>
+                <div className="text-[11px] text-primary">Pro Plan</div>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground" />
+            </div>
+            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-background/70">
+              <div className="h-full w-[35%] rounded-full bg-gradient-to-r from-primary to-[oklch(0.68_0.24_25)]" />
+            </div>
+            <div className="mt-2 text-[11px] text-muted-foreground">7 / 20 agent</div>
+          </div>
+          <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 p-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[oklch(0.75_0.15_75)]/15 text-[oklch(0.85_0.18_80)] ring-1 ring-inset ring-[oklch(0.75_0.15_75)]/25">
+              <Sun className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium text-foreground">24°C</div>
+              <div className="text-[11px] text-muted-foreground">Sunny</div>
+            </div>
+          </div>
+        </div>
       </aside>
 
       <main className="flex min-w-0 flex-1 flex-col">
