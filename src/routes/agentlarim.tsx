@@ -343,13 +343,16 @@ function AgentlarimPage() {
           <img
             src={planet}
             alt=""
-            className="absolute right-[-14%] top-[-12%] h-[85%] w-auto opacity-55 mix-blend-screen"
+            className="absolute right-[-20%] top-[-16%] h-[105%] w-auto opacity-60 mix-blend-screen"
+            style={{
+              filter: "saturate(1.65) contrast(1.12) brightness(1.08) hue-rotate(-12deg)",
+            }}
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(1200px 600px at 88% 8%, oklch(0.58 0.22 25 / 0.28), transparent 60%), radial-gradient(900px 500px at 10% 90%, oklch(0.58 0.22 25 / 0.14), transparent 60%), linear-gradient(180deg, oklch(0.06 0.02 20) 0%, oklch(0.05 0.015 20) 100%)",
+                "radial-gradient(1400px 700px at 86% 6%, oklch(0.62 0.24 22 / 0.38), transparent 60%), radial-gradient(1000px 550px at 10% 90%, oklch(0.58 0.22 25 / 0.16), transparent 60%), linear-gradient(180deg, oklch(0.06 0.02 20) 0%, oklch(0.05 0.015 20) 100%)",
             }}
           />
           <AgentlarimStars />
