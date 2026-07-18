@@ -6,10 +6,11 @@ import {
   Bot,
   Check,
   CircleHelp,
-  Crown,
   FileText,
   Home,
   Phone,
+  Rocket,
+  Sun,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -164,6 +165,35 @@ function Shell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+
+        {/* Bottom cards */}
+        <div className="space-y-2 border-t border-border/60 p-3">
+          <div className="rounded-2xl border border-border/60 bg-card/60 p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 text-sm font-semibold text-primary ring-1 ring-inset ring-primary/25">
+                A
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium text-foreground">Azizbek</div>
+                <div className="text-[11px] text-primary">Pro Plan</div>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground" />
+            </div>
+            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-background/70">
+              <div className="h-full w-[35%] rounded-full bg-gradient-to-r from-primary to-[oklch(0.68_0.24_25)]" />
+            </div>
+            <div className="mt-2 text-[11px] text-muted-foreground">7 / 20 agent</div>
+          </div>
+          <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 p-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[oklch(0.75_0.15_75)]/15 text-[oklch(0.85_0.18_80)] ring-1 ring-inset ring-[oklch(0.75_0.15_75)]/25">
+              <Sun className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-medium text-foreground">24°C</div>
+              <div className="text-[11px] text-muted-foreground">Sunny</div>
+            </div>
+          </div>
+        </div>
       </aside>
 
       <main className="flex min-w-0 flex-1 flex-col">
@@ -173,7 +203,7 @@ function Shell({ children }: { children: React.ReactNode }) {
               to="/"
               className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition hover:text-foreground"
             >
-              ← Sotuvchi paneli
+              ← Orqaga
             </Link>
           </div>
           <div className="flex items-center gap-2">
@@ -627,94 +657,128 @@ function SellerDashboard({
   profile: SellerProfile;
   onSignOut: () => void;
 }) {
+  void profile;
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 py-12">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/25">
-          <Crown className="h-5 w-5" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Xush kelibsiz, {profile.name.split(" ")[0]}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Siz Agentus Marketplace sotuvchisisiz. Sotuvchi paneli tez orada ochiladi.
-          </p>
-        </div>
+    <>
+      {/* Space background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <img
+          src={planet}
+          alt=""
+          className="absolute right-[-18%] top-[-8%] h-[95%] w-auto opacity-60 mix-blend-screen"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(1400px 700px at 88% 12%, oklch(0.58 0.22 25 / 0.28), transparent 60%), radial-gradient(900px 500px at 15% 85%, oklch(0.58 0.22 25 / 0.14), transparent 60%)",
+          }}
+        />
+        <StarField />
+        {/* small distant planets */}
+        <div className="absolute left-[18%] top-[22%] h-24 w-24 rounded-full bg-gradient-to-br from-[oklch(0.35_0.12_25)] to-[oklch(0.15_0.05_25)] opacity-70 blur-[1px] shadow-[0_0_60px_-10px_oklch(0.5_0.2_25/0.5)]" />
+        <div className="absolute left-[12%] bottom-[18%] h-16 w-16 rounded-full bg-gradient-to-br from-[oklch(0.3_0.1_25)] to-[oklch(0.12_0.04_25)] opacity-60 shadow-[0_0_40px_-8px_oklch(0.5_0.2_25/0.4)]" />
       </div>
 
-      <div className="mt-8 rounded-3xl border border-border/60 bg-card/60 p-8 backdrop-blur-xl">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/25">
-          <Sparkles className="h-3 w-3" />
-          Ro'yxatdan o'tish yakunlandi
-        </div>
-        <h2 className="mt-4 text-lg font-semibold">Keyingi qadamlar</h2>
-        <ul className="mt-4 space-y-3 text-sm text-foreground/90">
-          <li className="flex items-start gap-3">
-            <Check className="mt-0.5 h-4 w-4 text-primary" />
-            Agent yarating va Marketplace uchun tayyorlang.
-          </li>
-          <li className="flex items-start gap-3">
-            <Check className="mt-0.5 h-4 w-4 text-primary" />
-            To'lov ma'lumotlaringizni kiriting (tez orada).
-          </li>
-          <li className="flex items-start gap-3">
-            <Check className="mt-0.5 h-4 w-4 text-primary" />
-            Nashriyot ustasi orqali agentni Marketplace'ga chiqaring.
-          </li>
-        </ul>
+      <div className="relative mx-auto flex min-h-full w-full max-w-3xl items-center justify-center px-6 py-10 sm:py-14">
+        <div className="relative w-full overflow-hidden rounded-[28px] border border-border/60 bg-card/50 p-10 shadow-[0_30px_120px_-40px_oklch(0.58_0.22_25/0.7)] backdrop-blur-2xl sm:p-14">
+          {/* Planet arc at bottom of card */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-56 overflow-hidden">
+            <div
+              className="absolute left-1/2 top-8 h-[520px] w-[520px] -translate-x-1/2 rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 0%, oklch(0.35 0.15 25 / 0.7), oklch(0.1 0.03 25 / 0.9) 55%, transparent 70%)",
+                boxShadow:
+                  "0 -20px 80px -10px oklch(0.58 0.22 25 / 0.6), inset 0 20px 60px -10px oklch(0.68 0.24 25 / 0.5)",
+              }}
+            />
+          </div>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          <Link
-            to="/agent-yaratish"
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] px-4 text-sm font-medium text-primary-foreground shadow-[0_10px_40px_-10px_oklch(0.58_0.22_25/0.6)] transition hover:brightness-110"
-          >
-            <Sparkles className="h-4 w-4" />
-            Yangi agent yaratish
-          </Link>
+          {/* Confetti dots */}
+          <ConfettiDots />
+
+          {/* Success ring */}
+          <div className="relative mx-auto flex h-32 w-32 items-center justify-center">
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                boxShadow:
+                  "0 0 0 2px oklch(0.68 0.24 25 / 0.9), 0 0 40px 8px oklch(0.58 0.22 25 / 0.6), inset 0 0 20px 2px oklch(0.58 0.22 25 / 0.3)",
+              }}
+            />
+            <div className="absolute inset-2 rounded-full border border-primary/40" />
+            <Check className="relative h-14 w-14 text-white" strokeWidth={2.5} />
+          </div>
+
+          {/* Title */}
+          <h1 className="relative mt-10 text-center text-4xl font-semibold tracking-tight text-foreground sm:text-[42px]">
+            <span className="mr-2 inline-block">🎉</span>
+            Tabriklaymiz!
+          </h1>
+
+          <p className="relative mt-4 text-center text-base text-foreground/90">
+            Siz endi Agentus Marketplace sotuvchisisiz.
+          </p>
+
+          <div className="relative mx-auto mt-6 h-px w-10 bg-primary" />
+
+          <p className="relative mx-auto mt-6 max-w-md text-center text-sm leading-relaxed text-muted-foreground">
+            Endi birinchi agentingizni Marketplace'ga
+            <br />
+            joylashtirishingiz mumkin.
+          </p>
+
           <Link
             to="/agentlarim"
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border/60 bg-card/60 px-4 text-sm font-medium text-foreground transition hover:bg-accent/40"
+            className="relative mx-auto mt-10 flex h-14 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] px-6 text-base font-semibold text-primary-foreground shadow-[0_20px_60px_-15px_oklch(0.58_0.22_25/0.9)] transition hover:brightness-110"
           >
-            <Bot className="h-4 w-4" />
-            Agentlarim
+            <Rocket className="h-5 w-5" />
+            <span className="flex-1 text-center">Agent tanlash</span>
+            <ArrowRight className="h-5 w-5" />
           </Link>
+
+          {/* Demo reset — tiny, discreet */}
           <button
             type="button"
             onClick={onSignOut}
-            className="ml-auto inline-flex h-10 items-center gap-2 rounded-xl border border-dashed border-border/60 px-4 text-xs text-muted-foreground transition hover:text-foreground"
+            className="relative mx-auto mt-6 block text-[11px] text-muted-foreground/60 transition hover:text-muted-foreground"
           >
-            Ro'yxatni tozalash (demo)
+            Demo: ro'yxatdan chiqish
           </button>
         </div>
       </div>
-
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <ProfileRow icon={<User className="h-4 w-4" />} label="Ism va familiya" value={profile.name} />
-        <ProfileRow icon={<Phone className="h-4 w-4" />} label="Telefon" value={profile.phone} />
-      </div>
-    </div>
+    </>
   );
 }
 
-function ProfileRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function ConfettiDots() {
+  const dots = useMemo(
+    () =>
+      Array.from({ length: 24 }, (_, i) => ({
+        id: i,
+        top: 8 + Math.random() * 32,
+        left: Math.random() * 100,
+        size: Math.random() * 3 + 1.5,
+        opacity: Math.random() * 0.7 + 0.3,
+      })),
+    [],
+  );
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/40 p-4">
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/25">
-        {icon}
-      </div>
-      <div>
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className="text-sm text-foreground/90">{value}</div>
-      </div>
+    <div className="pointer-events-none absolute inset-0">
+      {dots.map((d) => (
+        <span
+          key={d.id}
+          className="absolute rounded-sm bg-primary"
+          style={{
+            top: `${d.top}%`,
+            left: `${d.left}%`,
+            width: d.size,
+            height: d.size,
+            opacity: d.opacity,
+          }}
+        />
+      ))}
     </div>
   );
 }
