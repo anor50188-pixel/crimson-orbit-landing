@@ -2,9 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
-  BarChart3,
   Bot,
-  BookOpen,
   Check,
   ChevronDown,
   Copy,
@@ -17,7 +15,6 @@ import {
   Link2,
   Loader2,
   Lock,
-  Plug,
   Plus,
   Search,
   Settings,
@@ -82,9 +79,6 @@ const navItems = [
     active: true,
   },
   { icon: Crown, label: "Sotuvchi paneli", to: "/seller" as const },
-  { icon: Plug, label: "Integratsiyalar" },
-  { icon: BookOpen, label: "Kodex" },
-  { icon: BarChart3, label: "Analytics" },
   { icon: Wallet, label: "To'lovlar" },
   { icon: Settings, label: "Sozlamalar" },
 ];

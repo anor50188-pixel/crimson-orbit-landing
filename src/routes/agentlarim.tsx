@@ -3,8 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   Bot,
-  BookOpen,
-  BarChart3,
   Check,
   Circle,
   Copy,
@@ -14,7 +12,6 @@ import {
   Pause,
   Pencil,
   Play,
-  Plug,
   Plus,
   Search,
   Settings,
@@ -73,9 +70,6 @@ const navItems = [
   { icon: Store, label: "Marketplace" },
   { icon: Wrench, label: "Mening toollarim", to: "/mening-toollarim" as const },
   { icon: Crown, label: "Sotuvchi paneli", to: "/seller" as const },
-  { icon: Plug, label: "Integratsiyalar" },
-  { icon: BookOpen, label: "Kodex" },
-  { icon: BarChart3, label: "Analytics" },
   { icon: Wallet, label: "To'lovlar" },
   { icon: Settings, label: "Sozlamalar" },
 ];
