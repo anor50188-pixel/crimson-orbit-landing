@@ -232,11 +232,8 @@ function TeamCreator({
 
 function AgentCreatePageInner() {
   const [prompt, setPrompt] = useState("");
-  const [mode, setMode] = useState<"single" | "team">("single");
-  const [teamName, setTeamName] = useState("");
-  const [teamRoles, setTeamRoles] = useState<string[]>([]);
-  const [teamSaved, setTeamSaved] = useState(false);
   const [phase, setPhase] = useState<Phase>("hero");
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [followUp, setFollowUp] = useState("");
   const [activeStep, setActiveStep] = useState<number>(-1);
