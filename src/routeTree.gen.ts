@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SellerRouteImport } from './routes/seller'
 import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
+import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
 import { Route as AgentlarimRouteImport } from './routes/agentlarim'
 import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,6 +26,11 @@ const SellerRoute = SellerRouteImport.update({
 const MeningToollarimRoute = MeningToollarimRouteImport.update({
   id: '/mening-toollarim',
   path: '/mening-toollarim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BizHaqimizdaRoute = BizHaqimizdaRouteImport.update({
+  id: '/biz-haqimizda',
+  path: '/biz-haqimizda',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentlarimRoute = AgentlarimRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
+  '/biz-haqimizda': typeof BizHaqimizdaRoute
   '/mening-toollarim': typeof MeningToollarimRoute
   '/seller': typeof SellerRouteWithChildren
   '/seller/': typeof SellerIndexRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
+  '/biz-haqimizda': typeof BizHaqimizdaRoute
   '/mening-toollarim': typeof MeningToollarimRoute
   '/seller': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agent-yaratish': typeof AgentYaratishRoute
   '/agentlarim': typeof AgentlarimRoute
+  '/biz-haqimizda': typeof BizHaqimizdaRoute
   '/mening-toollarim': typeof MeningToollarimRoute
   '/seller': typeof SellerRouteWithChildren
   '/seller/': typeof SellerIndexRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agent-yaratish'
     | '/agentlarim'
+    | '/biz-haqimizda'
     | '/mening-toollarim'
     | '/seller'
     | '/seller/'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agent-yaratish'
     | '/agentlarim'
+    | '/biz-haqimizda'
     | '/mening-toollarim'
     | '/seller'
     | '/seller/publish/$agentId'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agent-yaratish'
     | '/agentlarim'
+    | '/biz-haqimizda'
     | '/mening-toollarim'
     | '/seller'
     | '/seller/'
@@ -113,6 +125,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentYaratishRoute: typeof AgentYaratishRoute
   AgentlarimRoute: typeof AgentlarimRoute
+  BizHaqimizdaRoute: typeof BizHaqimizdaRoute
   MeningToollarimRoute: typeof MeningToollarimRoute
   SellerRoute: typeof SellerRouteWithChildren
 }
@@ -131,6 +144,13 @@ declare module '@tanstack/react-router' {
       path: '/mening-toollarim'
       fullPath: '/mening-toollarim'
       preLoaderRoute: typeof MeningToollarimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/biz-haqimizda': {
+      id: '/biz-haqimizda'
+      path: '/biz-haqimizda'
+      fullPath: '/biz-haqimizda'
+      preLoaderRoute: typeof BizHaqimizdaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agentlarim': {
@@ -188,6 +208,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentYaratishRoute: AgentYaratishRoute,
   AgentlarimRoute: AgentlarimRoute,
+  BizHaqimizdaRoute: BizHaqimizdaRoute,
   MeningToollarimRoute: MeningToollarimRoute,
   SellerRoute: SellerRouteWithChildren,
 }
