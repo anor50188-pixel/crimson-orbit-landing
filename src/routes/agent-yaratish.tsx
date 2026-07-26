@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Home,
@@ -69,6 +69,7 @@ function AgentCreatePage() {
 }
 
 function AgentCreatePageInner() {
+  const navigate = useNavigate();
   const [prompt, setPrompt] = useState("");
   const [phase, setPhase] = useState<Phase>("hero");
 
@@ -77,6 +78,66 @@ function AgentCreatePageInner() {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Publish modal state
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [pubName, setPubName] = useState("");
+  const [pubDesc, setPubDesc] = useState("");
+  const [pubCategory, setPubCategory] = useState("Automation");
+  const [pubIconUrl, setPubIconUrl] = useState<string | null>(null);
+  const [pubError, setPubError] = useState<string | null>(null);
+  const iconInputRef = useRef<HTMLInputElement | null>(null);
+
+  const resetPublishForm = () => {
+    setPubName("");
+    setPubDesc("");
+    setPubCategory("Automation");
+    setPubIconUrl(null);
+    setPubError(null);
+  };
+
+  const handleIconPick = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setPubIconUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCreateAgent = () => {
+    const name = pubName.trim();
+    const desc = pubDesc.trim();
+    if (!name) {
+      setPubError("Agent nomini kiriting.");
+      return;
+    }
+    if (!desc) {
+      setPubError("Qisqa tavsif kiriting.");
+      return;
+    }
+    const newAgent = {
+      id: `${Date.now()}`,
+      name,
+      description: desc,
+      createdAt: new Date().toISOString(),
+      status: "active" as const,
+      tools: [] as string[],
+      lastActivity: new Date().toISOString(),
+      iconUrl: pubIconUrl ?? undefined,
+      category: pubCategory,
+    };
+    try {
+      const raw = localStorage.getItem("agentus:agents");
+      const list = raw ? (JSON.parse(raw) as unknown[]) : [];
+      const next = [newAgent, ...(Array.isArray(list) ? list : [])];
+      localStorage.setItem("agentus:agents", JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    setPublishOpen(false);
+    resetPublishForm();
+    navigate({ to: "/agentlarim" });
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
