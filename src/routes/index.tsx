@@ -163,7 +163,6 @@ function Landing() {
                   <span>Telegram orqali xabar yuborish</span>
                 </li>
                 <li className="flex gap-2">
-                  <method="POST"
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                   <span>Google Sheets bilan ishlash</span>
                 </li>
