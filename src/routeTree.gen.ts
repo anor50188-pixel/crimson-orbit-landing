@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SellerRouteImport } from './routes/seller'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
 import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
 import { Route as AgentlarimRouteImport } from './routes/agentlarim'
@@ -21,6 +22,11 @@ import { Route as SellerPublishAgentIdRouteImport } from './routes/seller.publis
 const SellerRoute = SellerRouteImport.update({
   id: '/seller',
   path: '/seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeningToollarimRoute = MeningToollarimRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/agentlarim': typeof AgentlarimRoute
   '/biz-haqimizda': typeof BizHaqimizdaRoute
   '/mening-toollarim': typeof MeningToollarimRoute
+  '/roadmap': typeof RoadmapRoute
   '/seller': typeof SellerRouteWithChildren
   '/seller/': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/agentlarim': typeof AgentlarimRoute
   '/biz-haqimizda': typeof BizHaqimizdaRoute
   '/mening-toollarim': typeof MeningToollarimRoute
+  '/roadmap': typeof RoadmapRoute
   '/seller': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
 }
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/agentlarim': typeof AgentlarimRoute
   '/biz-haqimizda': typeof BizHaqimizdaRoute
   '/mening-toollarim': typeof MeningToollarimRoute
+  '/roadmap': typeof RoadmapRoute
   '/seller': typeof SellerRouteWithChildren
   '/seller/': typeof SellerIndexRoute
   '/seller/publish/$agentId': typeof SellerPublishAgentIdRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/agentlarim'
     | '/biz-haqimizda'
     | '/mening-toollarim'
+    | '/roadmap'
     | '/seller'
     | '/seller/'
     | '/seller/publish/$agentId'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/agentlarim'
     | '/biz-haqimizda'
     | '/mening-toollarim'
+    | '/roadmap'
     | '/seller'
     | '/seller/publish/$agentId'
   id:
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/agentlarim'
     | '/biz-haqimizda'
     | '/mening-toollarim'
+    | '/roadmap'
     | '/seller'
     | '/seller/'
     | '/seller/publish/$agentId'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   AgentlarimRoute: typeof AgentlarimRoute
   BizHaqimizdaRoute: typeof BizHaqimizdaRoute
   MeningToollarimRoute: typeof MeningToollarimRoute
+  RoadmapRoute: typeof RoadmapRoute
   SellerRoute: typeof SellerRouteWithChildren
 }
 
@@ -137,6 +150,13 @@ declare module '@tanstack/react-router' {
       path: '/seller'
       fullPath: '/seller'
       preLoaderRoute: typeof SellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mening-toollarim': {
@@ -210,6 +230,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgentlarimRoute: AgentlarimRoute,
   BizHaqimizdaRoute: BizHaqimizdaRoute,
   MeningToollarimRoute: MeningToollarimRoute,
+  RoadmapRoute: RoadmapRoute,
   SellerRoute: SellerRouteWithChildren,
 }
 export const routeTree = rootRouteImport
