@@ -405,22 +405,28 @@ function AgentCreatePage() {
           </>
         ) : (
           <>
-            {/* Vertical aurora: black top → deep blue → magenta/pink glow */}
+            {/* Agentus red planet horizon */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55vh]">
+              <img
+                src={heroPlanet}
+                alt=""
+                className="h-full w-full object-cover object-top"
+                style={{
+                  filter:
+                    "saturate(1.65) contrast(1.12) brightness(1.08) hue-rotate(-12deg)",
+                  opacity: 0.6,
+                }}
+                draggable={false}
+              />
+              <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
+            </div>
             <div
               className="pointer-events-none absolute inset-0 -z-20"
               style={{
                 background:
-                  "radial-gradient(ellipse 70% 55% at 50% 118%, #ff2e93 0%, #ff2e93 12%, #b026ff 30%, #3b5bff 52%, #0a1030 72%, #000 100%)",
+                  "radial-gradient(ellipse 70% 45% at 50% 105%, oklch(0.58 0.22 25 / 0.35), transparent 65%), radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
               }}
             />
-            <div
-              className="pointer-events-none absolute inset-0 -z-20"
-              style={{
-                background:
-                  "radial-gradient(ellipse 45% 30% at 50% 105%, rgba(255,90,180,0.55), transparent 70%)",
-              }}
-            />
-            <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-black to-transparent" />
           </>
         )}
 
@@ -480,27 +486,19 @@ function AgentCreatePage() {
         {/* HERO */}
         {!isSplit && (
           <div className="relative mx-auto flex min-h-[calc(100vh-160px)] max-w-3xl flex-col items-center justify-center px-6 pb-24 text-center">
-            {/* Announcement pill */}
-            <button
-              type="button"
-              disabled
-              title="Yangilik (demo)"
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-white/10 bg-black/50 py-1.5 pl-1.5 pr-4 text-sm text-white/90 backdrop-blur"
-            >
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm text-primary backdrop-blur">
               <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
-                Yangi
+                Demo
               </span>
-              <span className="hidden sm:inline">Agentus'da agent yaratish endi ancha oson</span>
-              <span className="sm:hidden">Agent yaratish oson</span>
-              <ArrowRight className="h-4 w-4 text-white/80" />
-            </button>
+              <span>Agent yaratish simulyatsiyasi</span>
+            </div>
 
-            <h1 className="mt-8 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+            <h1 className="mt-8 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
               Qanday agent quramiz, Azizbek?
             </h1>
 
             {/* Prompt box */}
-            <div className="mt-10 w-full rounded-3xl border border-white/10 bg-[#111114]/90 p-4 shadow-2xl shadow-black/50 backdrop-blur">
+            <div className="mt-10 w-full rounded-3xl border border-border bg-card/80 p-4 shadow-2xl shadow-black/40 backdrop-blur">
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -512,72 +510,34 @@ function AgentCreatePage() {
                 }}
                 placeholder="Agentusdan hisobot yig'uvchi agent qurishni so'rang..."
                 rows={2}
-                className="w-full resize-none bg-transparent px-2 py-2 text-left text-base text-white placeholder:text-white/40 focus:outline-none"
+                className="w-full resize-none bg-transparent px-2 py-2 text-left text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
-              <div className="mt-2 flex items-center justify-between">
+              <div className="mt-2 flex items-center justify-end">
                 <button
                   type="button"
-                  disabled
-                  title="Fayl biriktirish (demo)"
-                  className="grid h-9 w-9 cursor-not-allowed place-items-center rounded-full text-white/70 hover:bg-white/5"
+                  onClick={handleSubmit}
+                  disabled={!prompt.trim()}
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
                 >
-                  <Plus className="h-5 w-5" />
+                  Yaratish
+                  <Send className="h-4 w-4" />
                 </button>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={!prompt.trim()}
-                    className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium text-white hover:bg-white/5 disabled:opacity-50"
-                  >
-                    Build
-                    <ChevronDown className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    title="Ovozli kiritish (demo)"
-                    className="grid h-9 w-9 cursor-not-allowed place-items-center rounded-full text-white/70 hover:bg-white/5"
-                  >
-                    <Mic className="h-4 w-4" />
-                  </button>
-                </div>
               </div>
             </div>
 
-            {/* Example chips (kept as quick prompts) */}
+            {/* Example chips (quick prompts) */}
             <div className="mt-6 flex w-full flex-wrap justify-center gap-2">
               {examples.map(({ icon: Icon, text }) => (
                 <button
                   key={text}
                   type="button"
                   onClick={() => setPrompt(text)}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white/80 backdrop-blur transition-colors hover:border-white/30 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition-colors hover:border-primary/60 hover:text-foreground"
                 >
                   <Icon className="h-3.5 w-3.5 text-primary" />
                   {text}
                 </button>
               ))}
-            </div>
-
-            {/* Bottom tabs strip (visual, demo) */}
-            <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur">
-              <div className="flex items-center gap-1 text-sm text-white/70">
-                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-white/70">
-                  <Search className="h-4 w-4" />
-                  Qidiruv
-                </span>
-                <span className="rounded-full bg-white/10 px-3 py-1.5 text-white">Yaqinda ko'rilgan</span>
-                <span className="hidden rounded-full px-3 py-1.5 sm:inline">Men bilan ulashilgan</span>
-                <span className="hidden rounded-full px-3 py-1.5 md:inline">Andozalar</span>
-                <Link
-                  to="/agentlarim"
-                  className="ml-auto inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-white/80 hover:text-white"
-                >
-                  Barchasini ko'rish
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
             </div>
           </div>
         )}
