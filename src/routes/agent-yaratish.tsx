@@ -427,8 +427,53 @@ function AgentCreatePageInner() {
               </div>
 
               <div className="border-t border-border/60 p-3">
+                {attachments.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-1.5">
+                    {attachments.map((file, i) => (
+                      <span
+                        key={`${file.name}-${i}`}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-card/60 px-2 py-1 text-[11px] text-muted-foreground"
+                      >
+                        <Paperclip className="h-3 w-3" />
+                        <span className="max-w-[140px] truncate">{file.name}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setAttachments((a) => a.filter((_, idx) => idx !== i))
+                          }
+                          className="text-muted-foreground hover:text-foreground"
+                          aria-label="O'chirish"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div className="flex items-center gap-2 rounded-xl border border-border bg-background/60 px-3 py-2">
-                  <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*,application/pdf,.doc,.docx,.txt,.csv,.xlsx"
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files ?? []);
+                      if (files.length > 0) {
+                        setAttachments((a) => [...a, ...files]);
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                    aria-label="Rasm yoki fayl qo'shish"
+                    title="Rasm yoki fayl qo'shish"
+                  >
+                    <Paperclip className="h-4 w-4" />
+                  </button>
                   <input
                     value={followUp}
                     onChange={(e) => setFollowUp(e.target.value)}
@@ -444,7 +489,7 @@ function AgentCreatePageInner() {
                   <button
                     type="button"
                     onClick={sendFollowUp}
-                    disabled={!followUp.trim()}
+                    disabled={!followUp.trim() && attachments.length === 0}
                     className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
                   >
                     <Send className="h-4 w-4" />
