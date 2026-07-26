@@ -31,8 +31,8 @@ import {
   CheckCircle2,
   User,
   Crown,
-  Users,
 } from "lucide-react";
+
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
 import brainHologram from "@/assets/brain-hologram.jpg";
