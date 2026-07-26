@@ -31,6 +31,10 @@ import {
   CheckCircle2,
   User,
   Crown,
+  Plus,
+  Mic,
+  ArrowRight,
+  Search,
 } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
@@ -385,17 +389,40 @@ function AgentCreatePage() {
       {/* MAIN */}
       <main className="relative isolate flex-1 overflow-hidden">
         {/* Planet horizon */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[38vh]">
-          <img src={heroPlanet} alt="" className="h-full w-full object-cover object-top" />
-          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
-        </div>
-        <div
-          className="pointer-events-none absolute inset-0 -z-20"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
-          }}
-        />
+        {isSplit ? (
+          <>
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[38vh]">
+              <img src={heroPlanet} alt="" className="h-full w-full object-cover object-top" />
+              <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
+            </div>
+            <div
+              className="pointer-events-none absolute inset-0 -z-20"
+              style={{
+                background:
+                  "radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
+              }}
+            />
+          </>
+        ) : (
+          <>
+            {/* Vertical aurora: black top → deep blue → magenta/pink glow */}
+            <div
+              className="pointer-events-none absolute inset-0 -z-20"
+              style={{
+                background:
+                  "radial-gradient(ellipse 70% 55% at 50% 118%, #ff2e93 0%, #ff2e93 12%, #b026ff 30%, #3b5bff 52%, #0a1030 72%, #000 100%)",
+              }}
+            />
+            <div
+              className="pointer-events-none absolute inset-0 -z-20"
+              style={{
+                background:
+                  "radial-gradient(ellipse 45% 30% at 50% 105%, rgba(255,90,180,0.55), transparent 70%)",
+              }}
+            />
+            <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-black to-transparent" />
+          </>
+        )}
 
         {/* TOP BAR */}
         <div className="flex items-center justify-between gap-4 px-6 py-4">
@@ -452,16 +479,28 @@ function AgentCreatePage() {
 
         {/* HERO */}
         {!isSplit && (
-          <div className="mx-auto flex max-w-3xl flex-col items-center px-6 pt-8 text-center">
-            <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-              <span className="text-primary">Agentus</span> bilan yarating
-            </h1>
-            <p className="mt-4 text-sm text-muted-foreground md:text-base">
-              Oddiy tilda yozing — Agentus platformasi hali ishlab chiqilmoqda,
-              demo simulyatsiya orqali agent qurish jarayonini ko'rasiz.
-            </p>
+          <div className="relative mx-auto flex min-h-[calc(100vh-160px)] max-w-3xl flex-col items-center justify-center px-6 pb-24 text-center">
+            {/* Announcement pill */}
+            <button
+              type="button"
+              disabled
+              title="Yangilik (demo)"
+              className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-white/10 bg-black/50 py-1.5 pl-1.5 pr-4 text-sm text-white/90 backdrop-blur"
+            >
+              <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
+                Yangi
+              </span>
+              <span className="hidden sm:inline">Agentus'da agent yaratish endi ancha oson</span>
+              <span className="sm:hidden">Agent yaratish oson</span>
+              <ArrowRight className="h-4 w-4 text-white/80" />
+            </button>
 
-            <div className="mt-8 w-full rounded-2xl border border-border bg-card/80 p-4 backdrop-blur">
+            <h1 className="mt-8 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+              Qanday agent quramiz, Azizbek?
+            </h1>
+
+            {/* Prompt box */}
+            <div className="mt-10 w-full rounded-3xl border border-white/10 bg-[#111114]/90 p-4 shadow-2xl shadow-black/50 backdrop-blur">
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -471,41 +510,74 @@ function AgentCreatePage() {
                     handleSubmit();
                   }
                 }}
-                placeholder="Agentingiz qanday bo'lishini yozing..."
-                rows={3}
-                className="w-full resize-none bg-transparent px-2 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                placeholder="Agentusdan hisobot yig'uvchi agent qurishni so'rang..."
+                rows={2}
+                className="w-full resize-none bg-transparent px-2 py-2 text-left text-base text-white placeholder:text-white/40 focus:outline-none"
               />
               <div className="mt-2 flex items-center justify-between">
                 <button
                   type="button"
                   disabled
-                  className="grid h-9 w-9 cursor-not-allowed place-items-center rounded-md border border-border text-muted-foreground opacity-70"
+                  title="Fayl biriktirish (demo)"
+                  className="grid h-9 w-9 cursor-not-allowed place-items-center rounded-full text-white/70 hover:bg-white/5"
                 >
-                  <Paperclip className="h-4 w-4" />
+                  <Plus className="h-5 w-5" />
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={!prompt.trim()}
-                  className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={!prompt.trim()}
+                    className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium text-white hover:bg-white/5 disabled:opacity-50"
+                  >
+                    Build
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    title="Ovozli kiritish (demo)"
+                    className="grid h-9 w-9 cursor-not-allowed place-items-center rounded-full text-white/70 hover:bg-white/5"
+                  >
+                    <Mic className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="mt-8 grid w-full gap-3 text-left sm:grid-cols-2">
+            {/* Example chips (kept as quick prompts) */}
+            <div className="mt-6 flex w-full flex-wrap justify-center gap-2">
               {examples.map(({ icon: Icon, text }) => (
                 <button
                   key={text}
                   type="button"
                   onClick={() => setPrompt(text)}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-card/60 px-4 py-3 text-sm transition-colors hover:border-primary/60 hover:bg-card"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white/80 backdrop-blur transition-colors hover:border-white/30 hover:text-white"
                 >
-                  <Icon className="h-4 w-4 shrink-0 text-primary" />
+                  <Icon className="h-3.5 w-3.5 text-primary" />
                   {text}
                 </button>
               ))}
+            </div>
+
+            {/* Bottom tabs strip (visual, demo) */}
+            <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur">
+              <div className="flex items-center gap-1 text-sm text-white/70">
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-white/70">
+                  <Search className="h-4 w-4" />
+                  Qidiruv
+                </span>
+                <span className="rounded-full bg-white/10 px-3 py-1.5 text-white">Yaqinda ko'rilgan</span>
+                <span className="hidden rounded-full px-3 py-1.5 sm:inline">Men bilan ulashilgan</span>
+                <span className="hidden rounded-full px-3 py-1.5 md:inline">Andozalar</span>
+                <Link
+                  to="/agentlarim"
+                  className="ml-auto inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-white/80 hover:text-white"
+                >
+                  Barchasini ko'rish
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
             </div>
           </div>
         )}
