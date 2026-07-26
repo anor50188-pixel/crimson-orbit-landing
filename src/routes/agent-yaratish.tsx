@@ -12,18 +12,8 @@ import {
   Instagram,
   MessageCircle,
   FileSpreadsheet,
-  Check,
-  Loader2,
   Brain,
-  Play,
   Box,
-  Target,
-  Wrench as WrenchIcon,
-  FileCode,
-  Database,
-  GitBranch,
-  ShieldCheck,
-  CheckCircle2,
   User,
   Crown,
   Share2,
@@ -33,7 +23,6 @@ import {
 
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
-import brainHologram from "@/assets/brain-hologram.jpg";
 
 export const Route = createFileRoute("/agent-yaratish")({
   component: AgentCreatePage,
@@ -66,36 +55,8 @@ const examples = [
   { icon: FileSpreadsheet, text: "Excel fayllar bilan ishlovchi agent" },
 ];
 
-// Skript asosidagi demo bosqichlar — backend yo'q, hammasi simulyatsiya.
-const buildSteps = [
-  { key: "goal", icon: Target, label: "Goal Analysis", desc: "Maqsad tushunildi" },
-  { key: "tools", icon: WrenchIcon, label: "Tool Selection", desc: "Kerakli toolar aniqlanmoqda..." },
-  { key: "codex", icon: FileCode, label: "Kodex Generation", desc: "Kodex yaratilmoqda" },
-  { key: "memory", icon: Database, label: "Memory Configuration", desc: "Xotira sozlanmoqda" },
-  { key: "workflow", icon: GitBranch, label: "Workflow Planning", desc: "Ish jarayoni qurilmoqda" },
-  { key: "verify", icon: ShieldCheck, label: "Validation", desc: "Yakuniy sinovdan o'tkazilmoqda" },
-] as const;
-
-type ChatMessage =
-  | { role: "user"; text: string; time: string }
-  | { role: "brain"; text: string; time: string; choices?: string[]; answered?: string };
-
-type Phase = "hero" | "building" | "clarify" | "done";
-
-const clarifyQ1 = {
-  text: "Ajoyib! Yanada aniqroq bo'lishi uchun bir necha savolim bor.",
-  time: "23:41",
-};
-const clarifyQ2 = {
-  text: "Hisobotlarni kimdan yig'sin?",
-  choices: ["Xodimlar", "Mijozlar", "Hamkorlar", "Boshqa"],
-  time: "23:41",
-};
-const clarifyQ3 = {
-  text: "Qaysi vaqt oralig'ida hisobot yuborsin?",
-  choices: ["Har kuni", "Har hafta", "Har oy", "Boshqa"],
-  time: "23:42",
-};
+type ChatMessage = { role: "user" | "brain"; text: string; time: string };
+type Phase = "hero" | "building";
 
 function nowTime() {
   const d = new Date();
@@ -112,119 +73,26 @@ function AgentCreatePageInner() {
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [followUp, setFollowUp] = useState("");
-  const [activeStep, setActiveStep] = useState<number>(-1);
-  const [logs, setLogs] = useState<{ time: string; text: string }[]>([]);
-  const [clarifyStage, setClarifyStage] = useState<0 | 1 | 2>(0);
-  const [savedToAgents, setSavedToAgents] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-
-  const addLog = (text: string) => setLogs((l) => [...l, { time: nowTime(), text }]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, phase]);
-
-  useEffect(() => {
-    if (phase !== "building") return;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    const at = (ms: number, fn: () => void) => timers.push(setTimeout(fn, ms));
-
-    at(200, () => setActiveStep(0));
-    at(900, () => {
-      setActiveStep(1);
-      addLog("Maqsad tahlili qilindi");
-    });
-    at(1600, () => addLog("Telegram Bot API tanlandi"));
-    at(2200, () => addLog("Google Sheets integratsiyasi ulanishi tekshirilmoqda"));
-    at(2800, () => {
-      setMessages((m) => [
-        ...m,
-        { role: "brain", text: clarifyQ1.text, time: clarifyQ1.time },
-        { role: "brain", text: clarifyQ2.text, choices: clarifyQ2.choices, time: clarifyQ2.time },
-      ]);
-      setPhase("clarify");
-      setClarifyStage(1);
-    });
-
-    return () => timers.forEach(clearTimeout);
-  }, [phase]);
-
-  const continueAfterClarify1 = () => {
-    setActiveStep(2);
-    addLog("Kodex generatsiyasi boshlandi");
-    setTimeout(() => {
-      setMessages((m) => [
-        ...m,
-        { role: "brain", text: clarifyQ3.text, choices: clarifyQ3.choices, time: clarifyQ3.time },
-      ]);
-      setClarifyStage(2);
-    }, 400);
-  };
-
-  const continueAfterClarify2 = () => {
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    const at = (ms: number, fn: () => void) => timers.push(setTimeout(fn, ms));
-
-    at(400, () => {
-      setActiveStep(3);
-      addLog("Memory moduli sozlanmoqda");
-    });
-    at(1300, () => {
-      setActiveStep(4);
-      addLog("Workflow tuzilmoqda");
-    });
-    at(2200, () => {
-      setActiveStep(5);
-      addLog("Validatsiya sinovi o'tkazilmoqda");
-    });
-    at(3200, () => {
-      setActiveStep(6);
-      setPhase("done");
-      setMessages((m) => [
-        ...m,
-        {
-          role: "brain",
-          text: "Agent tayyor. Chap tomonda ko'rib chiqishingiz mumkin.",
-          time: nowTime(),
-        },
-      ]);
-    });
-  };
 
   const handleSubmit = () => {
     const text = prompt.trim();
     if (!text || phase !== "hero") return;
     const t = nowTime();
     setMessages([
+      { role: "user", text, time: t },
       {
         role: "brain",
-        text: "Salom Azizbek! 👋\nSiz uchun qanday agent yaratmoqchisiz? Iltimos g'oyangizni batafsil yozing.",
+        text: "Demo rejim — hozircha haqiqiy AI ulanmagan. Bu yerda Agentus Brain sizning promtingiz asosida jonli agent qurgan bo'lardi va natija chap tomonda paydo bo'ladi.",
         time: t,
       },
-      { role: "user", text, time: t },
     ]);
     setPrompt("");
     setPhase("building");
-  };
-
-  const handleChoice = (choice: string) => {
-    setMessages((m) => {
-      const copy = [...m];
-      for (let i = copy.length - 1; i >= 0; i--) {
-        const msg = copy[i];
-        if (msg.role === "brain" && msg.choices && !msg.answered) {
-          copy[i] = { ...msg, answered: choice };
-          break;
-        }
-      }
-      copy.push({ role: "user", text: choice, time: nowTime() });
-      return copy;
-    });
-    if (clarifyStage === 1) continueAfterClarify1();
-    else if (clarifyStage === 2) {
-      setPhase("building");
-      continueAfterClarify2();
-    }
   };
 
   const sendFollowUp = () => {
@@ -235,38 +103,12 @@ function AgentCreatePageInner() {
       { role: "user", text, time: nowTime() },
       {
         role: "brain",
-        text: "Qabul qilindi. (Demo — javoblar hozircha stsenariy asosida.)",
+        text: "Qabul qilindi. (Demo — hozircha haqiqiy AI ulanmagan.)",
         time: nowTime(),
       },
     ]);
     setFollowUp("");
   };
-
-  const handleTry = () => {
-    if (savedToAgents) return;
-    try {
-      const raw = localStorage.getItem("agentus:agents");
-      const list = raw ? JSON.parse(raw) : [];
-      list.push({
-        id: `${Date.now()}`,
-        name: "Hisobot Yig'uvchi",
-        description:
-          "Telegram orqali ma'lumot yig'adi, Sheets ga yozadi va hisobot yuboradi.",
-        createdAt: new Date().toISOString(),
-        status: "active",
-        tools: ["Telegram Bot API", "Google Sheets"],
-        lastActivity: new Date().toISOString(),
-      });
-      localStorage.setItem("agentus:agents", JSON.stringify(list));
-    } catch {
-      // ignore storage errors
-    }
-    setSavedToAgents(true);
-    addLog("Agent Agentlarim bo'limiga qo'shildi");
-  };
-
-  const completed = phase === "done" ? buildSteps.length : Math.max(activeStep, 0);
-  const percent = Math.round((completed / buildSteps.length) * 100);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
