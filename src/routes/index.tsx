@@ -107,6 +107,102 @@ function Landing() {
         </div>
       </section>
 
+      {/* Qanday ishlaydi — 3 bosqich */}
+      <section id="qanday-ishlaydi" className="relative border-t border-border/60 bg-background">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-xs uppercase tracking-widest text-muted-foreground">Qanday ishlaydi</p>
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+              3 bosqichda o'z AI jamoangizni yarating
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-balance text-base text-muted-foreground">
+              Agentusni ilk bor ochayotgan foydalanuvchilar uchun — har bir tushuncha qisqa va aniq tushuntiriladi.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Bosqich 1: Agent */}
+            <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background/60 p-6 backdrop-blur">
+              <span className="absolute right-4 top-4 text-5xl font-black leading-none text-primary/10">01</span>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-border text-primary">
+                <Bot className="h-5 w-5" />
+              </span>
+              <h3 className="mt-5 text-lg font-semibold text-foreground">Agent nima?</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Agent — ma'lum bir vazifani mustaqil boshqaradigan AI yuklanmasi. Har bir agent o'z maqsadi, o'z qoidalari (Codex), o'z toollari va o'z xotirasi bilan ishlaydi.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-foreground/90">
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>O'z vazifasini mustaqil bajaradi</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>O'z qoidalari va xotirasi mavjud</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>Boshqaruv panelidan kuzatiladi</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Bosqich 2: Tool */}
+            <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background/60 p-6 backdrop-blur">
+              <span className="absolute right-4 top-4 text-5xl font-black leading-none text-primary/10">02</span>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-border text-primary">
+                <Wrench className="h-5 w-5" />
+              </span>
+              <h3 className="mt-5 text-lg font-semibold text-foreground">Tool nima?</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Tool — agentning dunyo bilan ishlashini kuchaytiruvchi vositadir. Agent o'zi fikrlaydi, Tool esa harakat qiladi.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-foreground/90">
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>Telegram orqali xabar yuborish</span>
+                </li>
+                <li className="flex gap-2">
+                  <method="POST"
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>Google Sheets bilan ishlash</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>Internetdan ma'lumot izlash</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Bosqich 3: AI Jamoa */}
+            <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background/60 p-6 backdrop-blur">
+              <span className="absolute right-4 top-4 text-5xl font-black leading-none text-primary/10">03</span>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-border text-primary">
+                <Users className="h-5 w-5" />
+              </span>
+              <h3 className="mt-5 text-lg font-semibold text-foreground">AI Jamoa nima?</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                AI Jamoa — bir maqsad uchun yaratilgan agentlar guruhi. Har bir agent o'z vazifasini bajaradi va kerak bo'lganda boshqa agentlar bilan hamkorlik qiladi.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-foreground/90">
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>Mijoz → Lead → Taklif → Shartnoma</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>Murakkab jarayonlar avtomatlashtiriladi</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>24/7 bir jamoa sifatida ishlaydi</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Rejalashtirilgan xususiyatlar */}
       <section id="xususiyatlar" className="border-t border-border/60 bg-background">
         <div className="mx-auto max-w-7xl px-6 py-10">
