@@ -31,10 +31,6 @@ import {
   CheckCircle2,
   User,
   Crown,
-  Plus,
-  Mic,
-  ArrowRight,
-  Search,
 } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
