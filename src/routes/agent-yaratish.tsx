@@ -414,17 +414,6 @@ function AgentCreatePageInner() {
                 ))}
                 <div ref={chatEndRef} />
               </div>
-                              })}
-                            </div>
-                          )}
-                          <p className="mt-1 text-[10px] text-muted-foreground">{m.time}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                <div ref={chatEndRef} />
-              </div>
 
               <div className="border-t border-border/60 p-3">
                 <div className="flex items-center gap-2 rounded-xl border border-border bg-background/60 px-3 py-2">
