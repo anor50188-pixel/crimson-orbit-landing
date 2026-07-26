@@ -92,6 +92,8 @@ type SavedAgent = {
   status?: AgentStatus;
   tools?: string[];
   lastActivity?: string;
+  iconUrl?: string;
+  category?: string;
 };
 
 const STORAGE_KEY = "agentus:agents";
