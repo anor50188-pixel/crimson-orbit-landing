@@ -45,6 +45,12 @@ function Landing() {
             <a href="#xususiyatlar" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               Xususiyatlar
             </a>
+            <Link
+              to="/biz-haqimizda"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Biz haqimizda
+            </Link>
           </nav>
         </div>
       </header>
