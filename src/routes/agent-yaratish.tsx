@@ -597,7 +597,7 @@ function AgentCreatePageInner() {
         </div>
 
         {/* HERO */}
-        {!isSplit && mode === "single" && (
+        {!isSplit && (
           <div className="relative mx-auto flex min-h-[calc(100vh-160px)] max-w-3xl flex-col items-center justify-center px-6 pb-24 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm text-primary backdrop-blur">
               <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
