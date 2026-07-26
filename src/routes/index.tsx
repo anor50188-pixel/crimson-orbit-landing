@@ -51,6 +51,12 @@ function Landing() {
             >
               Biz haqimizda
             </Link>
+            <Link
+              to="/roadmap"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Yo'l xaritasi
+            </Link>
           </nav>
         </div>
       </header>
