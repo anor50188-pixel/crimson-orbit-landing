@@ -19,6 +19,8 @@ import {
   Share2,
   Upload,
   MessageSquare,
+  Paperclip,
+  X,
 } from "lucide-react";
 
 import heroPlanet from "@/assets/hero-planet.jpg";
@@ -74,6 +76,8 @@ function AgentCreatePageInner() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [followUp, setFollowUp] = useState("");
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -97,10 +101,14 @@ function AgentCreatePageInner() {
 
   const sendFollowUp = () => {
     const text = followUp.trim();
-    if (!text) return;
+    if (!text && attachments.length === 0) return;
+    const attachNote =
+      attachments.length > 0
+        ? `\n\n📎 Ilova: ${attachments.map((f) => f.name).join(", ")}`
+        : "";
     setMessages((m) => [
       ...m,
-      { role: "user", text, time: nowTime() },
+      { role: "user", text: (text || "(fayl yuborildi)") + attachNote, time: nowTime() },
       {
         role: "brain",
         text: "Qabul qilindi. (Demo — hozircha haqiqiy AI ulanmagan.)",
@@ -108,6 +116,7 @@ function AgentCreatePageInner() {
       },
     ]);
     setFollowUp("");
+    setAttachments([]);
   };
 
   return (
