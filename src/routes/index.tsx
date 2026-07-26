@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Bot, Wrench, ShieldCheck, Store } from "lucide-react";
+import { ArrowRight, Bot, Wrench, ShieldCheck, Store, Users } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
 
