@@ -105,6 +105,132 @@ function nowTime() {
 }
 
 function AgentCreatePage() {
+  return <AgentCreatePageInner />;
+}
+
+const TEAM_ROLES = [
+  { key: "researcher", label: "Tadqiqotchi", desc: "Ma'lumot yig'adi va tahlil qiladi" },
+  { key: "writer", label: "Kontent yozuvchi", desc: "Post va matnlar tayyorlaydi" },
+  { key: "sales", label: "Sotuv menejeri", desc: "Mijozlar bilan muloqot qiladi" },
+  { key: "support", label: "Qo'llab-quvvatlash", desc: "Savollarga javob beradi" },
+  { key: "analyst", label: "Hisobotchi", desc: "Hisobotlar tuzadi va yuboradi" },
+  { key: "coordinator", label: "Muvofiqlashtiruvchi", desc: "Agentlar orasidagi vazifalarni taqsimlaydi" },
+];
+
+function TeamCreator({
+  teamName,
+  setTeamName,
+  teamRoles,
+  setTeamRoles,
+  teamSaved,
+  onCreate,
+}: {
+  teamName: string;
+  setTeamName: (v: string) => void;
+  teamRoles: string[];
+  setTeamRoles: (v: string[]) => void;
+  teamSaved: boolean;
+  onCreate: () => void;
+}) {
+  const toggleRole = (key: string) => {
+    if (teamRoles.includes(key)) setTeamRoles(teamRoles.filter((r) => r !== key));
+    else setTeamRoles([...teamRoles, key]);
+  };
+  const canCreate = teamName.trim().length > 0 && teamRoles.length >= 2 && !teamSaved;
+
+  return (
+    <div className="relative mx-auto flex min-h-[calc(100vh-160px)] max-w-3xl flex-col items-center justify-center px-6 pb-24 text-center">
+      <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm text-primary backdrop-blur">
+        <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
+          Yangi
+        </span>
+        <span>Agent jamoa yaratish</span>
+      </div>
+
+      <h1 className="mt-8 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+        Birga ishlaydigan AI jamoa quring
+      </h1>
+      <p className="mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
+        Bir nechta agent birgalikda vazifalarni bajaradi — har biri o'z rolida.
+        Kamida 2 ta rol tanlang.
+      </p>
+
+      <div className="mt-8 w-full rounded-3xl border border-border bg-card/80 p-5 text-left shadow-2xl shadow-black/40 backdrop-blur">
+        <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Jamoa nomi
+        </label>
+        <input
+          type="text"
+          value={teamName}
+          onChange={(e) => setTeamName(e.target.value)}
+          placeholder="Masalan: Marketing jamoasi"
+          disabled={teamSaved}
+          className="w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none disabled:opacity-60"
+        />
+
+        <p className="mt-5 mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Jamoa rollari
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {TEAM_ROLES.map((r) => {
+            const active = teamRoles.includes(r.key);
+            return (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => toggleRole(r.key)}
+                disabled={teamSaved}
+                className={`flex items-start gap-3 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors ${
+                  active
+                    ? "border-primary/60 bg-primary/10"
+                    : "border-border bg-background/40 hover:border-primary/40"
+                } ${teamSaved ? "opacity-70" : ""}`}
+              >
+                <span
+                  className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border ${
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border text-transparent"
+                  }`}
+                >
+                  <Check className="h-3 w-3" />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground">{r.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{r.desc}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <span className="text-xs text-muted-foreground">
+            {teamRoles.length} ta rol tanlandi
+          </span>
+          {teamSaved ? (
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-400">
+              <CheckCircle2 className="h-4 w-4" />
+              Jamoa yaratildi (demo)
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={onCreate}
+              disabled={!canCreate}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+            >
+              Jamoa yaratish
+              <Users className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AgentCreatePageInner() {
   const [prompt, setPrompt] = useState("");
   const [mode, setMode] = useState<"single" | "team">("single");
   const [teamName, setTeamName] = useState("");
