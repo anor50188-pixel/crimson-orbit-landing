@@ -251,9 +251,14 @@ function Roadmap() {
             MVPni ishlab chiqish
           </h2>
 
-          <div className="mt-6 inline-flex items-center gap-3 rounded-lg border border-border/60 bg-card/40 px-5 py-3 font-mono text-sm text-foreground/90">
-            <span>███████░░░</span>
-            <span className="text-primary font-semibold">60%</span>
+          <div className="mt-6 inline-flex w-full max-w-xs flex-col gap-2 rounded-lg border border-border/60 bg-card/40 px-5 py-4">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Jarayon paneli</span>
+              <span className="font-semibold text-primary">60%</span>
+            </div>
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+              <div className="h-full w-[60%] rounded-full bg-primary" />
+            </div>
           </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
