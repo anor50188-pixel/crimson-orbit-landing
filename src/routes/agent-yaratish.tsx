@@ -432,55 +432,17 @@ function AgentCreatePage() {
 
         {/* TOP BAR */}
         <div className="flex items-center justify-between gap-4 px-6 py-4">
-          <button
-            type="button"
-            disabled
-            title="Agent yaratish oqimi (demo)"
-            className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2 text-sm opacity-90 backdrop-blur"
-          >
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2 text-sm backdrop-blur">
             <span className="grid h-5 w-5 place-items-center rounded-md bg-primary/20 text-primary">
               <Box className="h-3 w-3" />
             </span>
             Agent yaratish
-            <ChevronDown className="h-4 w-4" />
-          </button>
-
-          <div className="flex items-center gap-2">
-            {isSplit && (
-              <span className="hidden items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-wide text-primary md:inline-flex">
-                Demo simulyatsiya
-              </span>
-            )}
-            <button
-              type="button"
-              disabled
-              title="Yordam markazi hali tayyor emas"
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2 text-sm opacity-90 backdrop-blur"
-            >
-              <HelpCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Yordam markazi</span>
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Tema almashtirish hali ulanmagan"
-              className="grid h-9 w-9 cursor-not-allowed place-items-center rounded-full border border-border bg-background/60 opacity-90 backdrop-blur"
-            >
-              <Sun className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              disabled
-              title="Foydalanuvchi menyusi (demo)"
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-border bg-background/60 px-2 py-1 pr-3 text-sm opacity-90 backdrop-blur"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-primary/15 text-primary">
-                <User className="h-4 w-4" />
-              </span>
-              <span className="hidden sm:inline">Azizbek</span>
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
           </div>
+          {isSplit && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-wide text-primary">
+              Demo simulyatsiya
+            </span>
+          )}
         </div>
 
         {/* HERO */}
