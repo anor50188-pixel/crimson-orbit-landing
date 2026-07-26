@@ -31,6 +31,7 @@ import {
   CheckCircle2,
   User,
   Crown,
+  Users,
 } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
@@ -105,6 +106,10 @@ function nowTime() {
 
 function AgentCreatePage() {
   const [prompt, setPrompt] = useState("");
+  const [mode, setMode] = useState<"single" | "team">("single");
+  const [teamName, setTeamName] = useState("");
+  const [teamRoles, setTeamRoles] = useState<string[]>([]);
+  const [teamSaved, setTeamSaved] = useState(false);
   const [phase, setPhase] = useState<Phase>("hero");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [followUp, setFollowUp] = useState("");
@@ -428,12 +433,36 @@ function AgentCreatePage() {
 
         {/* TOP BAR */}
         <div className="flex items-center justify-between gap-4 px-6 py-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2 text-sm backdrop-blur">
-            <span className="grid h-5 w-5 place-items-center rounded-md bg-primary/20 text-primary">
-              <Box className="h-3 w-3" />
-            </span>
-            Agent yaratish
-          </div>
+          {!isSplit ? (
+            <div className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 p-1 text-sm backdrop-blur">
+              <button
+                type="button"
+                onClick={() => setMode("single")}
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
+                  mode === "single"
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Box className="h-3.5 w-3.5" />
+                Yakka agent
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("team")}
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
+                  mode === "team"
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Agent jamoa
+              </button>
+            </div>
+          ) : (
+            <div />
+          )}
           {isSplit && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-wide text-primary">
               Demo simulyatsiya
@@ -442,7 +471,7 @@ function AgentCreatePage() {
         </div>
 
         {/* HERO */}
-        {!isSplit && (
+        {!isSplit && mode === "single" && (
           <div className="relative mx-auto flex min-h-[calc(100vh-160px)] max-w-3xl flex-col items-center justify-center px-6 pb-24 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm text-primary backdrop-blur">
               <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
@@ -498,6 +527,34 @@ function AgentCreatePage() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* TEAM CREATION HERO */}
+        {!isSplit && mode === "team" && (
+          <TeamCreator
+            teamName={teamName}
+            setTeamName={setTeamName}
+            teamRoles={teamRoles}
+            setTeamRoles={setTeamRoles}
+            teamSaved={teamSaved}
+            onCreate={() => {
+              if (!teamName.trim() || teamRoles.length < 2) return;
+              try {
+                const raw = localStorage.getItem("agentus:teams");
+                const list = raw ? JSON.parse(raw) : [];
+                list.push({
+                  id: `${Date.now()}`,
+                  name: teamName.trim(),
+                  roles: teamRoles,
+                  createdAt: new Date().toISOString(),
+                });
+                localStorage.setItem("agentus:teams", JSON.stringify(list));
+              } catch {
+                /* ignore */
+              }
+              setTeamSaved(true);
+            }}
+          />
         )}
 
         {/* SPLIT VIEW */}
