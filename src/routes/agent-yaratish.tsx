@@ -348,156 +348,26 @@ function AgentCreatePageInner() {
         {phase !== "hero" && (
           <div className="grid flex-1 gap-0 overflow-hidden lg:grid-cols-[1fr_420px]">
             {/* PREVIEW PANEL */}
-            <section className="relative flex min-h-0 flex-col overflow-y-auto p-5">
-              <div className="mx-auto w-full max-w-3xl space-y-5">
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          phase === "done" ? "bg-emerald-400" : "animate-pulse bg-primary"
-                        }`}
-                      />
-                      <h2 className="text-lg font-semibold tracking-tight">
-                        {phase === "done" ? "Agent tayyor" : "Agent yaratilmoqda"}
-                      </h2>
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {phase === "done"
-                        ? "Demo simulyatsiya yakunlandi. Chap tomonda natijani ko'rib chiqing."
-                        : "Agentus Brain hozir agentingizni qurmoqda."}
-                    </p>
-                  </div>
-                  <div className="grid h-14 w-14 place-items-center rounded-xl border border-border/60 bg-card/60">
-                    <span className="text-xl font-semibold tabular-nums">{percent}%</span>
-                  </div>
-                </div>
-
-                {/* Progress bar */}
-                <div className="h-2 w-full overflow-hidden rounded-full bg-border/50">
-                  <div
-                    className="h-full rounded-full bg-primary shadow-[0_0_12px_var(--primary)] transition-all duration-500"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
-
-                {/* Agent preview card */}
-                <div className="relative overflow-hidden rounded-2xl border border-border bg-card/70 p-6 backdrop-blur">
-                  <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
-                  <div className="relative flex items-start gap-4">
-                    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-primary/30 bg-primary/15 text-primary">
-                      <Bot className="h-7 w-7" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-xl font-semibold">Hisobot Yig'uvchi</h3>
-                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                        Telegram orqali ma'lumot yig'adi, Google Sheets ga yozadi va hisobot yuboradi.
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-xs text-muted-foreground">
-                          <Send className="h-3 w-3 text-primary" /> Telegram Bot API
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-xs text-muted-foreground">
-                          <FileSpreadsheet className="h-3 w-3 text-primary" /> Google Sheets
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {phase === "done" && (
-                    <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border/60 pt-5">
-                      <button
-                        type="button"
-                        onClick={handleTry}
-                        disabled={savedToAgents}
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        <Play className="h-4 w-4" />
-                        {savedToAgents ? "Saqlangan" : "Sinab ko'rish"}
-                      </button>
-                      <Link
-                        to="/agentlarim"
-                        className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card"
-                      >
-                        <Bot className="h-4 w-4" />
-                        Agentlarim
-                      </Link>
-                    </div>
-                  )}
-
-                  {savedToAgents && (
-                    <p className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Agentingiz Agentlarim bo'limiga qo'shildi
-                    </p>
-                  )}
-                </div>
-
-                {/* Steps */}
-                <div className="rounded-2xl border border-border bg-card/60 p-5 backdrop-blur">
-                  <p className="mb-4 text-sm font-semibold">Qurilish bosqichlari</p>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {buildSteps.map((s, i) => {
-                      const done = i < activeStep || phase === "done";
-                      const active = i === activeStep && phase !== "done";
-                      const Icon = s.icon;
-                      return (
-                        <div
-                          key={s.key}
-                          className={`flex items-center gap-3 rounded-xl border px-3 py-3 transition-colors ${
-                            active
-                              ? "border-primary bg-primary/5"
-                              : done
-                                ? "border-border/60"
-                                : "border-border/40 opacity-60"
-                          }`}
-                        >
-                          <span
-                            className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${
-                              done
-                                ? "bg-emerald-500/15 text-emerald-400"
-                                : active
-                                  ? "bg-primary/15 text-primary"
-                                  : "bg-border/30 text-muted-foreground"
-                            }`}
-                          >
-                            {done ? (
-                              <Check className="h-4 w-4" />
-                            ) : active ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Icon className="h-4 w-4" />
-                            )}
-                          </span>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium">{s.label}</p>
-                            <p className="text-[11px] text-muted-foreground">{s.desc}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Live log */}
-                <div className="rounded-2xl border border-border bg-card/60 p-5 backdrop-blur">
-                  <p className="mb-3 text-sm font-semibold">Jonli log</p>
-                  {logs.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">Voqealar shu yerda paydo bo'ladi.</p>
-                  ) : (
-                    <ol className="space-y-2">
-                      {logs.map((l, i) => (
-                        <li key={i} className="flex animate-fade-in items-start gap-3 text-xs">
-                          <span className="w-10 shrink-0 tabular-nums text-muted-foreground">
-                            {l.time}
-                          </span>
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                          <span className="text-foreground/90">{l.text}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  )}
+            <section className="relative flex min-h-0 flex-col items-center justify-center overflow-hidden p-8">
+              <div className="pointer-events-none absolute inset-0 opacity-40">
+                <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-3xl" />
+              </div>
+              <div className="relative flex flex-col items-center text-center">
+                <span className="relative grid h-20 w-20 place-items-center rounded-full border border-primary/40 bg-primary/10">
+                  <span className="absolute inset-0 animate-ping rounded-full border border-primary/40" />
+                  <Brain className="h-8 w-8 text-primary" />
+                </span>
+                <h2 className="mt-6 text-xl font-semibold tracking-tight">
+                  Agentus Brain ishlayapti…
+                </h2>
+                <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                  Sizning agentingiz shu yerda jonli qurilib boradi. Natija tayyor bo'lgach,
+                  bu maydonda paydo bo'ladi.
+                </p>
+                <div className="mt-6 flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
                 </div>
               </div>
             </section>
@@ -525,7 +395,7 @@ function AgentCreatePageInner() {
                         <div className="max-w-[85%] rounded-2xl rounded-br-sm border border-primary/50 bg-primary/10 px-3.5 py-2 text-sm text-foreground">
                           <p className="whitespace-pre-wrap">{m.text}</p>
                           <p className="mt-1 text-right text-[10px] text-muted-foreground">
-                            {m.time} <Check className="ml-0.5 inline h-3 w-3 text-primary" />
+                            {m.time}
                           </p>
                         </div>
                       </div>
@@ -536,28 +406,14 @@ function AgentCreatePageInner() {
                         </span>
                         <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border/60 bg-background/50 px-3.5 py-2 text-sm">
                           <p className="whitespace-pre-wrap">{m.text}</p>
-                          {m.choices && (
-                            <div className="mt-2.5 flex flex-wrap gap-2">
-                              {m.choices.map((c) => {
-                                const picked = m.answered === c;
-                                const disabled = Boolean(m.answered);
-                                return (
-                                  <button
-                                    key={c}
-                                    type="button"
-                                    disabled={disabled}
-                                    onClick={() => handleChoice(c)}
-                                    className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${
-                                      picked
-                                        ? "border-primary bg-primary/15 text-primary"
-                                        : disabled
-                                          ? "border-border/50 text-muted-foreground opacity-60"
-                                          : "border-border hover:border-primary/60 hover:bg-card"
-                                    }`}
-                                  >
-                                    {c}
-                                  </button>
-                                );
+                          <p className="mt-1 text-[10px] text-muted-foreground">{m.time}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <div ref={chatEndRef} />
+              </div>
                               })}
                             </div>
                           )}
