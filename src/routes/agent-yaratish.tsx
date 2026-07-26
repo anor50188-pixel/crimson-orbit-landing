@@ -655,33 +655,6 @@ function AgentCreatePageInner() {
           </div>
         )}
 
-        {/* TEAM CREATION HERO */}
-        {!isSplit && mode === "team" && (
-          <TeamCreator
-            teamName={teamName}
-            setTeamName={setTeamName}
-            teamRoles={teamRoles}
-            setTeamRoles={setTeamRoles}
-            teamSaved={teamSaved}
-            onCreate={() => {
-              if (!teamName.trim() || teamRoles.length < 2) return;
-              try {
-                const raw = localStorage.getItem("agentus:teams");
-                const list = raw ? JSON.parse(raw) : [];
-                list.push({
-                  id: `${Date.now()}`,
-                  name: teamName.trim(),
-                  roles: teamRoles,
-                  createdAt: new Date().toISOString(),
-                });
-                localStorage.setItem("agentus:teams", JSON.stringify(list));
-              } catch {
-                /* ignore */
-              }
-              setTeamSaved(true);
-            }}
-          />
-        )}
 
         {/* SPLIT VIEW */}
         {isSplit && (
