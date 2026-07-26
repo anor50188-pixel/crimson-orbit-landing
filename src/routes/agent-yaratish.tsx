@@ -346,9 +346,8 @@ function AgentCreatePageInner() {
             </button>
             <button
               type="button"
-              disabled
-              title="Publish funksiyasi hali ulanmagan"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => setPublishOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
             >
               <Upload className="h-4 w-4" />
               Publish
