@@ -7,20 +7,15 @@ import {
   Wrench,
   Wallet,
   Settings,
-  HelpCircle,
-  ChevronDown,
   ChevronRight,
-  Paperclip,
   Send,
   Instagram,
   MessageCircle,
   FileSpreadsheet,
   Check,
   Loader2,
-  Circle,
   Brain,
   Play,
-  Sun,
   Box,
   Target,
   Wrench as WrenchIcon,
@@ -31,6 +26,9 @@ import {
   CheckCircle2,
   User,
   Crown,
+  Share2,
+  Upload,
+  MessageSquare,
 } from "lucide-react";
 
 import heroPlanet from "@/assets/hero-planet.jpg";
@@ -107,7 +105,6 @@ function nowTime() {
 function AgentCreatePage() {
   return <AgentCreatePageInner />;
 }
-
 
 function AgentCreatePageInner() {
   const [prompt, setPrompt] = useState("");
@@ -187,7 +184,7 @@ function AgentCreatePageInner() {
         ...m,
         {
           role: "brain",
-          text: "Agent tayyor. O'ng tomonda ko'rib chiqishingiz mumkin.",
+          text: "Agent tayyor. Chap tomonda ko'rib chiqishingiz mumkin.",
           time: nowTime(),
         },
       ]);
@@ -268,7 +265,6 @@ function AgentCreatePageInner() {
     addLog("Agent Agentlarim bo'limiga qo'shildi");
   };
 
-  const isSplit = phase !== "hero";
   const completed = phase === "done" ? buildSteps.length : Math.max(activeStep, 0);
   const percent = Math.round((completed / buildSteps.length) * 100);
 
@@ -390,62 +386,66 @@ function AgentCreatePageInner() {
       </aside>
 
       {/* MAIN */}
-      <main className="relative isolate flex-1 overflow-hidden">
+      <main className="relative isolate flex flex-1 flex-col overflow-hidden">
         {/* Planet horizon */}
-        {isSplit ? (
-          <>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[38vh]">
-              <img src={heroPlanet} alt="" className="h-full w-full object-cover object-top" />
-              <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
-            </div>
-            <div
-              className="pointer-events-none absolute inset-0 -z-20"
-              style={{
-                background:
-                  "radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
-              }}
-            />
-          </>
-        ) : (
-          <>
-            {/* Agentus red planet horizon */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55vh]">
-              <img
-                src={heroPlanet}
-                alt=""
-                className="h-full w-full object-cover object-top"
-                style={{
-                  filter:
-                    "saturate(1.65) contrast(1.12) brightness(1.08) hue-rotate(-12deg)",
-                  opacity: 0.6,
-                }}
-                draggable={false}
-              />
-              <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
-            </div>
-            <div
-              className="pointer-events-none absolute inset-0 -z-20"
-              style={{
-                background:
-                  "radial-gradient(ellipse 70% 45% at 50% 105%, oklch(0.58 0.22 25 / 0.35), transparent 65%), radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
-              }}
-            />
-          </>
-        )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55vh]">
+          <img
+            src={heroPlanet}
+            alt=""
+            className="h-full w-full object-cover object-top"
+            style={{
+              filter:
+                "saturate(1.65) contrast(1.12) brightness(1.08) hue-rotate(-12deg)",
+              opacity: 0.55,
+            }}
+            draggable={false}
+          />
+          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
+        </div>
+        <div
+          className="pointer-events-none absolute inset-0 -z-20"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 45% at 50% 105%, oklch(0.58 0.22 25 / 0.35), transparent 65%), radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
+          }}
+        />
 
-        {/* TOP BAR */}
-        <div className="flex items-center justify-end gap-4 px-6 py-4">
-          {isSplit && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-wide text-primary">
+        {/* TOP BAR — Lovable-style */}
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur">
+          <div className="flex items-center gap-3">
+            <Link to="/" className="inline-flex lg:hidden">
+              <img src={wordmark} alt="AGENTUS" className="h-5 w-auto" draggable={false} />
+            </Link>
+            <span className="hidden rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary lg:inline-flex">
               Demo simulyatsiya
             </span>
-          )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled
+              title="Ulashish funksiyasi hali ulanmagan"
+              className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </button>
+            <button
+              type="button"
+              disabled
+              title="Publish funksiyasi hali ulanmagan"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Upload className="h-4 w-4" />
+              Publish
+            </button>
+          </div>
         </div>
 
-
         {/* HERO */}
-        {!isSplit && (
-          <div className="relative mx-auto flex min-h-[calc(100vh-160px)] max-w-3xl flex-col items-center justify-center px-6 pb-24 text-center">
+        {phase === "hero" && (
+          <div className="relative mx-auto flex min-h-0 flex-1 flex-col items-center justify-center px-6 pb-16 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm text-primary backdrop-blur">
               <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
                 Demo
@@ -458,7 +458,7 @@ function AgentCreatePageInner() {
             </h1>
 
             {/* Prompt box */}
-            <div className="mt-10 w-full rounded-3xl border border-border bg-card/80 p-4 shadow-2xl shadow-black/40 backdrop-blur">
+            <div className="mt-10 w-full max-w-2xl rounded-3xl border border-border bg-card/80 p-4 shadow-2xl shadow-black/40 backdrop-blur">
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -485,8 +485,8 @@ function AgentCreatePageInner() {
               </div>
             </div>
 
-            {/* Example chips (quick prompts) */}
-            <div className="mt-6 flex w-full flex-wrap justify-center gap-2">
+            {/* Example chips */}
+            <div className="mt-6 flex w-full max-w-2xl flex-wrap justify-center gap-2">
               {examples.map(({ icon: Icon, text }) => (
                 <button
                   key={text}
@@ -502,12 +502,166 @@ function AgentCreatePageInner() {
           </div>
         )}
 
+        {/* SPLIT VIEW: preview left, chat right */}
+        {phase !== "hero" && (
+          <div className="grid flex-1 gap-0 overflow-hidden lg:grid-cols-[1fr_420px]">
+            {/* PREVIEW PANEL */}
+            <section className="relative flex min-h-0 flex-col overflow-y-auto p-5">
+              <div className="mx-auto w-full max-w-3xl space-y-5">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          phase === "done" ? "bg-emerald-400" : "animate-pulse bg-primary"
+                        }`}
+                      />
+                      <h2 className="text-lg font-semibold tracking-tight">
+                        {phase === "done" ? "Agent tayyor" : "Agent yaratilmoqda"}
+                      </h2>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {phase === "done"
+                        ? "Demo simulyatsiya yakunlandi. Chap tomonda natijani ko'rib chiqing."
+                        : "Agentus Brain hozir agentingizni qurmoqda."}
+                    </p>
+                  </div>
+                  <div className="grid h-14 w-14 place-items-center rounded-xl border border-border/60 bg-card/60">
+                    <span className="text-xl font-semibold tabular-nums">{percent}%</span>
+                  </div>
+                </div>
 
-        {/* SPLIT VIEW */}
-        {isSplit && (
-          <div className="grid animate-fade-in gap-4 px-4 pb-6 md:px-6 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
+                {/* Progress bar */}
+                <div className="h-2 w-full overflow-hidden rounded-full bg-border/50">
+                  <div
+                    className="h-full rounded-full bg-primary shadow-[0_0_12px_var(--primary)] transition-all duration-500"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+
+                {/* Agent preview card */}
+                <div className="relative overflow-hidden rounded-2xl border border-border bg-card/70 p-6 backdrop-blur">
+                  <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+                  <div className="relative flex items-start gap-4">
+                    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-primary/30 bg-primary/15 text-primary">
+                      <Bot className="h-7 w-7" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-xl font-semibold">Hisobot Yig'uvchi</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        Telegram orqali ma'lumot yig'adi, Google Sheets ga yozadi va hisobot yuboradi.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-xs text-muted-foreground">
+                          <Send className="h-3 w-3 text-primary" /> Telegram Bot API
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-xs text-muted-foreground">
+                          <FileSpreadsheet className="h-3 w-3 text-primary" /> Google Sheets
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {phase === "done" && (
+                    <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border/60 pt-5">
+                      <button
+                        type="button"
+                        onClick={handleTry}
+                        disabled={savedToAgents}
+                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        <Play className="h-4 w-4" />
+                        {savedToAgents ? "Saqlangan" : "Sinab ko'rish"}
+                      </button>
+                      <Link
+                        to="/agentlarim"
+                        className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card"
+                      >
+                        <Bot className="h-4 w-4" />
+                        Agentlarim
+                      </Link>
+                    </div>
+                  )}
+
+                  {savedToAgents && (
+                    <p className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Agentingiz Agentlarim bo'limiga qo'shildi
+                    </p>
+                  )}
+                </div>
+
+                {/* Steps */}
+                <div className="rounded-2xl border border-border bg-card/60 p-5 backdrop-blur">
+                  <p className="mb-4 text-sm font-semibold">Qurilish bosqichlari</p>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {buildSteps.map((s, i) => {
+                      const done = i < activeStep || phase === "done";
+                      const active = i === activeStep && phase !== "done";
+                      const Icon = s.icon;
+                      return (
+                        <div
+                          key={s.key}
+                          className={`flex items-center gap-3 rounded-xl border px-3 py-3 transition-colors ${
+                            active
+                              ? "border-primary bg-primary/5"
+                              : done
+                                ? "border-border/60"
+                                : "border-border/40 opacity-60"
+                          }`}
+                        >
+                          <span
+                            className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${
+                              done
+                                ? "bg-emerald-500/15 text-emerald-400"
+                                : active
+                                  ? "bg-primary/15 text-primary"
+                                  : "bg-border/30 text-muted-foreground"
+                            }`}
+                          >
+                            {done ? (
+                              <Check className="h-4 w-4" />
+                            ) : active ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Icon className="h-4 w-4" />
+                            )}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium">{s.label}</p>
+                            <p className="text-[11px] text-muted-foreground">{s.desc}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Live log */}
+                <div className="rounded-2xl border border-border bg-card/60 p-5 backdrop-blur">
+                  <p className="mb-3 text-sm font-semibold">Jonli log</p>
+                  {logs.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">Voqealar shu yerda paydo bo'ladi.</p>
+                  ) : (
+                    <ol className="space-y-2">
+                      {logs.map((l, i) => (
+                        <li key={i} className="flex animate-fade-in items-start gap-3 text-xs">
+                          <span className="w-10 shrink-0 tabular-nums text-muted-foreground">
+                            {l.time}
+                          </span>
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                          <span className="text-foreground/90">{l.text}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </div>
+              </div>
+            </section>
+
             {/* CHAT PANEL */}
-            <section className="flex h-[calc(100vh-120px)] flex-col rounded-2xl border border-border bg-card/60 backdrop-blur">
+            <section className="flex h-full min-h-0 flex-col border-l border-border/60 bg-card/60 backdrop-blur">
               <header className="flex items-center gap-3 border-b border-border/60 px-4 py-4">
                 <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">
                   <Brain className="h-5 w-5" />
@@ -576,6 +730,7 @@ function AgentCreatePageInner() {
 
               <div className="border-t border-border/60 p-3">
                 <div className="flex items-center gap-2 rounded-xl border border-border bg-background/60 px-3 py-2">
+                  <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <input
                     value={followUp}
                     onChange={(e) => setFollowUp(e.target.value)}
@@ -590,14 +745,6 @@ function AgentCreatePageInner() {
                   />
                   <button
                     type="button"
-                    disabled
-                    title="Fayl biriktirish hali ulanmagan"
-                    className="cursor-not-allowed text-muted-foreground opacity-70"
-                  >
-                    <Paperclip className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
                     onClick={sendFollowUp}
                     disabled={!followUp.trim()}
                     className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
@@ -607,289 +754,9 @@ function AgentCreatePageInner() {
                 </div>
               </div>
             </section>
-
-            {/* BUILDER PANEL */}
-            <section className="flex flex-col gap-4 rounded-2xl border border-border bg-card/60 p-5 backdrop-blur">
-              {/* Header */}
-              <div className="grid gap-5 md:grid-cols-[1fr_auto]">
-                <div>
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-                    <h2 className="text-xl font-semibold tracking-tight">
-                      {phase === "done" ? "Agent yaratildi" : "Agent yaratilmoqda"}
-                    </h2>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {phase === "done"
-                      ? "Demo simulyatsiya yakunlandi."
-                      : "Agentus Brain hozir agentingizni yaratmoqda. Iltimos kuting..."}
-                  </p>
-                  <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-border/50">
-                    <div
-                      className="h-full rounded-full bg-primary shadow-[0_0_12px_var(--primary)] transition-all duration-500"
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="grid place-items-center rounded-xl border border-border/60 bg-background/40 px-6 py-3">
-                  <p className="text-3xl font-semibold tabular-nums">{percent}%</p>
-                </div>
-              </div>
-
-              {/* Steps + Hologram */}
-              <div className="grid gap-4 md:grid-cols-[1fr_240px]">
-                <ul className="space-y-2">
-                  {buildSteps.map((s, i) => {
-                    const done = i < activeStep || phase === "done";
-                    const active = i === activeStep && phase !== "done";
-                    const Icon = s.icon;
-                    return (
-                      <li
-                        key={s.key}
-                        className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-                          active
-                            ? "border-primary bg-primary/5"
-                            : done
-                              ? "border-border/60"
-                              : "border-border/40 opacity-70"
-                        }`}
-                      >
-                        <span
-                          className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${
-                            done
-                              ? "bg-emerald-500/15 text-emerald-400"
-                              : active
-                                ? "bg-primary/15 text-primary"
-                                : "bg-border/30 text-muted-foreground"
-                          }`}
-                        >
-                          {done ? (
-                            <Check className="h-4 w-4" />
-                          ) : active ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Icon className="h-4 w-4" />
-                          )}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium">{s.label}</p>
-                          <p className="text-[11px] text-muted-foreground">{s.desc}</p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-
-                <div className="hidden overflow-hidden rounded-xl border border-border/60 bg-background/40 md:block">
-                  <img
-                    src={brainHologram}
-                    alt=""
-                    loading="lazy"
-                    width={768}
-                    height={768}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
-
-              {/* Agent qurilishi */}
-              <div>
-                <p className="mb-3 text-sm font-semibold">Agent qurilishi</p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                  <BuildTile
-                    revealed={activeStep >= 1}
-                    active={activeStep === 1 && phase !== "done"}
-                    done={activeStep > 1 || phase === "done"}
-                    icon={Target}
-                    label="Agent nomi"
-                  >
-                    <p className="text-xs font-medium">Hisobot Yig'uvchi</p>
-                  </BuildTile>
-                  <BuildTile
-                    revealed={activeStep >= 1}
-                    active={activeStep === 1 && phase !== "done"}
-                    done={activeStep > 1 || phase === "done"}
-                    icon={FileCode}
-                    label="Tavsif"
-                  >
-                    <p className="text-[11px] leading-snug text-muted-foreground">
-                      Telegram orqali ma'lumot yig'adi, Sheets ga yozadi va hisobot yuboradi.
-                    </p>
-                  </BuildTile>
-                  <BuildTile
-                    revealed={activeStep >= 2}
-                    active={activeStep === 2 && phase !== "done"}
-                    done={activeStep > 2 || phase === "done"}
-                    icon={WrenchIcon}
-                    label="Tanlangan toolar"
-                  >
-                    <div className="space-y-1">
-                      <p className="flex items-center gap-1 text-[11px]">
-                        <Send className="h-3 w-3 text-primary" /> Telegram Bot API
-                      </p>
-                      <p className="flex items-center gap-1 text-[11px]">
-                        <FileSpreadsheet className="h-3 w-3 text-primary" /> Google Sheets
-                      </p>
-                    </div>
-                  </BuildTile>
-                  <BuildTile
-                    revealed={activeStep >= 3}
-                    active={activeStep === 3 && phase !== "done"}
-                    done={activeStep > 3 || phase === "done"}
-                    icon={FileCode}
-                    label="Kodex"
-                  >
-                    <p className="text-[11px] text-muted-foreground">
-                      {activeStep > 3 || phase === "done" ? "Yaratildi" : "Yaratilmoqda..."}
-                    </p>
-                  </BuildTile>
-                  <BuildTile
-                    revealed={activeStep >= 4}
-                    active={activeStep === 4 && phase !== "done"}
-                    done={activeStep > 4 || phase === "done"}
-                    icon={Database}
-                    label="Memory"
-                  >
-                    <p className="text-[11px] text-muted-foreground">
-                      {activeStep > 4 || phase === "done" ? "Sozlandi" : "Kutilmoqda..."}
-                    </p>
-                  </BuildTile>
-                  <BuildTile
-                    revealed={activeStep >= 5}
-                    active={activeStep === 5 && phase !== "done"}
-                    done={activeStep > 5 || phase === "done"}
-                    icon={GitBranch}
-                    label="Workflow"
-                  >
-                    <p className="text-[11px] text-muted-foreground">
-                      {activeStep > 5 || phase === "done" ? "Tuzildi" : "Kutilmoqda..."}
-                    </p>
-                  </BuildTile>
-                </div>
-              </div>
-
-              {/* Jonli log + Success */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-border/60 bg-background/40 p-4">
-                  <p className="mb-3 text-sm font-semibold">Jonli log</p>
-                  {logs.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">Voqealar shu yerda paydo bo'ladi.</p>
-                  ) : (
-                    <ol className="space-y-2">
-                      {logs.map((l, i) => (
-                        <li key={i} className="flex animate-fade-in items-start gap-3 text-xs">
-                          <span className="w-10 shrink-0 tabular-nums text-muted-foreground">
-                            {l.time}
-                          </span>
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                          <span className="text-foreground/90">{l.text}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  )}
-                </div>
-
-                <div
-                  className={`relative flex flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border p-6 text-center transition-colors ${
-                    phase === "done"
-                      ? "border-emerald-500/30 bg-emerald-500/5"
-                      : "border-border/60 bg-background/40"
-                  }`}
-                >
-                  <div className="pointer-events-none absolute inset-0 -z-10 opacity-40">
-                    <img src={heroPlanet} alt="" className="h-full w-full object-cover" />
-                  </div>
-                  {phase === "done" ? (
-                    <>
-                      <span className="grid h-12 w-12 place-items-center rounded-full border border-emerald-500/50 bg-emerald-500/10 text-emerald-400">
-                        <CheckCircle2 className="h-6 w-6" />
-                      </span>
-                      <p className="text-base font-semibold">Agent muvaffaqiyatli yaratildi!</p>
-                    </>
-                  ) : (
-                    <>
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      <p className="text-sm text-muted-foreground">
-                        Agent tayyor bo'lishini kutmoqdamiz...
-                      </p>
-                    </>
-                  )}
-                  {phase === "done" && (
-                    <div className="flex flex-col items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={handleTry}
-                        disabled={savedToAgents}
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        <Play className="h-3.5 w-3.5" /> Sinab ko'rish
-                      </button>
-                      {savedToAgents && (
-                        <div className="animate-fade-in text-center">
-                          <p className="text-sm font-medium text-emerald-400">
-                            Agentingiz Agentlarim bo'limida
-                          </p>
-                          <Link
-                            to="/agentlarim"
-                            className="mt-1 inline-block text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                          >
-                            Agentlarim bo'limiga o'tish
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
           </div>
         )}
       </main>
-    </div>
-  );
-}
-
-function BuildTile({
-  revealed,
-  active,
-  done,
-  icon: Icon,
-  label,
-  children,
-}: {
-  revealed: boolean;
-  active: boolean;
-  done: boolean;
-  icon: typeof Target;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={`relative rounded-xl border p-3 transition-all duration-500 ${
-        revealed ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-40"
-      } ${active ? "border-primary/60 bg-primary/5" : "border-border/60 bg-background/40"}`}
-    >
-      <div className="mb-2 flex items-center justify-between">
-        <span
-          className={`grid h-7 w-7 place-items-center rounded-lg ${
-            done ? "bg-emerald-500/15 text-emerald-400" : "bg-primary/15 text-primary"
-          }`}
-        >
-          <Icon className="h-3.5 w-3.5" />
-        </span>
-        <span className="grid h-5 w-5 place-items-center">
-          {done ? (
-            <Check className="h-3.5 w-3.5 text-emerald-400" />
-          ) : active ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-          ) : (
-            <Circle className="h-3 w-3 text-muted-foreground/50" />
-          )}
-        </span>
-      </div>
-      <p className="mb-1 text-[11px] font-medium text-muted-foreground">{label}</p>
-      {children}
     </div>
   );
 }
