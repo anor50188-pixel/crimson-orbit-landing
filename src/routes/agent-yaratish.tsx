@@ -17,8 +17,6 @@ import {
   User,
   Crown,
   Share2,
-  Upload,
-  MessageSquare,
   Paperclip,
   X,
 } from "lucide-react";
