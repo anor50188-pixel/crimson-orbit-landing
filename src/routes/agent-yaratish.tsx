@@ -558,43 +558,14 @@ function AgentCreatePageInner() {
         )}
 
         {/* TOP BAR */}
-        <div className="flex items-center justify-between gap-4 px-6 py-4">
-          {!isSplit ? (
-            <div className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 p-1 text-sm backdrop-blur">
-              <button
-                type="button"
-                onClick={() => setMode("single")}
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
-                  mode === "single"
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Box className="h-3.5 w-3.5" />
-                Yakka agent
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("team")}
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
-                  mode === "team"
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Users className="h-3.5 w-3.5" />
-                Agent jamoa
-              </button>
-            </div>
-          ) : (
-            <div />
-          )}
+        <div className="flex items-center justify-end gap-4 px-6 py-4">
           {isSplit && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-wide text-primary">
               Demo simulyatsiya
             </span>
           )}
         </div>
+
 
         {/* HERO */}
         {!isSplit && (
