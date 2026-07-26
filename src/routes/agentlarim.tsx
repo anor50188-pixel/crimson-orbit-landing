@@ -92,6 +92,8 @@ type SavedAgent = {
   status?: AgentStatus;
   tools?: string[];
   lastActivity?: string;
+  iconUrl?: string;
+  category?: string;
 };
 
 const STORAGE_KEY = "agentus:agents";
@@ -743,7 +745,15 @@ function AgentCard(props: CardProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
-            <Bot className="h-5 w-5" />
+            {agent.iconUrl ? (
+              <img
+                src={agent.iconUrl}
+                alt=""
+                className="h-full w-full rounded-xl object-cover"
+              />
+            ) : (
+              <Bot className="h-5 w-5" />
+            )}
           </span>
           <div className="min-w-0">
             {renaming ? (

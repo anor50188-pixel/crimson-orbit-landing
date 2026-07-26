@@ -1,15 +1,31 @@
 ## Maqsad
-Agent yaratish sahifasida `phase === "building"` bo'lgan vaqtda chap sidebarni yashirib, jonli preview maydoniga ko'proq joy berish.
+`/agent-yaratish` sahifasidagi **Publish** tugmasi bosilganda modal (kichik oyna) ochilib, foydalanuvchi agent ma'lumotlarini kiritadi. "Yaratish" bosilganda agent `agentus:agents` localStorage'ga saqlanadi va `/agentlarim`da paydo bo'ladi.
 
-## O'zgarish
-`src/routes/agent-yaratish.tsx` — bitta fayl:
+## O'zgarishlar
 
-- `<aside>` (116-satr) `className`iga shart qo'shiladi: `phase === "building"` bo'lsa `hidden` klassi qo'llanadi, aks holda hozirgi `lg:flex` xatti-harakati saqlanadi.
-- Top bar'dagi mobil wordmark (258-satr) va layout `lg:hidden` shartlariga tegilmaydi — sidebar yashirilganda ham asosiy joylashuv buzilmaydi, chunki `main` allaqachon `flex-1`.
-- Ixtiyoriy: top bar'da kichik "Sidebar'ni ko'rsatish" tugmasi qo'shilmaydi (foydalanuvchi so'ramagan). "Hero" holatga qaytilganda (masalan, kelajakda) sidebar avtomatik qaytadi.
+### 1. `src/routes/agent-yaratish.tsx`
+- Yangi state: `publishOpen: boolean`, `publishForm: { name, description, iconEmoji, iconFile?, category }`, `iconPreviewUrl`.
+- **Publish** tugmasiga `onClick={() => setPublishOpen(true)}` — tugmani `disabled`dan olib tashlash.
+- Modal komponenti (sahifa ichida, o'ng-yuqori porta emas, ekran markazida overlay bilan):
+  - **Sarlavha**: "Agentni chop etish"
+  - **Maydonlar**:
+    - Agent nomi (text, majburiy)
+    - Qisqa tavsif (textarea, majburiy)
+    - Ikonka: `<input type="file" accept="image/*">` — FileReader orqali data URL, yoki emoji tanlash chipi (default 🤖)
+    - Kategoriya (select: Communication / Data / Automation / AI / Files)
+    - Toollar (readonly ko'rsatish — hozircha bo'sh yoki `[]`)
+  - **Tugmalar**: "Bekor qilish" + "Yaratish" (primary)
+- "Yaratish" bosilganda:
+  - Validatsiya (nom + tavsif bo'sh emas)
+  - `SavedAgent` shakliga moslashtirib obyekt yaratish: `{ id: Date.now(), name, description, iconUrl?, category, createdAt, status: "active", tools: [] }`
+  - `agentus:agents` localStorage'ga qo'shish (mavjudlarni o'qib, boshiga qo'shish)
+  - Toast/success chip, modalni yopish, `useNavigate` orqali `/agentlarim`ga o'tish
 
-## Xulq-atvor
-- Hero (promt kiritish) fazasi: sidebar oldingidek ko'rinadi.
-- Building fazasi (promt yuborilgandan keyin): sidebar butunlay yashirin, preview + chat butun ekran kengligini oladi.
+### 2. `src/routes/agentlarim.tsx`
+- `SavedAgent` type'iga ixtiyoriy `iconUrl?: string` va `category?: string` maydonlarini qo'shish (mavjud yozuvlar buzilmasin).
+- Agent kartochkasi ikonka render qiladigan joyda: agar `iconUrl` bo'lsa `<img>` ko'rsatish, aks holda hozirgi default.
 
-Boshqa fayllar va biznes-logika o'zgarmaydi.
+## Ko'lam tashqarisida
+- Backend/AI integratsiyasi yo'q — barchasi localStorage.
+- Marketplace'ga publish qilish yo'q — faqat "Mening agentlarim" ro'yxatiga.
+- Share tugmasi tegilmaydi.

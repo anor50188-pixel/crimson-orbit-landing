@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Home,
@@ -69,6 +69,7 @@ function AgentCreatePage() {
 }
 
 function AgentCreatePageInner() {
+  const navigate = useNavigate();
   const [prompt, setPrompt] = useState("");
   const [phase, setPhase] = useState<Phase>("hero");
 
@@ -77,6 +78,66 @@ function AgentCreatePageInner() {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Publish modal state
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [pubName, setPubName] = useState("");
+  const [pubDesc, setPubDesc] = useState("");
+  const [pubCategory, setPubCategory] = useState("Automation");
+  const [pubIconUrl, setPubIconUrl] = useState<string | null>(null);
+  const [pubError, setPubError] = useState<string | null>(null);
+  const iconInputRef = useRef<HTMLInputElement | null>(null);
+
+  const resetPublishForm = () => {
+    setPubName("");
+    setPubDesc("");
+    setPubCategory("Automation");
+    setPubIconUrl(null);
+    setPubError(null);
+  };
+
+  const handleIconPick = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setPubIconUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCreateAgent = () => {
+    const name = pubName.trim();
+    const desc = pubDesc.trim();
+    if (!name) {
+      setPubError("Agent nomini kiriting.");
+      return;
+    }
+    if (!desc) {
+      setPubError("Qisqa tavsif kiriting.");
+      return;
+    }
+    const newAgent = {
+      id: `${Date.now()}`,
+      name,
+      description: desc,
+      createdAt: new Date().toISOString(),
+      status: "active" as const,
+      tools: [] as string[],
+      lastActivity: new Date().toISOString(),
+      iconUrl: pubIconUrl ?? undefined,
+      category: pubCategory,
+    };
+    try {
+      const raw = localStorage.getItem("agentus:agents");
+      const list = raw ? (JSON.parse(raw) as unknown[]) : [];
+      const next = [newAgent, ...(Array.isArray(list) ? list : [])];
+      localStorage.setItem("agentus:agents", JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    setPublishOpen(false);
+    resetPublishForm();
+    navigate({ to: "/agentlarim" });
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -285,9 +346,8 @@ function AgentCreatePageInner() {
             </button>
             <button
               type="button"
-              disabled
-              title="Publish funksiyasi hali ulanmagan"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => setPublishOpen(true)}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
             >
               <Upload className="h-4 w-4" />
               Publish
@@ -499,6 +559,142 @@ function AgentCreatePageInner() {
           </div>
         )}
       </main>
+
+      {/* PUBLISH MODAL */}
+      {publishOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+            onClick={() => setPublishOpen(false)}
+          />
+          <div className="relative z-10 w-full max-w-md rounded-2xl border border-border/60 bg-card p-6 shadow-2xl">
+            <div className="mb-5 flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-semibold">Agentni chop etish</h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Ma'lumotlarni to'ldiring — agent "Agentlarim" ro'yxatiga qo'shiladi.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPublishOpen(false)}
+                className="grid h-8 w-8 place-items-center rounded-md text-muted-foreground hover:bg-card/60 hover:text-foreground"
+                aria-label="Yopish"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Ikonka */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => iconInputRef.current?.click()}
+                  className="relative grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-xl border border-border/60 bg-primary/10 text-primary hover:border-primary/60"
+                >
+                  {pubIconUrl ? (
+                    <img src={pubIconUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <Bot className="h-6 w-6" />
+                  )}
+                </button>
+                <input
+                  ref={iconInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleIconPick(f);
+                    e.target.value = "";
+                  }}
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">Ikonka</p>
+                  <p className="text-xs text-muted-foreground">
+                    Rasm yuklang (ixtiyoriy). Bo'sh qoldirilsa standart belgi.
+                  </p>
+                  {pubIconUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setPubIconUrl(null)}
+                      className="mt-1 text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                    >
+                      Olib tashlash
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                  Agent nomi
+                </label>
+                <input
+                  value={pubName}
+                  onChange={(e) => setPubName(e.target.value)}
+                  placeholder="Masalan, Telegram hisobotchi"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary/60 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                  Qisqa tavsif
+                </label>
+                <textarea
+                  value={pubDesc}
+                  onChange={(e) => setPubDesc(e.target.value)}
+                  rows={3}
+                  placeholder="Bu agent nima qiladi?"
+                  className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary/60 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
+                  Kategoriya
+                </label>
+                <select
+                  value={pubCategory}
+                  onChange={(e) => setPubCategory(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary/60 focus:outline-none"
+                >
+                  <option value="Communication">Kommunikatsiya</option>
+                  <option value="Data">Ma'lumotlar</option>
+                  <option value="Automation">Avtomatlashtirish</option>
+                  <option value="AI">AI</option>
+                  <option value="Files">Fayllar</option>
+                </select>
+              </div>
+
+              {pubError && (
+                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                  {pubError}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setPublishOpen(false)}
+                className="rounded-lg border border-border/60 bg-transparent px-4 py-2 text-sm font-medium text-foreground hover:bg-card/60"
+              >
+                Bekor qilish
+              </button>
+              <button
+                type="button"
+                onClick={handleCreateAgent}
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+              >
+                Yaratish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
