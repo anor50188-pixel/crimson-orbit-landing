@@ -59,6 +59,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-status-available: var(--status-available);
+  --color-status-in-progress: var(--status-in-progress);
+  --color-status-planned: var(--status-planned);
 }
 
 :root {
@@ -87,6 +90,9 @@
   --gradient-radial-red: radial-gradient(ellipse at bottom, oklch(0.4 0.2 25 / 0.4), transparent 70%);
   --shadow-glow: 0 0 60px -10px oklch(0.58 0.22 25 / 0.5);
   --shadow-elegant: 0 20px 60px -20px oklch(0 0 0 / 0.8);
+  --status-available: oklch(0.7 0.2 145);
+  --status-in-progress: oklch(0.8 0.18 90);
+  --status-planned: oklch(0.65 0.2 250);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
