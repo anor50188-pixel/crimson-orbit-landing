@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Sparkles, Shield, Users, Rocket } from "lucide-react";
+import { ArrowLeft, Heart, Rocket, SlidersHorizontal, Users } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
 
@@ -7,9 +7,9 @@ export const Route = createFileRoute("/biz-haqimizda")({
   head: () => ({
     meta: [
       { title: "Biz haqimizda — Agentus" },
-      { name: "description", content: "Agentus — oddiy tilda AI agentlar yaratish platformasi. Bizning maqsad, vazifalarni avtomatlashtirishni har qanday foydalanuvchi uchun oson va tushunarli qilish." },
+      { name: "description", content: "Agentus — har bir inson uchun AI jamoa. O'z agentlaringizni yarating, biznesingizga moslashtiring va sun'iy intellekt ekotizimidan foydalaning." },
       { property: "og:title", content: "Biz haqimizda — Agentus" },
-      { property: "og:description", content: "Agentus — oddiy tilda AI agentlar yaratish platformasi." },
+      { property: "og:description", content: "Agentus — har bir inson uchun AI jamoa. O'z agentlaringizni yarating, biznesingizga moslashtiring." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -19,24 +19,24 @@ export const Route = createFileRoute("/biz-haqimizda")({
 
 const values = [
   {
-    icon: Sparkles,
-    title: "Oddiylik",
-    desc: "Kod yoki murakkab sozlamalarsiz, faqatgina tabiiy til orqali agent yaratish.",
-  },
-  {
-    icon: Shield,
-    title: "Xavfsizlik",
-    desc: "Foydalanuvchi ma'lumotlari va ulanishlar xavfsiz saqlanadi.",
-  },
-  {
-    icon: Users,
-    title: "Hamjamiyat",
-    desc: "Agentlaringizni Marketplace'da ulashing va boshqalarning ishini osonlashtiring.",
+    icon: Heart,
+    title: "Inson markazida",
+    desc: "AI insonning o'rnini emas, uning rivojlanishini tezlashtiradi. Har bir funksiya foydalanuvchi hayotini yaxshilaydimi — shu savoldan boshlanadi.",
   },
   {
     icon: Rocket,
-    title: "Tezlik",
-    desc: "G'oyadan ishlaydigan agentga atigi bir necha daqiqa.",
+    title: "Oson boshlash",
+    desc: "G'oyadan ishlaydigan AI agentga atigi bir necha daqiqa. Kod yoki murakkab sozlamalar talab qilmaydi.",
+  },
+  {
+    icon: SlidersHorizontal,
+    title: "Cheksiz moslashuv",
+    desc: "Boshlash oson, chuqur moslashtirish esa cheklanmagan. Agentlaringizni o'z biznesingiz va vazifalaringizga qarab o'stiring.",
+  },
+  {
+    icon: Users,
+    title: "Hamkor AI jamoasi",
+    desc: "Agentlaringizni birga ishga soling, ulashing va AI jamoalaringizni Marketplace'da dunyo bilan ulisting.",
   },
 ];
 
@@ -81,7 +81,7 @@ function BizHaqimizda() {
           <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-background to-transparent" />
         </div>
 
-        <div className="mx-auto flex max-w-3xl flex-col items-center px-6 pb-32 pt-16 text-center md:pt-24">
+        <div className="mx-auto flex max-w-3xl flex-col items-center px-6 pb-24 pt-16 text-center md:pt-24">
           <img
             src={wordmark}
             alt="AGENTUS"
@@ -93,20 +93,84 @@ function BizHaqimizda() {
           <h1 className="mt-8 text-3xl font-bold tracking-tight md:text-4xl">
             Biz haqimizda
           </h1>
-          <p className="mt-6 max-w-2xl text-balance text-lg text-foreground/90 md:text-xl">
-            <span className="text-primary">Agentus</span> — oddiy tilda yozib, aqlli AI agentlar yaratish platformasi.
-            Bizning maqsadimiz: texnologiyani har kimga ochiq va foydali qilish.
+          <p className="mt-6 max-w-2xl text-balance text-xl text-foreground/90 md:text-2xl">
+            <span className="text-primary">Agentus</span> — har bir inson uchun AI jamoa.
+          </p>
+        </div>
+      </section>
+
+      {/* About */}
+      <section className="border-t border-border/60 bg-background">
+        <div className="mx-auto max-w-3xl px-6 py-20">
+          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Kompaniya haqida</p>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            Agentus — har bir inson uchun AI jamoa
+          </h2>
+          <div className="mt-8 space-y-5 text-base leading-relaxed text-foreground/90">
+            <p>
+              Biz ishonamizki, muvaffaqiyatga erishish faqat katta kompaniyalarniki emas. Har bir inson, tadbirkor, freelancer va startap asoschisi ham o'zining sun'iy intellekt jamoasiga ega bo'lishi kerak.
+            </p>
+            <p>
+              Agentus aynan shu maqsadda yaratilmoqda. Bugun ko'plab insonlar o'z g'oyalarini amalga oshirishni xohlaydi, lekin vaqt, mablag' yoki jamoa yetishmaydi. Agentus aynan shu muammoni hal qilish uchun mo'ljallangan.
+            </p>
+            <p>
+              Bu yerda siz o'zingizga agentlaringizni yaratasiz, ularni biznesingizga moslashtirasiz, kerakli tool va integratsiyalarni ulaysiz, AI jamoalaringizni birgalikda ishlatasiz, vaqtingizni tejaysiz va samaradorlikni oshirasiz.
+            </p>
+            <p>
+              Agentus AI platformasi emas. Bu — o'z g'oyalarini tatbiq etishni talab qiladigan insonlar uchun yaratilayotgan AI ekotizimidir.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission */}
+      <section className="border-t border-border/60 bg-background">
+        <div className="mx-auto max-w-3xl px-6 py-20">
+          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Missiya</p>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+            Bizning maqsadimiz oddiy
+          </h2>
+          <p className="mt-6 text-base leading-relaxed text-foreground/90">
+            Har qanday odamga bir necha daqiqada o'ziga mos AI agent yoki AI jamoaga yordam berish.
+          </p>
+          <ul className="mt-8 space-y-4 text-base leading-relaxed text-foreground/90">
+            <li className="flex gap-3">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>O'zingizga agentlaringizni yaratasiz.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>Ularni biznesingizga moslashtirasiz.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>Kerakli tool va integratsiyalarni ulaysiz.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>AI jamoalaringizni birgalikda ishlatasiz.</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>Vaqtingizni tejaysiz va samaradorlikni oshirasiz.</span>
+            </li>
+          </ul>
+          <p className="mt-8 text-base leading-relaxed text-foreground/90">
+            Biz AI insonniga emas, insonning rivojlanishiga ishonamiz. Buning uchun Agentusning har bir funksiyasi bitta savol asosida yaratiladi: <em className="text-foreground">“Bu foydalanuvchining hayotini yaxshilaydimi?”</em> Agar javob ha bo'lsa, biz uni quramiz. Agar javob yo'q bo'lsa, biz uni qayta o'ylaymiz.
           </p>
         </div>
       </section>
 
       {/* Values */}
       <section className="border-t border-border/60 bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-10">
-          <p className="mb-6 text-center text-xs uppercase tracking-widest text-muted-foreground">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <p className="mb-4 text-center text-xs uppercase tracking-widest text-muted-foreground">
             Asosiy qadriyatlar
           </p>
-          <div className="grid gap-x-10 gap-y-8 md:grid-cols-2 lg:grid-cols-4">
+          <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
+            Nega Agentus?
+          </h2>
+          <div className="mt-10 grid gap-x-10 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
             {values.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex gap-4">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-border text-primary">
@@ -119,6 +183,16 @@ function BizHaqimizda() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Slogan */}
+      <section className="border-t border-border/60 bg-background">
+        <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-20 text-center">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">Bizning shiorimiz</p>
+          <p className="mt-6 text-2xl font-semibold italic leading-snug text-foreground md:text-3xl">
+            “Boshlash oson. Chuqur moslashtirish esa cheklanmagan.”
+          </p>
         </div>
       </section>
 
