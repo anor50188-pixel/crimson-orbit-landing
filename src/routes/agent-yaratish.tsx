@@ -20,6 +20,7 @@ import {
   Upload,
   Paperclip,
   X,
+  ArrowLeft,
 } from "lucide-react";
 
 import heroPlanet from "@/assets/hero-planet.jpg";
@@ -326,6 +327,14 @@ function AgentCreatePageInner() {
         {/* TOP BAR — Lovable-style */}
         <div className="flex h-14 shrink-0 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur">
           <div className="flex items-center gap-3">
+            <Link
+              to="/agentlarim"
+              className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card hover:text-primary"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Oldingi bo‘limga qaytish</span>
+              <span className="sm:hidden">Ortga</span>
+            </Link>
             <Link to="/" className="inline-flex lg:hidden">
               <img src={wordmark} alt="AGENTUS" className="h-5 w-auto" draggable={false} />
             </Link>
