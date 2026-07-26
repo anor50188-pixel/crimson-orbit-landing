@@ -112,8 +112,10 @@ function AgentCreatePageInner() {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      {/* SIDEBAR */}
-      <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border/60 bg-background lg:flex">
+      {/* SIDEBAR — building fazasida yashirinadi, jonli maydonga joy beriladi */}
+      <aside
+        className={`${phase === "building" ? "hidden" : "hidden lg:flex"} w-[220px] shrink-0 flex-col border-r border-border/60 bg-background`}
+      >
         <div className="px-6 py-6">
           <Link to="/" className="inline-flex">
             <img src={wordmark} alt="AGENTUS" className="h-6 w-auto" draggable={false} />
