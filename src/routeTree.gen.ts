@@ -9,39 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SellerRouteImport } from './routes/seller'
-import { Route as RoadmapRouteImport } from './routes/roadmap'
-import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
-import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
-import { Route as AgentlarimRouteImport } from './routes/agentlarim'
-import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgentYaratishRouteImport } from './routes/agent-yaratish'
+import { Route as AgentlarimRouteImport } from './routes/agentlarim'
+import { Route as BizHaqimizdaRouteImport } from './routes/biz-haqimizda'
+import { Route as MeningToollarimRouteImport } from './routes/mening-toollarim'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as SellerRouteImport } from './routes/seller'
 import { Route as SellerIndexRouteImport } from './routes/seller.index'
 import { Route as SellerPublishAgentIdRouteImport } from './routes/seller.publish.$agentId'
 
-const SellerRoute = SellerRouteImport.update({
-  id: '/seller',
-  path: '/seller',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RoadmapRoute = RoadmapRouteImport.update({
-  id: '/roadmap',
-  path: '/roadmap',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MeningToollarimRoute = MeningToollarimRouteImport.update({
-  id: '/mening-toollarim',
-  path: '/mening-toollarim',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BizHaqimizdaRoute = BizHaqimizdaRouteImport.update({
-  id: '/biz-haqimizda',
-  path: '/biz-haqimizda',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AgentlarimRoute = AgentlarimRouteImport.update({
-  id: '/agentlarim',
-  path: '/agentlarim',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentYaratishRoute = AgentYaratishRouteImport.update({
@@ -49,9 +29,29 @@ const AgentYaratishRoute = AgentYaratishRouteImport.update({
   path: '/agent-yaratish',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AgentlarimRoute = AgentlarimRouteImport.update({
+  id: '/agentlarim',
+  path: '/agentlarim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BizHaqimizdaRoute = BizHaqimizdaRouteImport.update({
+  id: '/biz-haqimizda',
+  path: '/biz-haqimizda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeningToollarimRoute = MeningToollarimRouteImport.update({
+  id: '/mening-toollarim',
+  path: '/mening-toollarim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellerRoute = SellerRouteImport.update({
+  id: '/seller',
+  path: '/seller',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SellerIndexRoute = SellerIndexRouteImport.update({
@@ -145,39 +145,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/seller': {
-      id: '/seller'
-      path: '/seller'
-      fullPath: '/seller'
-      preLoaderRoute: typeof SellerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/roadmap': {
-      id: '/roadmap'
-      path: '/roadmap'
-      fullPath: '/roadmap'
-      preLoaderRoute: typeof RoadmapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mening-toollarim': {
-      id: '/mening-toollarim'
-      path: '/mening-toollarim'
-      fullPath: '/mening-toollarim'
-      preLoaderRoute: typeof MeningToollarimRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/biz-haqimizda': {
-      id: '/biz-haqimizda'
-      path: '/biz-haqimizda'
-      fullPath: '/biz-haqimizda'
-      preLoaderRoute: typeof BizHaqimizdaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/agentlarim': {
-      id: '/agentlarim'
-      path: '/agentlarim'
-      fullPath: '/agentlarim'
-      preLoaderRoute: typeof AgentlarimRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agent-yaratish': {
@@ -187,11 +159,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentYaratishRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/agentlarim': {
+      id: '/agentlarim'
+      path: '/agentlarim'
+      fullPath: '/agentlarim'
+      preLoaderRoute: typeof AgentlarimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/biz-haqimizda': {
+      id: '/biz-haqimizda'
+      path: '/biz-haqimizda'
+      fullPath: '/biz-haqimizda'
+      preLoaderRoute: typeof BizHaqimizdaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mening-toollarim': {
+      id: '/mening-toollarim'
+      path: '/mening-toollarim'
+      fullPath: '/mening-toollarim'
+      preLoaderRoute: typeof MeningToollarimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seller': {
+      id: '/seller'
+      path: '/seller'
+      fullPath: '/seller'
+      preLoaderRoute: typeof SellerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/seller/': {
@@ -236,3 +236,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
