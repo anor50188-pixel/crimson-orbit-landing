@@ -772,6 +772,10 @@ const dictionary = {
       "sahifa_yozish": "Sahifa yozish"
     },
     "shared": {
+      "draft": "Qoralama",
+      "agents": "Agentlar",
+      "templates": "Shablonlar",
+      "pages": "Sahifalar",
       "close": "Yopish",
       "language": "Til",
       "closing_title": "Keyingi agentingizni hoziroq yarating",

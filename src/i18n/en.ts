@@ -772,6 +772,10 @@ const dictionary = {
       "sahifa_yozish": "Write pages"
     },
     "shared": {
+      "draft": "Draft",
+      "agents": "Agents",
+      "templates": "Templates",
+      "pages": "Pages",
       "close": "Close",
       "language": "Language",
       "closing_title": "Create your next agent now",

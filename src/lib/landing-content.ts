@@ -1,7 +1,7 @@
 import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 export const plannedPlans = localized(() => ([
   { name: "Freemium", price: 0, agents: 2, tools: 2, requests: 500, scheduled: false },
-  { name: "Pro", price: 19, agents: 10, tools: 5, requests: 5000, scheduled: true },
+  { name: t("app.workspace.pro"), price: 19, agents: 10, tools: 5, requests: 5000, scheduled: true },
   { name: t("app.landing.pro_max"), price: 49, agents: null, tools: null, requests: 25000, scheduled: true },
 ] as const));
 

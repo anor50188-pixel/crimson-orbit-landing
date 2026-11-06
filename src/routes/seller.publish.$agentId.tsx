@@ -465,7 +465,7 @@ function WizardNav({
 function Step1Basic({ onNext }: { onNext: () => void }) {
   useI18n();
   const [name, setName] = useState(translate("app.seller.trading_assistant"));
-  const [slug, setSlug] = useState("trading-assistant");
+  const [slug, setSlug] = useState(translate("app.seller.tradingassistant"));
   const [category, setCategory] = useState("Moliyaviy (Trading)");
   const [lang, setLang] = useState(translate("app.seller.ozbek_tili"));
   const [type, setType] = useState<"simple" | "auto">("simple");
@@ -634,7 +634,7 @@ function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => vo
             selected={source === "agentus"}
             onClick={() => setSource("agentus")}
             title={translate("app.seller.agentus_orqali")}
-            badge="Pro"
+            badge=translate("app.workspace.pro")
             desc={translate("app.seller.agentus_api_xarajatlarni_boshqaradi")}
           />
         </div>

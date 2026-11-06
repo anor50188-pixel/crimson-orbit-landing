@@ -772,6 +772,10 @@ const dictionary = {
       "sahifa_yozish": "Запись страниц"
     },
     "shared": {
+      "draft": "Черновик",
+      "agents": "Агенты",
+      "templates": "Шаблоны",
+      "pages": "Страницы",
       "close": "Закрыть",
       "language": "Язык",
       "closing_title": "Создайте следующего агента прямо сейчас",

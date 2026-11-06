@@ -14,7 +14,7 @@ function MiniIllustration({ index }: { index: number }) {
     <span className="illustration-core"><Icon /></span>
     {index === 0 && <div className="robot-lines"><i /><i /><i /></div>}
     {index === 1 && <div className="tool-orbits"><span><Send /></span><span><Globe /></span><span><Zap /></span></div>}
-    {index === 2 && <div className="team-nodes">{["Mijoz", "Lead", "Taklif", "Shartnoma"].map((label, i) => <span key={label} style={{ "--sequence": i } as CSSProperties}>{label}</span>)}</div>}
+    {index === 2 && <div className="team-nodes">{[t("app.landing.mijoz"), t("app.landing.lead"), t("app.landing.taklif"), t("app.landing.shartnoma")].map((label, i) => <span key={label} style={{ "--sequence": i } as CSSProperties}>{label}</span>)}</div>}
     {index === 3 && <div className="clock-sweep" />}
     {index === 4 && <div className="memory-stack"><i /><i /><i /></div>}
     {index === 5 && <div className="lock-scan" />}

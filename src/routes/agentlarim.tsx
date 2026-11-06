@@ -46,7 +46,7 @@ export const Route = createFileRoute("/agentlarim")({
   head: () => ({
     meta: [
       { title: translate("app.agents.agentlarim_agentus") },
-      { property: "og:title", content: "Agentlarim — Agentus" },
+      { property: "og:title", content: translate("app.agents.agentlarim_agentus") },
       { property: "og:description", content: translate("app.agents.saqlangan_agent_profillaringizni_koring_va_toollarini") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -123,8 +123,8 @@ const navItems = localized(() => ([
 const categories = [
   "Barchasi",
   "Free",
-  "Pro",
-  "Marketplace",
+  translate("app.workspace.pro"),
+  translate("app.workspace.marketplace"),
   "Agentda",
 ] as const;
 
@@ -825,7 +825,7 @@ function AgentCard(props: CardProps) {
             ) : (
               <MenuItem
                 icon={Trash2}
-                label="O'chirish"
+                label=translate("app.tools.ochirish")
                 onClick={() => setConfirmDelete(true)}
                 danger
               />

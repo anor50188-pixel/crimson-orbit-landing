@@ -285,7 +285,7 @@ const genericInstanceFields: InstanceField[] = localized(() => ([
   inst.notes,
 ]));
 
-export const toolCatalog: ToolDef[] = [
+const buildCatalog = (): ToolDef[] => [
   {
     id: "telegram-bot",
     name: t("app.catalog.telegram_bot_api"),
@@ -480,7 +480,9 @@ const instanceMap: Record<string, { fields: InstanceField[]; targetKey: string }
   "notion-integration": { fields: notionInstanceFields, targetKey: "database_id" },
 };
 
-for (const t of toolCatalog) {
+export const toolCatalog: ToolDef[] = localized(() => {
+const entries = buildCatalog();
+for (const t of entries) {
   const m = instanceMap[t.id];
   if (m) {
     t.instanceFields = m.fields;
@@ -490,6 +492,9 @@ for (const t of toolCatalog) {
     t.targetFieldKey = "target";
   }
 }
+
+return entries;
+});
 
 export function readInstalledToolIds(): string[] {
   if (typeof window === "undefined") return [];

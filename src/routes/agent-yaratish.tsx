@@ -122,7 +122,7 @@ const suggestions = localized(() => ([
 ]));
 
 const recentAgents = localized(() => ([
-  { name: t("app.workspace.hisobot_yiguvchi"), icon: BarChart3, status: "Faol" },
+  { name: t("app.workspace.hisobot_yiguvchi"), icon: BarChart3, status: t("app.agents.faol") },
   { name: t("app.workspace.kontent_yordamchisi"), icon: Instagram, status: "Qoralama" },
   { name: t("app.workspace.mijozlar_boti"), icon: MessageCircle, status: t("app.workspace.toxtatilgan") },
 ]));
@@ -158,10 +158,10 @@ const iconChoices: { id: string; icon: LucideIcon; label: string }[] = localized
 ]));
 
 const toolChoices: { name: string; icon: LucideIcon }[] = localized(() => ([
-  { name: "Telegram", icon: Send },
+  { name: t("app.landing.telegram"), icon: Send },
   { name: t("app.workspace.web_qidiruv"), icon: Search },
   { name: t("app.workspace.http_sorov"), icon: Globe },
-  { name: "Xotira", icon: Database },
+  { name: t("app.workspace.xotira"), icon: Database },
   { name: "Kalkulyator", icon: Calculator },
   { name: "Sana/vaqt", icon: Clock },
 ]));
@@ -462,7 +462,7 @@ function AgentCreatePage() {
             </Button>
             <span>Agentus</span>
             <ChevronRight aria-hidden="true" />
-            <strong>{phase === "home" ? "Asosiy" : t("app.workspace.agent_yaratish")}</strong>
+            <strong>{phase === "home" ? t("app.workspace.asosiy") : t("app.workspace.agent_yaratish")}</strong>
           </div>
           <div className="topbar-actions">
             <Button className="icon-button command-trigger" type="button" aria-label={t("app.workspace.tezkor_qidiruv")} title={t("app.workspace.tezkor_qidiruv")} onClick={() => setCommandOpen(true)}>{t("app.workspace.k")}</Button>
@@ -578,10 +578,10 @@ function AgentCreatePage() {
       </main>
 
       {commandOpen && <WorkspaceCommandPalette onClose={() => setCommandOpen(false)} commands={[
-        ...recentAgents.map(agent => ({ label: agent.name, group: "Agentlar", run: () => startBuilder(t("app.workspace.v0_agentini_sinash", { v0: agent.name })) })),
-        ...suggestions.map(item => ({ label: item.text, group: "Shablonlar", run: () => { goHome(); setPrompt(item.text); later(() => promptRef.current?.focus(), 100); } })),
-        { label: t("app.workspace.asosiy"), group: "Sahifalar", run: goHome },
-        { label: t("app.workspace.agentlarim"), group: "Sahifalar", run: () => { navigate({ to: "/agentlarim" }); } },
+        ...recentAgents.map(agent => ({ label: agent.name, group: t("app.shared.agents"), run: () => startBuilder(t("app.workspace.v0_agentini_sinash", { v0: agent.name })) })),
+        ...suggestions.map(item => ({ label: item.text, group: t("app.shared.templates"), run: () => { goHome(); setPrompt(item.text); later(() => promptRef.current?.focus(), 100); } })),
+        { label: t("app.workspace.asosiy"), group: t("app.shared.pages"), run: goHome },
+        { label: t("app.workspace.agentlarim"), group: t("app.shared.pages"), run: () => { navigate({ to: "/agentlarim" }); } },
         ...(["Marketplace", "Mening toollarim", "Sotuvchi paneli", "To'lovlar"] as SoonKey[]).map(label => ({ label: soonLabel(label), group: t("app.workspace.asosiy_bolimlar"), run: () => setSoon(label) })),
       ]} />}
       {soon && <ComingSoonModal section={soon} onClose={() => setSoon(null)} />}
@@ -677,7 +677,7 @@ function Sidebar({
       <div className="sidebar-bottom">
         <div className="plan-card">
           <div className="plan-title"><span className="pro-accent">{t("app.workspace.pro")}</span><strong>{t("app.workspace.pro_plan")}</strong></div>
-          <UsageLine label="Agentlar" value="3 / 10" percent={30} />
+          <UsageLine label={t("app.shared.agents")} value="3 / 10" percent={30} />
           <Button className="neon-button" type="button" onClick={() => onNotice(t("app.workspace.rejani_yangilash_tez_orada_mavjud_boladi"))}>{t("app.workspace.yangilash")}<ArrowRight /></Button>
         </div>
         <Button className="sidebar-user" type="button" onClick={() => onNotice(t("app.workspace.azizbek_pro_tarif"))} title={t("app.workspace.azizbek_pro_tarif_2")}>
@@ -817,7 +817,7 @@ function HomeView({
           <div className="dashboard-section usage-section">
             <div className="section-title-row"><div><span className="section-kicker">{t("app.workspace.joriy_oy")}</span><h2>{t("app.workspace.foydalanish")}</h2></div></div>
             <div className="usage-cards elevated-surface">
-              <UsageMetric icon={Bot} label="Agentlar" value="3 / 10" percent={30} />
+              <UsageMetric icon={Bot} label={t("app.shared.agents")} value="3 / 10" percent={30} />
               <UsageMetric icon={Wrench} label={t("app.workspace.toollar")} value="4 / 10" percent={40} />
               <UsageMetric icon={Zap} label={t("app.workspace.oylik_sorovlar")} value="1 240 / 5 000" percent={24.8} />
             </div>
@@ -847,9 +847,9 @@ function HomeView({
 function StatusPill({ status }: { status: string }) {
   useI18n();
   const active = status === "Faol" || status === t("app.agents.faol");
-  const draft = status === "Qoralama" || status === t("app.workspace.qoralama");
+  const draft = status === "Qoralama" || status === t("app.shared.draft");
   const className = active ? "active" : draft ? "draft" : "paused";
-  status = active ? t("app.agents.faol") : draft ? t("app.workspace.qoralama") : t("app.workspace.toxtatilgan");
+  status = active ? t("app.agents.faol") : draft ? t("app.shared.draft") : t("app.workspace.toxtatilgan");
   return <span className={`status-pill ${className}`}><span />{status}</span>;
 }
 
@@ -950,7 +950,7 @@ function ChatPanel({
                         </Button>
                       ))}
                     </div>
-                    {selectedTools.includes("Telegram") && (
+                    {selectedTools.includes(t("app.landing.telegram")) && (
                       <div className="telegram-fields">
                         <label><span>{t("app.workspace.bot_token")}</span><div><LockKeyhole /><input type="password" autoComplete="off" placeholder={t("app.workspace.bot_tokenni_kiriting")} /></div></label>
                         <label><span>{t("app.workspace.chat_id")}</span><div><MessageCircle /><input inputMode="numeric" placeholder={t("app.workspace.chat_id_ni_kiriting")} /></div></label>
@@ -1071,7 +1071,7 @@ function AgentLiveCard({ draft, step, flash, published, ready }: { draft: Draft;
         <div><span className="section-kicker">{t("app.workspace.jonli_agent")}</span><h2>{ready ? t("app.workspace.agentingiz_tayyor") : t("app.workspace.agent_qurilmoqda")}</h2></div>
         <div className="readiness">
           <div className="progress-ring" style={{ "--progress": `${progress * 3.6}deg` } as CSSProperties}><span>{progress}%</span></div>
-          <div><strong>{t("app.workspace.tayyorlik")}{progress}%</strong><StatusPill status={published ? "Faol" : "Qoralama"} /></div>
+          <div><strong>{t("app.workspace.tayyorlik")}{progress}%</strong><StatusPill status={published ? t("app.agents.faol") : "Qoralama"} /></div>
         </div>
       </div>
       <article className="agent-profile-card">
