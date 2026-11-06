@@ -33,7 +33,13 @@ export function plural(key: 'agent' | 'tool', count: number) {
 }
 export const formatNumber = (number: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat(language === 'uz' ? 'ru-RU' : getLocale(), options).format(number);
 export const formatDate = (date: string | number | Date, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(getLocale(), options).format(new Date(date));
-export const relativeTime = (amount: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' }).format(amount, unit);
+export const relativeTime = (amount: number, unit: Intl.RelativeTimeFormatUnit) => {
+  if (language === 'uz' && ['hour','minute','day'].includes(unit)) {
+    const key = unit === 'hour' ? 'app.agents.v0_soat_oldin' : unit === 'minute' ? 'app.agents.v0_daqiqa_oldin' : 'app.agents.v0_kun_oldin';
+    return t(key, { v0: formatNumber(Math.abs(amount)) });
+  }
+  return new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' }).format(amount, unit);
+};
 /** Locale-aware module data without recreating or translating stored user input. */
 export function localized<T extends object>(factory: () => T): T {
   let cachedLanguage: Language | null = null;

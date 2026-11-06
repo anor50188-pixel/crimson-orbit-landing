@@ -34,9 +34,11 @@ export function ScrollAtmosphere() {
     };
     const observer = typeof IntersectionObserver === 'undefined' ? null : new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('cosmic-revealed'); observer?.unobserve(entry.target); } }), { threshold: .08 });
     const observe = () => document.querySelectorAll('.home-sections > section,.cosmic-closing,.cosmic-page main > section').forEach(section => observer?.observe(section));
-    observe(); const mutation = new MutationObserver(observe); mutation.observe(document.body, { childList: true, subtree: true });
+    // Wait for deferred route hydration before applying reveal classes.
+    const hydrationTimer = window.setTimeout(observe, 1800);
+    const mutation = new MutationObserver(() => window.setTimeout(observe, 1800)); mutation.observe(document.body, { childList: true, subtree: true });
     window.addEventListener('scroll', update, { passive: true }); document.addEventListener('scroll', update, { capture: true, passive: true }); update();
-    return () => { cancelAnimationFrame(frame); observer?.disconnect(); mutation.disconnect(); window.removeEventListener('scroll', update); document.removeEventListener('scroll', update, true); };
+    return () => { clearTimeout(hydrationTimer); cancelAnimationFrame(frame); observer?.disconnect(); mutation.disconnect(); window.removeEventListener('scroll', update); document.removeEventListener('scroll', update, true); };
   }, []);
   const up = () => {
     const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
