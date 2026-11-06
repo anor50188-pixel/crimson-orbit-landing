@@ -31,12 +31,20 @@ export function plural(key: 'agent' | 'tool', count: number) {
   const category = pluralCategory(language, count);
   return t(`app.shared.${key}_${category}` as TranslationKey, { n: formatNumber(count) });
 }
-export const formatNumber = (number: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat(getLocale(), options).format(number);
+export const formatNumber = (number: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat(language === 'uz' ? 'ru-RU' : getLocale(), options).format(number);
 export const formatDate = (date: string | number | Date, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(getLocale(), options).format(new Date(date));
 export const relativeTime = (amount: number, unit: Intl.RelativeTimeFormatUnit) => new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto' }).format(amount, unit);
 /** Locale-aware module data without recreating or translating stored user input. */
 export function localized<T extends object>(factory: () => T): T {
-  return new Proxy({} as T, { get: (_target, property) => Reflect.get(factory(), property), ownKeys: () => Reflect.ownKeys(factory()), getOwnPropertyDescriptor: () => ({ enumerable: true, configurable: true }) });
+  let cachedLanguage: Language | null = null;
+  let cached: T | null = null;
+  const current = () => { if (!cached || cachedLanguage !== language) { cached = factory(); cachedLanguage = language; } return cached; };
+  return new Proxy({} as T, {
+    get: (_target, property) => { const value = Reflect.get(current(), property); return typeof value === 'function' ? value.bind(current()) : value; },
+    has: (_target, property) => property in current(),
+    ownKeys: () => Reflect.ownKeys(current()),
+    getOwnPropertyDescriptor: () => ({ enumerable: true, configurable: true }),
+  });
 }
 const LanguageContext = createContext<Language>('uz');
 export function useI18n() { const active = useContext(LanguageContext); return { language: active, setLanguage, t, plural, formatNumber, formatDate, relativeTime }; }
