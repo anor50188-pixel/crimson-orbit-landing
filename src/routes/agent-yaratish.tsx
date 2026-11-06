@@ -31,6 +31,10 @@ export const Route = createFileRoute("/agent-yaratish")({
   head: () => ({
     meta: [
       { title: "Agent yaratish — Agentus" },
+      { property: "og:title", content: "Agent yaratish — Agentus" },
+      { property: "og:description", content: "Suhbat orqali agent yaratish demo muhiti. Agent g'oyangizni kiriting va profilini sozlang." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:

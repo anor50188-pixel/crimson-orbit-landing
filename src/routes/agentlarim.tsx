@@ -42,6 +42,10 @@ export const Route = createFileRoute("/agentlarim")({
   head: () => ({
     meta: [
       { title: "Agentlarim — Agentus" },
+      { property: "og:title", content: "Agentlarim — Agentus" },
+      { property: "og:description", content: "Saqlangan agent profillaringizni ko'ring va toollarini boshqaring." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:

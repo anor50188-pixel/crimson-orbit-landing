@@ -28,6 +28,10 @@ export const Route = createFileRoute("/seller/")({
   head: () => ({
     meta: [
       { title: "Sotuvchi paneli — Agentus" },
+      { property: "og:title", content: "Sotuvchi paneli — Agentus" },
+      { property: "og:description", content: "Agentus sotuvchi profilini tayyorlash va nashr qilish demo muhiti." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
