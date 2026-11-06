@@ -1,4 +1,7 @@
-import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
+import { WorkspaceCosmos } from '@/components/workspace-cosmos';
+import { CosmicEnding } from '@/components/cosmic-ending';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { t as translate, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
@@ -30,15 +33,15 @@ export const Route = createFileRoute("/seller/publish/$agentId")({
   component: SellerPublishPage,
   head: () => ({
     meta: [
-      { title: t("app.seller.agentni_marketplacega_chiqarish_agentus") },
-      { property: "og:title", content: t("app.seller.agentni_nashrga_tayyorlash_agentus") },
-      { property: "og:description", content: t("app.seller.agent_nomi_tavsifi_narxi_va_rasmlarini") },
+      { title: translate("app.seller.agentni_marketplacega_chiqarish_agentus") },
+      { property: "og:title", content: translate("app.seller.agentni_nashrga_tayyorlash_agentus") },
+      { property: "og:description", content: translate("app.seller.agent_nomi_tavsifi_narxi_va_rasmlarini") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
-          t("app.seller.4_bosqichli_sotuvchi_nashriyot_ustasi_agentingizni"),
+          translate("app.seller.4_bosqichli_sotuvchi_nashriyot_ustasi_agentingizni"),
       },
     ],
   }),
@@ -46,27 +49,27 @@ export const Route = createFileRoute("/seller/publish/$agentId")({
 
 // ————— Nav (mirrors seller.tsx sidebar) —————
 const mainNav = localized(() => ([
-  { icon: Home, label: t("app.workspace.asosiy"), to: "/" as const },
-  { icon: Bot, label: t("app.workspace.agentlarim"), to: "/agentlarim" as const },
-  { icon: Store, label: t("app.workspace.marketplace"), to: null },
-  { icon: Wrench, label: t("app.workspace.mening_toollarim"), to: "/mening-toollarim" as const },
-  { icon: Wallet, label: t("app.workspace.tolovlar"), to: null },
+  { icon: Home, label: translate("app.workspace.asosiy"), to: "/" as const },
+  { icon: Bot, label: translate("app.workspace.agentlarim"), to: "/agentlarim" as const },
+  { icon: Store, label: translate("app.workspace.marketplace"), to: null },
+  { icon: Wrench, label: translate("app.workspace.mening_toollarim"), to: "/mening-toollarim" as const },
+  { icon: Wallet, label: translate("app.workspace.tolovlar"), to: null },
 ] as const));
 
 const sellerNav = localized(() => ([
-  { icon: Store, label: t("app.workspace.sotuvchi_paneli"), to: "/seller" as const, active: true },
-  { icon: Settings, label: t("app.workspace.sozlamalar"), to: null, active: false },
+  { icon: Store, label: translate("app.workspace.sotuvchi_paneli"), to: "/seller" as const, active: true },
+  { icon: Settings, label: translate("app.workspace.sozlamalar"), to: null, active: false },
 ] as const));
 
 function SellerPublishPage() {
   useI18n();
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="cosmic-page flex min-h-screen bg-background text-foreground">
       <Sidebar />
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="relative flex min-w-0 flex-1 flex-col"><WorkspaceCosmos continuous/>
         <TopBar />
         <div className="relative min-w-0 flex-1 overflow-y-auto pb-24">
-          <PublishWizard />
+          <PublishWizard /><CosmicEnding/>
         </div>
         <BottomBar />
       </main>
@@ -104,7 +107,7 @@ function Sidebar() {
         })}
 
         <div className="mt-6 px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-          {t("app.seller.sotuvchi")}</div>
+          {translate("app.seller.sotuvchi")}</div>
         {sellerNav.map((item) => {
           const Icon = item.icon;
           const inner = (
@@ -136,23 +139,23 @@ function Sidebar() {
               A
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-medium text-foreground">{t("app.workspace.azizbek")}</div>
-              <div className="text-[11px] text-primary">{t("app.workspace.pro_plan")}</div>
+              <div className="truncate text-sm font-medium text-foreground">{translate("app.workspace.azizbek")}</div>
+              <div className="text-[11px] text-primary">{translate("app.workspace.pro_plan")}</div>
             </div>
             <ArrowRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground" />
           </div>
           <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-background/70">
             <div className="h-full w-[35%] rounded-full bg-gradient-to-r from-primary to-[oklch(0.68_0.24_25)]" />
           </div>
-          <div className="mt-2 text-[11px] text-muted-foreground">{t("app.seller.7_20_agent")}</div>
+          <div className="mt-2 text-[11px] text-muted-foreground">{translate("app.seller.7_20_agent")}</div>
         </div>
         <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 p-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[oklch(0.75_0.15_75)]/15 text-[oklch(0.85_0.18_80)] ring-1 ring-inset ring-[oklch(0.75_0.15_75)]/25">
             <Sun className="h-4 w-4" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium text-foreground">{t("app.seller.24c")}</div>
-            <div className="text-[11px] text-muted-foreground">{t("app.seller.sunny")}</div>
+            <div className="text-sm font-medium text-foreground">{translate("app.seller.24c")}</div>
+            <div className="text-[11px] text-muted-foreground">{translate("app.seller.sunny")}</div>
           </div>
         </div>
       </div>
@@ -168,8 +171,8 @@ function TopBar() {
         to="/seller"
         className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/40 px-3 py-1.5 text-xs text-muted-foreground transition hover:text-foreground"
       >
-        <span className="text-sm">←</span> {t("app.agents.orqaga")}</Link>
-      <div className="flex items-center gap-2">
+        <span className="text-sm">←</span> {translate("app.agents.orqaga")}</Link>
+      <div className="flex items-center gap-2"><LanguageSwitcher/>
         <button className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/60 bg-card/40 text-muted-foreground transition hover:text-foreground">
           <CircleHelp className="h-4 w-4" />
         </button>
@@ -183,7 +186,7 @@ function TopBar() {
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/15 text-[11px] font-semibold text-primary">
             A
           </div>
-          <span className="hidden text-sm text-foreground/90 sm:inline">{t("app.workspace.azizbek")}</span>
+          <span className="hidden text-sm text-foreground/90 sm:inline">{translate("app.workspace.azizbek")}</span>
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
         </div>
       </div>
@@ -200,18 +203,18 @@ function BottomBar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/60 bg-card/40">
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           </div>
-          {t("app.seller.agentingiz_tekshiruvdan_otadi_va_qoidalarga_muvofiq")}</div>
+          {translate("app.seller.agentingiz_tekshiruvdan_otadi_va_qoidalarga_muvofiq")}</div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             className="rounded-xl border border-border/60 bg-card/60 px-4 py-2 text-sm font-medium text-foreground transition hover:bg-accent/40"
           >
-            {t("app.seller.qoralama_saqlash")}</button>
+            {translate("app.seller.qoralama_saqlash")}</button>
           <button
             type="button"
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] px-5 py-2 text-sm font-semibold text-primary-foreground shadow-[0_10px_30px_-10px_oklch(0.58_0.22_25/0.7)] transition hover:brightness-110"
           >
-            {t("app.seller.tekshiruvga_yuborish")}<Rocket className="h-4 w-4" />
+            {translate("app.seller.tekshiruvga_yuborish")}<Rocket className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -221,10 +224,10 @@ function BottomBar() {
 
 // —————————————————————— Wizard ——————————————————————
 const STEP_LABELS = localized(() => ([
-  t("app.seller.asosiy_malumotlar"),
-  t("app.seller.tolov_va_harajatlar"),
-  t("app.seller.tavsif_va_toollar"),
-  t("app.seller.rasm_va_ikonka"),
+  translate("app.seller.asosiy_malumotlar"),
+  translate("app.seller.tolov_va_harajatlar"),
+  translate("app.seller.tavsif_va_toollar"),
+  translate("app.seller.rasm_va_ikonka"),
 ] as const));
 
 function PublishWizard() {
@@ -253,9 +256,9 @@ function PublishWizard() {
       <div className="relative mx-auto w-full max-w-[1600px] px-8 py-10">
         {/* Title */}
         <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-[42px]">
-          {t("app.seller.agentingizni_marketplacega_chiqarish")}</h1>
+          {translate("app.seller.agentingizni_marketplacega_chiqarish")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          {t("app.seller.quyidagi_4_bosqichni_toldirib_agentingizni_minglab")}</p>
+          {translate("app.seller.quyidagi_4_bosqichni_toldirib_agentingizni_minglab")}</p>
 
         {/* Stepper */}
         <Stepper current={step} onJump={(i) => i < step && setStep(i)} />
@@ -442,7 +445,7 @@ function WizardNav({
           onClick={onBack}
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border/60 bg-card/60 px-4 text-sm font-medium text-foreground transition hover:bg-accent/40"
         >
-          {t("app.seller.orqaga")}</button>
+          {translate("app.seller.orqaga")}</button>
       ) : null}
       {onNext ? (
         <button
@@ -461,38 +464,38 @@ function WizardNav({
 // —————— Step 1 ——————
 function Step1Basic({ onNext }: { onNext: () => void }) {
   useI18n();
-  const [name, setName] = useState(t("app.seller.trading_assistant"));
+  const [name, setName] = useState(translate("app.seller.trading_assistant"));
   const [slug, setSlug] = useState("trading-assistant");
   const [category, setCategory] = useState("Moliyaviy (Trading)");
-  const [lang, setLang] = useState(t("app.seller.ozbek_tili"));
+  const [lang, setLang] = useState(translate("app.seller.ozbek_tili"));
   const [type, setType] = useState<"simple" | "auto">("simple");
 
   return (
-    <Card n={1} title={t("app.seller.asosiy_malumotlar")} subtitle={t("app.seller.agentingiz_haqida_asosiy_malumotlar")}>
+    <Card n={1} title={translate("app.seller.asosiy_malumotlar")} subtitle={translate("app.seller.agentingiz_haqida_asosiy_malumotlar")}>
       <div>
-        <Label required>{t("app.seller.agent_nomi")}</Label>
-        <TextInput value={name} onChange={setName} placeholder={t("app.seller.trading_assistant")} />
+        <Label required>{translate("app.seller.agent_nomi")}</Label>
+        <TextInput value={name} onChange={setName} placeholder={translate("app.seller.trading_assistant")} />
       </div>
 
       <div>
-        <Label required>{t("app.seller.qisqa_nom_url_uchun")}</Label>
-        <TextInput value={slug} onChange={setSlug} placeholder={t("app.seller.tradingassistant")} />
+        <Label required>{translate("app.seller.qisqa_nom_url_uchun")}</Label>
+        <TextInput value={slug} onChange={setSlug} placeholder={translate("app.seller.tradingassistant")} />
         <div className="mt-1.5 flex items-center justify-between text-[11px]">
-          <span className="text-muted-foreground">{t("app.seller.agentusaiagents")}{slug || "..."}</span>
+          <span className="text-muted-foreground">{translate("app.seller.agentusaiagents")}{slug || "..."}</span>
           <span className="inline-flex items-center gap-1 text-[oklch(0.72_0.18_150)]">
-            <Check className="h-3 w-3" /> {t("app.common.mavjud")}</span>
+            <Check className="h-3 w-3" /> {translate("app.common.mavjud")}</span>
         </div>
       </div>
 
       <div>
-        <Label required>{t("app.seller.kategoriya")}</Label>
+        <Label required>{translate("app.seller.kategoriya")}</Label>
         <Select
           value={category}
           onChange={setCategory}
           options={[
             "Moliyaviy (Trading)",
-            t("app.seller.talim"),
-            t("app.seller.sogliqni_saqlash"),
+            translate("app.seller.talim"),
+            translate("app.seller.sogliqni_saqlash"),
             "Marketing",
             "Boshqa",
           ]}
@@ -500,29 +503,29 @@ function Step1Basic({ onNext }: { onNext: () => void }) {
       </div>
 
       <div>
-        <Label required>{t("app.seller.agent_turi")}</Label>
+        <Label required>{translate("app.seller.agent_turi")}</Label>
         <div className="grid grid-cols-2 gap-2">
           <TypeCard
             selected={type === "simple"}
             onClick={() => setType("simple")}
-            title={t("app.seller.oddiy_agent")}
-            desc={t("app.seller.foydalanuvchi_soroviga_javob_beradi")}
+            title={translate("app.seller.oddiy_agent")}
+            desc={translate("app.seller.foydalanuvchi_soroviga_javob_beradi")}
           />
           <TypeCard
             selected={type === "auto"}
             onClick={() => setType("auto")}
-            title={t("app.seller.avtomatik_agent")}
-            desc={t("app.seller.ozi_mustaqil_ishlaydi")}
+            title={translate("app.seller.avtomatik_agent")}
+            desc={translate("app.seller.ozi_mustaqil_ishlaydi")}
           />
         </div>
       </div>
 
       <div>
-        <Label required>{t("app.workspace.til")}</Label>
+        <Label required>{translate("app.workspace.til")}</Label>
         <Select
           value={lang}
           onChange={setLang}
-          options={[t("app.seller.ozbek_tili"), t("app.seller.rus_tili"), t("app.seller.ingliz_tili")]}
+          options={[translate("app.seller.ozbek_tili"), translate("app.seller.rus_tili"), translate("app.seller.ingliz_tili")]}
         />
       </div>
 
@@ -580,25 +583,25 @@ function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => vo
   }, [price]);
 
   return (
-    <Card n={2} title={t("app.seller.tolov_va_harajatlar")} subtitle={t("app.seller.narx_belgilang_va_oyiga_xarajatni_koring")}>
+    <Card n={2} title={translate("app.seller.tolov_va_harajatlar")} subtitle={translate("app.seller.narx_belgilang_va_oyiga_xarajatni_koring")}>
       <div>
-        <Label required>{t("app.seller.sotish_narxi_usd")}</Label>
+        <Label required>{translate("app.seller.sotish_narxi_usd")}</Label>
         <TextInput value={price} onChange={setPrice} placeholder="15" suffix="USD" />
         <div className="mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground">
-          <Info className="h-3 w-3" /> {t("app.seller.foydalanuvchilar_ushbu_narxni_tolaydi")}</div>
+          <Info className="h-3 w-3" /> {translate("app.seller.foydalanuvchilar_ushbu_narxni_tolaydi")}</div>
       </div>
 
       <div className="rounded-xl border border-[oklch(0.75_0.15_60)]/40 bg-[oklch(0.75_0.15_60)]/[0.06] p-3">
-        <div className="text-[11px] text-[oklch(0.85_0.15_65)]">{t("app.seller.sizning_daromadingiz")}</div>
+        <div className="text-[11px] text-[oklch(0.85_0.15_65)]">{translate("app.seller.sizning_daromadingiz")}</div>
         <div className="mt-1 flex items-baseline gap-1.5">
           <span className="text-xl font-semibold text-foreground">${income}</span>
           <span className="text-[11px] text-muted-foreground">/ sotuv</span>
         </div>
-        <div className="mt-1 text-[11px] text-muted-foreground">{t("app.seller.agentus_komissiyasi_20")}</div>
+        <div className="mt-1 text-[11px] text-muted-foreground">{translate("app.seller.agentus_komissiyasi_20")}</div>
       </div>
 
       <div>
-        <Label required>{t("app.seller.agentingiz_oyiga_qancha_harajat_qiladi")}</Label>
+        <Label required>{translate("app.seller.agentingiz_oyiga_qancha_harajat_qiladi")}</Label>
         <div className="rounded-xl border border-border/60 bg-background/60 p-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-1">
@@ -606,33 +609,33 @@ function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => vo
               <span className="text-[11px] text-muted-foreground">/ oy</span>
             </div>
             <span className="rounded-md bg-[oklch(0.55_0.15_160)]/15 px-2 py-0.5 text-[10px] font-medium text-[oklch(0.78_0.16_160)] ring-1 ring-inset ring-[oklch(0.55_0.15_160)]/30">
-              {t("app.tools.tavsiya_etilgan")}</span>
+              {translate("app.tools.tavsiya_etilgan")}</span>
           </div>
           <div className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-            {t("app.seller.bu_summa_agent_ishlashi_uchun_zarur")}</div>
+            {translate("app.seller.bu_summa_agent_ishlashi_uchun_zarur")}</div>
         </div>
         <button
           type="button"
           className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
         >
-          <Info className="h-3 w-3" /> {t("app.seller.hisobkitob_qanday_ishlaydi")}</button>
+          <Info className="h-3 w-3" /> {translate("app.seller.hisobkitob_qanday_ishlaydi")}</button>
       </div>
 
       <div>
-        <Label required>{t("app.seller.xarajat_manbai")}</Label>
+        <Label required>{translate("app.seller.xarajat_manbai")}</Label>
         <div className="flex flex-col gap-2">
           <SourceCard
             selected={source === "own"}
             onClick={() => setSource("own")}
-            title={t("app.seller.mening_api_kalitlarim")}
-            desc={t("app.seller.ozingizning_api_kalitlaringizni_ishlatasiz")}
+            title={translate("app.seller.mening_api_kalitlarim")}
+            desc={translate("app.seller.ozingizning_api_kalitlaringizni_ishlatasiz")}
           />
           <SourceCard
             selected={source === "agentus"}
             onClick={() => setSource("agentus")}
-            title={t("app.seller.agentus_orqali")}
+            title={translate("app.seller.agentus_orqali")}
             badge="Pro"
-            desc={t("app.seller.agentus_api_xarajatlarni_boshqaradi")}
+            desc={translate("app.seller.agentus_api_xarajatlarni_boshqaradi")}
           />
         </div>
       </div>
@@ -692,22 +695,22 @@ function SourceCard({
 function Step3Description({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   useI18n();
   const [short, setShort] = useState(
-    t("app.seller.trading_assistant_kriptovalyuta_bozorini_tahlil_qiladi"),
+    translate("app.seller.trading_assistant_kriptovalyuta_bozorini_tahlil_qiladi"),
   );
   const [full, setFull] = useState(
-    t("app.seller.bu_agent_kriptovalyuta_bozoridagi_malumotlarni_real"),
+    translate("app.seller.bu_agent_kriptovalyuta_bozoridagi_malumotlarni_real"),
   );
   const [features, setFeatures] = useState<string[]>([
-    t("app.seller.bozor_tahlili"),
-    t("app.seller.savdo_signallari"),
-    t("app.seller.risk_boshqaruvi"),
-    t("app.seller.portfel_kuzatuvi"),
+    translate("app.seller.bozor_tahlili"),
+    translate("app.seller.savdo_signallari"),
+    translate("app.seller.risk_boshqaruvi"),
+    translate("app.seller.portfel_kuzatuvi"),
   ]);
 
   return (
-    <Card n={3} title={t("app.seller.tavsif_va_toollar")} subtitle={t("app.seller.agentingizni_batafsil_tavsiflang")}>
+    <Card n={3} title={translate("app.seller.tavsif_va_toollar")} subtitle={translate("app.seller.agentingizni_batafsil_tavsiflang")}>
       <div>
-        <Label required>{t("app.seller.qisqa_tavsif")}</Label>
+        <Label required>{translate("app.seller.qisqa_tavsif")}</Label>
         <div className="rounded-xl border border-border/60 bg-background/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
           <textarea
             value={short}
@@ -722,7 +725,7 @@ function Step3Description({ onNext, onBack }: { onNext: () => void; onBack: () =
       </div>
 
       <div>
-        <Label required>{t("app.seller.toliq_tavsif")}</Label>
+        <Label required>{translate("app.seller.toliq_tavsif")}</Label>
         <div className="rounded-xl border border-border/60 bg-background/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
           <textarea
             value={full}
@@ -737,7 +740,7 @@ function Step3Description({ onNext, onBack }: { onNext: () => void; onBack: () =
       </div>
 
       <div>
-        <Label required>{t("app.seller.asosiy_funksiyalar")}</Label>
+        <Label required>{translate("app.seller.asosiy_funksiyalar")}</Label>
         <div className="flex flex-wrap gap-1.5 rounded-xl border border-border/60 bg-background/60 p-2">
           {features.map((f) => (
             <span
@@ -757,12 +760,12 @@ function Step3Description({ onNext, onBack }: { onNext: () => void; onBack: () =
           <button
             type="button"
             onClick={() => {
-              const v = prompt(t("app.seller.yangi_funksiya_nomi"));
+              const v = prompt(translate("app.seller.yangi_funksiya_nomi"));
               if (v && v.trim()) setFeatures([...features, v.trim()]);
             }}
             className="rounded-md px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent/40 hover:text-foreground"
           >
-            {t("app.seller.qoshish")}</button>
+            {translate("app.seller.qoshish")}</button>
         </div>
       </div>
 
@@ -775,9 +778,9 @@ function Step3Description({ onNext, onBack }: { onNext: () => void; onBack: () =
 function Step4Media({ onBack }: { onBack: () => void }) {
   useI18n();
   return (
-    <Card n={4} title={t("app.seller.rasm_va_ikonka")} subtitle={t("app.seller.agentingiz_uchun_rasm_va_ikonka_yuklang")}>
+    <Card n={4} title={translate("app.seller.rasm_va_ikonka")} subtitle={translate("app.seller.agentingiz_uchun_rasm_va_ikonka_yuklang")}>
       <div>
-        <Label required>{t("app.seller.agent_ikonka_512x512")}</Label>
+        <Label required>{translate("app.seller.agent_ikonka_512x512")}</Label>
         <div className="relative aspect-square overflow-hidden rounded-xl border border-border/60 bg-background/60">
           <div
             className="absolute inset-0"
@@ -795,7 +798,7 @@ function Step4Media({ onBack }: { onBack: () => void }) {
             type="button"
             className="flex-1 rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-xs font-medium text-foreground transition hover:bg-accent/40"
           >
-            {t("app.seller.rasmni_ozgartirish")}</button>
+            {translate("app.seller.rasmni_ozgartirish")}</button>
           <button
             type="button"
             className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/60 bg-card/60 text-muted-foreground transition hover:bg-accent/40 hover:text-foreground"
@@ -806,7 +809,7 @@ function Step4Media({ onBack }: { onBack: () => void }) {
       </div>
 
       <div>
-        <Label>{t("app.seller.muqova_rasmi_1200x630")}</Label>
+        <Label>{translate("app.seller.muqova_rasmi_1200x630")}</Label>
         <div className="relative aspect-[1200/630] overflow-hidden rounded-xl border border-border/60 bg-background/60">
           <div
             className="absolute inset-0"
@@ -826,7 +829,7 @@ function Step4Media({ onBack }: { onBack: () => void }) {
           className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-xs font-medium text-foreground transition hover:bg-accent/40"
         >
           <Upload className="h-3.5 w-3.5" />
-          {t("app.seller.rasmni_yuklash")}</button>
+          {translate("app.seller.rasmni_yuklash")}</button>
       </div>
 
       <div className="mt-auto flex items-start gap-2.5 rounded-xl border border-border/60 bg-background/60 p-3">
@@ -834,9 +837,9 @@ function Step4Media({ onBack }: { onBack: () => void }) {
           <Lightbulb className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0">
-          <div className="text-xs font-semibold text-foreground">{t("app.seller.maslahat")}</div>
+          <div className="text-xs font-semibold text-foreground">{translate("app.seller.maslahat")}</div>
           <div className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
-            {t("app.seller.yaxshi_rasm_va_ikonka_koproq_sotuvga")}</div>
+            {translate("app.seller.yaxshi_rasm_va_ikonka_koproq_sotuvga")}</div>
         </div>
       </div>
       <WizardNav onBack={onBack} />

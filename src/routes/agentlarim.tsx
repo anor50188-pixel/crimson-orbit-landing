@@ -1,4 +1,7 @@
-import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
+import { WorkspaceCosmos } from '@/components/workspace-cosmos';
+import { CosmicEnding } from '@/components/cosmic-ending';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { t as translate, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -42,15 +45,15 @@ export const Route = createFileRoute("/agentlarim")({
   component: AgentlarimPage,
   head: () => ({
     meta: [
-      { title: t("app.agents.agentlarim_agentus") },
+      { title: translate("app.agents.agentlarim_agentus") },
       { property: "og:title", content: "Agentlarim — Agentus" },
-      { property: "og:description", content: t("app.agents.saqlangan_agent_profillaringizni_koring_va_toollarini") },
+      { property: "og:description", content: translate("app.agents.saqlangan_agent_profillaringizni_koring_va_toollarini") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
-          t("app.agents.yaratgan_ai_agentlaringizni_bir_joyda_boshqaring"),
+          translate("app.agents.yaratgan_ai_agentlaringizni_bir_joyda_boshqaring"),
       },
     ],
   }),
@@ -105,13 +108,13 @@ type SavedAgent = {
 const STORAGE_KEY = "agentus:agents";
 
 const navItems = localized(() => ([
-  { icon: Home, label: t("app.workspace.asosiy"), to: "/" as const },
-  { icon: Bot, label: t("app.workspace.agentlarim"), to: "/agentlarim" as const, active: true },
-  { icon: Store, label: t("app.workspace.marketplace") },
-  { icon: Wrench, label: t("app.workspace.mening_toollarim"), to: "/mening-toollarim" as const },
-  { icon: Crown, label: t("app.workspace.sotuvchi_paneli"), to: "/seller" as const },
-  { icon: Wallet, label: t("app.workspace.tolovlar") },
-  { icon: Settings, label: t("app.workspace.sozlamalar") },
+  { icon: Home, label: translate("app.workspace.asosiy"), to: "/" as const },
+  { icon: Bot, label: translate("app.workspace.agentlarim"), to: "/agentlarim" as const, active: true },
+  { icon: Store, label: translate("app.workspace.marketplace") },
+  { icon: Wrench, label: translate("app.workspace.mening_toollarim"), to: "/mening-toollarim" as const },
+  { icon: Crown, label: translate("app.workspace.sotuvchi_paneli"), to: "/seller" as const },
+  { icon: Wallet, label: translate("app.workspace.tolovlar") },
+  { icon: Settings, label: translate("app.workspace.sozlamalar") },
 ]));
 
 // Agent'ga qo'shiladigan toollar — foydalanuvchi "Mening toollarim"ga
@@ -130,20 +133,20 @@ function timeAgo(iso?: string) {
   const diff = Date.now() - new Date(iso).getTime();
   if (diff < 60_000) return "hozir";
   const m = Math.floor(diff / 60_000);
-  if (m < 60) return t("app.agents.v0_daqiqa_oldin", { v0: m });
+  if (m < 60) return translate("app.agents.v0_daqiqa_oldin", { v0: m });
   const h = Math.floor(m / 60);
-  if (h < 24) return t("app.agents.v0_soat_oldin", { v0: h });
+  if (h < 24) return translate("app.agents.v0_soat_oldin", { v0: h });
   const d = Math.floor(h / 24);
-  return t("app.agents.v0_kun_oldin", { v0: d });
+  return translate("app.agents.v0_kun_oldin", { v0: d });
 }
 
 function statusMeta(s: AgentStatus | undefined) {
   const v = s ?? "active";
   if (v === "active")
-    return { dot: "bg-emerald-500", label: t("app.agents.faol"), ring: "ring-emerald-500/20" };
+    return { dot: "bg-emerald-500", label: translate("app.agents.faol"), ring: "ring-emerald-500/20" };
   if (v === "paused")
-    return { dot: "bg-amber-500", label: t("app.agents.toxtatilgan"), ring: "ring-amber-500/20" };
-  return { dot: "bg-red-500", label: t("app.agents.xato"), ring: "ring-red-500/20" };
+    return { dot: "bg-amber-500", label: translate("app.agents.toxtatilgan"), ring: "ring-amber-500/20" };
+  return { dot: "bg-red-500", label: translate("app.agents.xato"), ring: "ring-red-500/20" };
 }
 
 function AgentlarimPage() {
@@ -281,7 +284,7 @@ function AgentlarimPage() {
   return (
     <div
       ref={rootRef}
-      className="flex min-h-screen bg-background text-foreground"
+      className="cosmic-page flex min-h-screen bg-background text-foreground"
     >
       {/* SIDEBAR */}
       <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border/60 bg-background lg:flex">
@@ -321,29 +324,29 @@ function AgentlarimPage() {
             <span className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
               <Sparkles className="h-3.5 w-3.5" />
             </span>
-            {t("app.workspace.pro_plan")}</div>
+            {translate("app.workspace.pro_plan")}</div>
           <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-            {t("app.agents.barcha_premium_imkoniyatlardan_foydalaning")}</p>
+            {translate("app.agents.barcha_premium_imkoniyatlardan_foydalaning")}</p>
           <button
             type="button"
             disabled
             className="w-full cursor-not-allowed rounded-lg bg-primary/80 px-3 py-2 text-xs font-medium text-primary-foreground opacity-70"
           >
-            {t("app.agents.rejalashtirilgan")}</button>
+            {translate("app.agents.rejalashtirilgan")}</button>
         </div>
         <div className="mx-3 mb-4 flex items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-3 py-2.5">
           <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
             A
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{t("app.workspace.azizbek")}</p>
-            <p className="truncate text-[10px] text-primary/80">{t("app.workspace.pro_plan")}</p>
+            <p className="truncate text-sm font-medium">{translate("app.workspace.azizbek")}</p>
+            <p className="truncate text-[10px] text-primary/80">{translate("app.workspace.pro_plan")}</p>
           </div>
         </div>
       </aside>
 
       {/* MAIN */}
-      <main className="relative flex-1 overflow-hidden">
+      <main className="relative flex-1 overflow-hidden"><WorkspaceCosmos continuous/>
         {/* Cinematic red/black space background */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <img
@@ -368,17 +371,17 @@ function AgentlarimPage() {
         </div>
         <div className="relative flex h-full flex-col">
         {/* Header */}
-        <header className="relative flex items-center justify-between border-b border-border/60 px-6 py-4">
+        <header className="relative flex items-center justify-between border-b border-border/60 px-6 py-4"><LanguageSwitcher/>
           <Link
             to="/agent-yaratish"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="h-4 w-4" /> {t("app.agents.orqaga")}</Link>
+            <ArrowLeft className="h-4 w-4" /> {translate("app.agents.orqaga")}</Link>
           <Link
             to="/agent-yaratish"
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_0_20px_-8px_var(--primary)] transition-transform hover:scale-[1.02]"
           >
-            <Plus className="h-4 w-4" /> {t("app.agents.yangi_agent")}</Link>
+            <Plus className="h-4 w-4" /> {translate("app.agents.yangi_agent")}</Link>
         </header>
 
         {/* Content area with focus-blur */}
@@ -390,12 +393,12 @@ function AgentlarimPage() {
           >
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight">{t("app.workspace.agentlarim")}</h1>
+                <h1 className="text-2xl font-semibold tracking-tight">{translate("app.workspace.agentlarim")}</h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {t("app.agents.siz_yaratgan_agentlar_shu_yerda_saqlanadi")}</p>
+                  {translate("app.agents.siz_yaratgan_agentlar_shu_yerda_saqlanadi")}</p>
               </div>
               <div className="hidden text-right text-xs text-muted-foreground sm:block">
-                {t("app.agents.jami")}<span className="text-foreground">{agents.length}</span> {t("app.agents.agent")}</div>
+                {translate("app.agents.jami")}<span className="text-foreground">{agents.length}</span> {translate("app.agents.agent")}</div>
             </div>
 
             {agents.length === 0 ? (
@@ -429,7 +432,7 @@ function AgentlarimPage() {
                           setMenuOpen(null);
                           // Sahifa hali qurilmagan — halol xabar
                           alert(
-                            t("app.agents.agent_workspace_hali_tayyor_emas_rejalashtirilgan"),
+                            translate("app.agents.agent_workspace_hali_tayyor_emas_rejalashtirilgan"),
                           );
                         }}
                         onAddTools={() => {
@@ -471,6 +474,7 @@ function AgentlarimPage() {
           )}
         </div>
 
+        <CosmicEnding/>
         {/* Tool Marketplace slide-in */}
         <aside
           className={`fixed inset-y-0 right-0 z-40 w-full max-w-md border-l border-border/60 bg-background/95 backdrop-blur transition-transform duration-300 ease-out ${
@@ -483,18 +487,18 @@ function AgentlarimPage() {
               <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
                 <div>
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {t("app.agents.tool_marketplace")}</p>
+                    {translate("app.agents.tool_marketplace")}</p>
                   <h2 className="mt-0.5 text-lg font-semibold">
                     {focusedAgent.name}
                   </h2>
                   <p className="text-xs text-muted-foreground">
-                    🧰 {(focusedAgent.tools ?? []).length} {t("app.agents.ta_tool_ornatilgan")}</p>
+                    🧰 {(focusedAgent.tools ?? []).length} {translate("app.agents.ta_tool_ornatilgan")}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setFocusedId(null)}
                   className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                  aria-label={t("app.workspace.yopish")}
+                  aria-label={translate("app.workspace.yopish")}
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -506,7 +510,7 @@ function AgentlarimPage() {
                   <input
                     value={marketQuery}
                     onChange={(e) => setMarketQuery(e.target.value)}
-                    placeholder={t("app.agents.tool_qidiring")}
+                    placeholder={translate("app.agents.tool_qidiring")}
                     className="w-full rounded-lg border border-border/60 bg-card/60 py-2 pl-8 pr-3 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary/60"
                   />
                 </div>
@@ -532,16 +536,16 @@ function AgentlarimPage() {
                 {userTools.length === 0 ? (
                   <div className="py-10 text-center text-xs text-muted-foreground">
                     <p className="mb-3">
-                      {t("app.agents.kutubxonangizda_hali_toollar_yoq")}</p>
+                      {translate("app.agents.kutubxonangizda_hali_toollar_yoq")}</p>
                     <Link
                       to="/mening-toollarim"
                       className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
                     >
-                      <Plus className="h-3 w-3" /> {t("app.agents.mening_toollarimga_otish")}</Link>
+                      <Plus className="h-3 w-3" /> {translate("app.agents.mening_toollarimga_otish")}</Link>
                   </div>
                 ) : filteredTools.length === 0 ? (
                   <p className="py-10 text-center text-xs text-muted-foreground">
-                    {t("app.agents.hech_narsa_topilmadi")}</p>
+                    {translate("app.agents.hech_narsa_topilmadi")}</p>
                 ) : (
                   filteredTools.map((t) => {
                     const authed = isToolAuthenticated(t, toolConfigs[t.id]);
@@ -569,10 +573,10 @@ function AgentlarimPage() {
                             </div>
                             <p className="mt-0.5 text-[11px] text-muted-foreground">
                               {!authed
-                                ? t("app.agents.autentifikatsiya_kerak")
+                                ? translate("app.agents.autentifikatsiya_kerak")
                                 : insts.length === 0
-                                  ? t("app.agents.konfiguratsiya_kerak")
-                                  : t("app.agents.v0_ta_konfiguratsiya", { v0: insts.length })}
+                                  ? translate("app.agents.konfiguratsiya_kerak")
+                                  : translate("app.agents.v0_ta_konfiguratsiya", { v0: insts.length })}
                             </p>
                           </div>
                           {expanded ? (
@@ -585,15 +589,15 @@ function AgentlarimPage() {
                           <div className="border-t border-border/60 px-3 pb-3 pt-2">
                             {!authed ? (
                               <div className="rounded-lg border border-dashed border-border/60 bg-background/40 p-3 text-center text-[11px] text-muted-foreground">
-                                {t("app.agents.avval_mening_toollarimda_ulanishni_yakunlang")}{" "}
+                                {translate("app.agents.avval_mening_toollarimda_ulanishni_yakunlang")}{" "}
                                 <Link to="/mening-toollarim" className="text-primary hover:underline">
-                                  {t("app.agents.otish")}</Link>
+                                  {translate("app.agents.otish")}</Link>
                               </div>
                             ) : insts.length === 0 ? (
                               <div className="rounded-lg border border-dashed border-border/60 bg-background/40 p-3 text-center text-[11px] text-muted-foreground">
-                                {t("app.agents.hali_konfiguratsiya_yoq")}{" "}
+                                {translate("app.agents.hali_konfiguratsiya_yoq")}{" "}
                                 <Link to="/mening-toollarim" className="text-primary hover:underline">
-                                  {t("app.agents.yaratish")}</Link>
+                                  {translate("app.agents.yaratish")}</Link>
                               </div>
                             ) : (
                               <ul className="space-y-1.5">
@@ -628,7 +632,7 @@ function AgentlarimPage() {
                                         }`}
                                       >
                                         {attached ? (
-                                          <span className="inline-flex items-center gap-1"><Check className="h-3 w-3" /> {t("app.agents.ulangan")}</span>
+                                          <span className="inline-flex items-center gap-1"><Check className="h-3 w-3" /> {translate("app.agents.ulangan")}</span>
                                         ) : isBusy ? (
                                           <span className="inline-flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> ...</span>
                                         ) : (
@@ -649,9 +653,9 @@ function AgentlarimPage() {
               </div>
 
               <div className="border-t border-border/60 px-5 py-3 text-[10px] text-muted-foreground">
-                {t("app.agents.faqat_mening_toollarimda_ornatilgan_toollar_korinadi")}{" "}
+                {translate("app.agents.faqat_mening_toollarimda_ornatilgan_toollar_korinadi")}{" "}
                 <Link to="/mening-toollarim" className="text-primary hover:underline">
-                  {t("app.agents.kutubxonaga_otish")}</Link>
+                  {translate("app.agents.kutubxonaga_otish")}</Link>
               </div>
             </div>
           )}
@@ -670,12 +674,12 @@ function EmptyState() {
         <Bot className="h-5 w-5" />
       </div>
       <p className="text-sm text-muted-foreground">
-        {t("app.agents.hozircha_agent_yoq_birinchi_agentingizni_yaratib")}</p>
+        {translate("app.agents.hozircha_agent_yoq_birinchi_agentingizni_yaratib")}</p>
       <Link
         to="/agent-yaratish"
         className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
       >
-        <Plus className="h-4 w-4" /> {t("app.workspace.agent_yaratish")}</Link>
+        <Plus className="h-4 w-4" /> {translate("app.workspace.agent_yaratish")}</Link>
     </div>
   );
 }
@@ -764,7 +768,7 @@ function AgentCard(props: CardProps) {
               <p className="truncate text-sm font-semibold">{agent.name}</p>
             )}
             <p className="mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground/80">
-              {new Date(agent.createdAt).toLocaleDateString()}
+              {new Date(agent.createdAt).toLocaleDateString(getLocale())}
             </p>
           </div>
         </div>
@@ -775,7 +779,7 @@ function AgentCard(props: CardProps) {
           onClick={onOpenMenu}
           className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:bg-card/80 hover:text-foreground group-hover:opacity-100 data-[open=true]:opacity-100"
           data-open={menuOpen}
-          aria-label={t("app.agents.menyu")}
+          aria-label={translate("app.agents.menyu")}
         >
           <MoreVertical className="h-4 w-4" />
         </button>
@@ -788,34 +792,34 @@ function AgentCard(props: CardProps) {
             <MenuItem icon={Play} label="Ochish" onClick={onOpen} />
             <MenuItem
               icon={Wrench}
-              label={t("app.agents.tool_qoshish")}
+              label={translate("app.agents.tool_qoshish")}
               onClick={onAddTools}
               accent
             />
             {agent.status === "paused" ? (
               <MenuItem icon={Play} label="Faollashtirish" onClick={onResume} />
             ) : (
-              <MenuItem icon={Pause} label={t("app.agents.toxtatish")} onClick={onPause} />
+              <MenuItem icon={Pause} label={translate("app.agents.toxtatish")} onClick={onPause} />
             )}
-            <MenuItem icon={Pencil} label={t("app.agents.nomini_ozgartirish")} onClick={onRename} />
-            <MenuItem icon={Copy} label={t("app.agents.nusxa_olish")} onClick={onDuplicate} />
+            <MenuItem icon={Pencil} label={translate("app.agents.nomini_ozgartirish")} onClick={onRename} />
+            <MenuItem icon={Copy} label={translate("app.agents.nusxa_olish")} onClick={onDuplicate} />
             <div className="my-1 h-px bg-border/60" />
             {confirmDelete ? (
               <div className="px-2 py-1.5 text-[11px]">
-                <p className="mb-1.5 text-muted-foreground">{t("app.agents.ochirishni_tasdiqlang")}</p>
+                <p className="mb-1.5 text-muted-foreground">{translate("app.agents.ochirishni_tasdiqlang")}</p>
                 <div className="flex gap-1.5">
                   <button
                     type="button"
                     onClick={onDelete}
                     className="flex-1 rounded-md bg-primary px-2 py-1 text-primary-foreground"
                   >
-                    {t("app.agents.ha")}</button>
+                    {translate("app.agents.ha")}</button>
                   <button
                     type="button"
                     onClick={() => setConfirmDelete(false)}
                     className="flex-1 rounded-md border border-border/60 px-2 py-1"
                   >
-                    {t("app.agents.yoq")}</button>
+                    {translate("app.agents.yoq")}</button>
                 </div>
               </div>
             ) : (
@@ -842,7 +846,7 @@ function AgentCard(props: CardProps) {
           {status.label}
         </span>
         <span className="inline-flex items-center gap-1">
-          <Wrench className="h-3 w-3" /> {toolsCount} {t("app.agents.ta_tool")}</span>
+          <Wrench className="h-3 w-3" /> {toolsCount} {translate("app.agents.ta_tool")}</span>
         <span className="inline-flex items-center gap-1">
           <Circle className="h-2 w-2 fill-current" /> {timeAgo(agent.lastActivity ?? agent.createdAt)}
         </span>

@@ -1,4 +1,7 @@
-import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
+import { WorkspaceCosmos } from '@/components/workspace-cosmos';
+import { CosmicEnding } from '@/components/cosmic-ending';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { t as translate, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Clock, CircleDashed, Target } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
@@ -7,10 +10,10 @@ import wordmark from "@/assets/agentus-wordmark.png";
 export const Route = createFileRoute("/roadmap")({
   head: () => ({
     meta: [
-      { title: t("app.common.agentus_development_roadmap_agentus") },
-      { name: "description", content: t("app.common.agentus_rivojlanish_yol_xaritasi_bugun_mavjud") },
-      { property: "og:title", content: t("app.common.agentus_development_roadmap_agentus") },
-      { property: "og:description", content: t("app.common.agentus_rivojlanish_yol_xaritasi_bugun_mavjud") },
+      { title: translate("app.common.agentus_development_roadmap_agentus") },
+      { name: "description", content: translate("app.common.agentus_rivojlanish_yol_xaritasi_bugun_mavjud") },
+      { property: "og:title", content: translate("app.common.agentus_development_roadmap_agentus") },
+      { property: "og:description", content: translate("app.common.agentus_rivojlanish_yol_xaritasi_bugun_mavjud") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -21,49 +24,49 @@ export const Route = createFileRoute("/roadmap")({
 const phases = localized(() => ([
   {
     status: "available",
-    label: t("app.common.mavjud"),
-    title: t("app.common.joriy_mvp"),
+    label: translate("app.common.mavjud"),
+    title: translate("app.common.joriy_mvp"),
     icon: CheckCircle2,
     items: [
-      t("app.common.suniy_intellekt_agentini_yaratish"),
-      t("app.common.ai_jamoasini_yaratish"),
-      t("app.common.asbob_ulanishi"),
-      t("app.common.maxsus_agent_boshqaruv_paneli"),
-      t("app.common.agent_kodeksi"),
-      t("app.common.agentning_ishlash_vaqti"),
-      t("app.common.agentlarni_boshqarish"),
+      translate("app.common.suniy_intellekt_agentini_yaratish"),
+      translate("app.common.ai_jamoasini_yaratish"),
+      translate("app.common.asbob_ulanishi"),
+      translate("app.common.maxsus_agent_boshqaruv_paneli"),
+      translate("app.common.agent_kodeksi"),
+      translate("app.common.agentning_ishlash_vaqti"),
+      translate("app.common.agentlarni_boshqarish"),
     ],
   },
   {
     status: "in-progress",
-    label: t("app.common.ishlab_chiqilmoqda"),
-    title: t("app.common.hozirda_qurilmoqda"),
+    label: translate("app.common.ishlab_chiqilmoqda"),
+    title: translate("app.common.hozirda_qurilmoqda"),
     icon: Clock,
     items: [
-      t("app.common.asboblar_bozori"),
-      t("app.common.247_ish_vaqti"),
-      t("app.common.model_router"),
-      t("app.common.jamoa_orkestri"),
+      translate("app.common.asboblar_bozori"),
+      translate("app.common.247_ish_vaqti"),
+      translate("app.common.model_router"),
+      translate("app.common.jamoa_orkestri"),
       "Tahlil",
-      t("app.common.bilimlar_markazi"),
-      t("app.common.mcp_integratsiyasi"),
+      translate("app.common.bilimlar_markazi"),
+      translate("app.common.mcp_integratsiyasi"),
     ],
   },
   {
     status: "planned",
-    label: t("app.agents.rejalashtirilgan"),
-    title: t("app.common.kelajak_uchun_rejalashtirilgan"),
+    label: translate("app.agents.rejalashtirilgan"),
+    title: translate("app.common.kelajak_uchun_rejalashtirilgan"),
     icon: CircleDashed,
     items: [
-      t("app.common.agent_bozori"),
-      t("app.common.mening_kompyuterim"),
-      t("app.common.ish_stoli_sinxronizatsiyasi"),
-      t("app.common.mobil_ilova"),
-      t("app.common.mahalliy_ai_ish_vaqti"),
-      t("app.common.suniy_intellekt_kompaniyasi_generatori"),
-      t("app.common.biznes_shablonlari"),
-      t("app.common.korxona_ish_maydoni"),
-      t("app.common.gumanoid_robototexnika_integratsiyasi"),
+      translate("app.common.agent_bozori"),
+      translate("app.common.mening_kompyuterim"),
+      translate("app.common.ish_stoli_sinxronizatsiyasi"),
+      translate("app.common.mobil_ilova"),
+      translate("app.common.mahalliy_ai_ish_vaqti"),
+      translate("app.common.suniy_intellekt_kompaniyasi_generatori"),
+      translate("app.common.biznes_shablonlari"),
+      translate("app.common.korxona_ish_maydoni"),
+      translate("app.common.gumanoid_robototexnika_integratsiyasi"),
     ],
   },
 ]));
@@ -98,8 +101,8 @@ const statusMeta: Record<
 function Roadmap() {
   useI18n();
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Header */}
+    <div className="cosmic-page min-h-screen bg-background text-foreground overflow-x-hidden">
+      <WorkspaceCosmos continuous/><LanguageSwitcher/>{/* Header */}
       <header className="relative z-30">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
           <Link to="/" className="flex items-baseline gap-0.5">
@@ -108,19 +111,19 @@ function Roadmap() {
           </Link>
           <nav className="hidden items-center gap-10 md:flex">
             <Link to="/" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              {t("app.common.bosh_sahifa")}</Link>
+              {translate("app.common.bosh_sahifa")}</Link>
             <a href="/#xususiyatlar" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              {t("app.common.xususiyatlar")}</a>
+              {translate("app.common.xususiyatlar")}</a>
             <Link
               to="/biz-haqimizda"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              {t("app.common.biz_haqimizda")}</Link>
+              {translate("app.common.biz_haqimizda")}</Link>
             <Link
               to="/roadmap"
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
-              {t("app.common.yol_xaritasi")}</Link>
+              {translate("app.common.yol_xaritasi")}</Link>
           </nav>
         </div>
       </header>
@@ -149,9 +152,9 @@ function Roadmap() {
             draggable={false}
           />
           <h1 className="mt-8 text-3xl font-bold tracking-tight md:text-4xl">
-            {t("app.common.agentus_development_roadmap")}</h1>
+            {translate("app.common.agentus_development_roadmap")}</h1>
           <p className="mt-4 max-w-2xl text-balance text-xl text-foreground/90 md:text-2xl">
-            {t("app.common.suniy_intellekt_sohasidagi_ishlarning_kelajagini_qurish")}</p>
+            {translate("app.common.suniy_intellekt_sohasidagi_ishlarning_kelajagini_qurish")}</p>
         </div>
       </section>
 
@@ -159,9 +162,9 @@ function Roadmap() {
       <section className="relative border-t border-border/60 bg-background">
         <div className="mx-auto max-w-3xl px-6 py-12 text-center">
           <p className="text-balance text-base leading-relaxed text-muted-foreground md:text-lg">
-            {t("app.common.agentus_bosqichmabosqich_quriladi_biz_avval_barqaror")}</p>
+            {translate("app.common.agentus_bosqichmabosqich_quriladi_biz_avval_barqaror")}</p>
           <p className="mt-4 text-balance text-sm leading-relaxed text-muted-foreground">
-            {t("app.common.chiqarilgan_har_bir_xususiyat_keyingi_bosqichga")}</p>
+            {translate("app.common.chiqarilgan_har_bir_xususiyat_keyingi_bosqichga")}</p>
         </div>
       </section>
 
@@ -238,15 +241,15 @@ function Roadmap() {
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/30 px-4 py-2 text-sm text-muted-foreground">
             <Target className="h-4 w-4 text-primary" />
-            <span>{t("app.common.joriy_bosqich")}</span>
+            <span>{translate("app.common.joriy_bosqich")}</span>
           </div>
 
           <h2 className="mt-5 text-2xl font-bold tracking-tight md:text-3xl">
-            {t("app.common.mvpni_ishlab_chiqish")}</h2>
+            {translate("app.common.mvpni_ishlab_chiqish")}</h2>
 
           <div className="mt-6 inline-flex w-full max-w-xs flex-col gap-2 rounded-lg border border-border/60 bg-card/40 px-5 py-4">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>{t("app.common.jarayon_paneli")}</span>
+              <span>{translate("app.common.jarayon_paneli")}</span>
               <span className="font-semibold text-primary">60%</span>
             </div>
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-secondary">
@@ -255,14 +258,11 @@ function Roadmap() {
           </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{t("app.common.hozirgi_maqsad")}</span> {t("app.common.birinchi_ommaviy_mvpni_ishga_tushirish")}</p>
+            <span className="font-medium text-foreground">{translate("app.common.hozirgi_maqsad")}</span> {translate("app.common.birinchi_ommaviy_mvpni_ishga_tushirish")}</p>
         </div>
       </section>
 
-      <footer className="border-t border-border/60">
-        <div className="mx-auto max-w-7xl px-6 py-6 text-center text-xs text-muted-foreground">
-          {t("app.common.2026_agentus_ishlab_chiqilmoqda")}</div>
-      </footer>
+      <CosmicEnding/>
     </div>
   );
 }
