@@ -1,4 +1,5 @@
-# Landing page refresh
-- [x] Build the uploaded brief’s ten sections and cinematic hero.
-- [x] Keep planned capabilities, tariffs and targets clearly labeled.
-- [x] Verify mobile menu, navigation, desktop/mobile layout and metadata.
+# Agentus dashboard refresh
+- [x] Rebuild Home with prompt, recent agents, usage and onboarding checklist.
+- [x] Build the five-step chat wizard, live carousel and assembling agent card.
+- [x] Add responsive navigation, working theme controls, coming-soon modals and publish states.
+- [x] Verify the complete flow on desktop and mobile, including keyboard interactions.
