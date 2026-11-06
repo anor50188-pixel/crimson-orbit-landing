@@ -1,27 +1,59 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
 import {
-  Home,
+  ArrowRight,
+  BarChart3,
+  Bell,
+  BookOpen,
   Bot,
-  Store,
-  Wrench,
-  Wallet,
-  Settings,
-  ChevronRight,
-  Send,
-  Instagram,
-  MessageCircle,
-  FileSpreadsheet,
-  Brain,
   Box,
-  User,
+  Brain,
+  Calculator,
+  CalendarClock,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Circle,
+  Clock,
   Crown,
-  Share2,
+  Database,
+  FileSpreadsheet,
+  Globe,
+  Home,
+  Instagram,
+  Layers,
+  LockKeyhole,
+  Mail,
+  Megaphone,
+  Menu,
+  MessageCircle,
+  Moon,
+  Play,
+  Plus,
+  Search,
+  Send,
+  Settings,
+  Shield,
+  ShoppingCart,
+  Sparkles,
+  Store,
+  Sun,
   Upload,
-  Paperclip,
+  User,
+  Users,
+  Wallet,
+  Wrench,
   X,
-  ArrowLeft,
+  Zap,
+  type LucideIcon,
 } from "lucide-react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
@@ -31,683 +63,1073 @@ export const Route = createFileRoute("/agent-yaratish")({
   head: () => ({
     meta: [
       { title: "Agent yaratish — Agentus" },
-      { property: "og:title", content: "Agent yaratish — Agentus" },
-      { property: "og:description", content: "Suhbat orqali agent yaratish demo muhiti. Agent g'oyangizni kiriting va profilini sozlang." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
-        content:
-          "Agentus'da yangi AI agent yaratish. Suhbat orqali agent qurish demo simulyatsiyasi.",
+        content: "Agentus yordamchisi bilan suhbatda o‘z AI agentingizni yarating.",
       },
+      { property: "og:title", content: "Agent yaratish — Agentus" },
+      {
+        property: "og:description",
+        content: "G‘oyangizni yozing, savollarga javob bering va agentingiz jonli shakllanishini kuzating.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
 });
 
-const navItems = [
-  { icon: Home, label: "Asosiy", active: true },
-  { icon: Bot, label: "Agentlarim" },
-  { icon: Store, label: "Marketplace" },
-  { icon: Wrench, label: "Mening toollarim", to: "/mening-toollarim" as const },
-  { icon: Crown, label: "Sotuvchi paneli", to: "/seller" as const },
-  { icon: Wallet, label: "To'lovlar" },
-  { icon: Settings, label: "Sozlamalar" },
-];
+type Phase = "home" | "builder";
+type SoonKey = "Marketplace" | "Mening toollarim" | "Sotuvchi paneli" | "To'lovlar";
+type MobilePanel = "chat" | "live";
+type ChatMessage = { id: number; role: "user" | "assistant"; text: string };
+type Draft = {
+  name: string;
+  icon: string;
+  direction: string;
+  tools: string[];
+  schedule: string;
+  prompt: string;
+  instructions: string;
+};
 
-const examples = [
+const initialDraft: Draft = {
+  name: "",
+  icon: "bot",
+  direction: "",
+  tools: [],
+  schedule: "",
+  prompt: "",
+  instructions: "",
+};
+
+const suggestions = [
   { icon: Send, text: "Telegram orqali hisobot yig'uvchi agent yarat" },
   { icon: Instagram, text: "Instagram postlar tayyorlovchi agent" },
   { icon: MessageCircle, text: "Mijozlar bilan avtomatik muloqot qiluvchi bot" },
   { icon: FileSpreadsheet, text: "Excel fayllar bilan ishlovchi agent" },
 ];
 
-type ChatMessage = { role: "user" | "brain"; text: string; time: string };
-type Phase = "hero" | "building";
+const recentAgents = [
+  { name: "Hisobot yig‘uvchi", icon: BarChart3, status: "Faol" },
+  { name: "Kontent yordamchisi", icon: Instagram, status: "Qoralama" },
+  { name: "Mijozlar boti", icon: MessageCircle, status: "To‘xtatilgan" },
+];
 
-function nowTime() {
-  const d = new Date();
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-}
+const questions = [
+  "Agentingizga qanday nom beramiz?",
+  "Ikonka tanlang",
+  "Qaysi yo‘nalishga tegishli?",
+  "Qaysi tool'lar kerak bo'ladi?",
+  "Agent qachon ishlasin?",
+];
+
+const directions = [
+  "Talabalar",
+  "Biznes",
+  "Marketing",
+  "Qo‘llab-quvvatlash",
+  "Kontent",
+  "Tadqiqot",
+  "Ta’lim",
+  "Samaradorlik",
+];
+
+const iconChoices: { id: string; icon: LucideIcon; label: string }[] = [
+  { id: "bot", icon: Bot, label: "Bot" },
+  { id: "chart", icon: BarChart3, label: "Grafik" },
+  { id: "mail", icon: Mail, label: "Pochta" },
+  { id: "megaphone", icon: Megaphone, label: "E’lon" },
+  { id: "book", icon: BookOpen, label: "Kitob" },
+  { id: "shield", icon: Shield, label: "Himoya" },
+  { id: "cart", icon: ShoppingCart, label: "Savat" },
+  { id: "spark", icon: Sparkles, label: "Yulduz" },
+];
+
+const toolChoices: { name: string; icon: LucideIcon }[] = [
+  { name: "Telegram", icon: Send },
+  { name: "Web qidiruv", icon: Search },
+  { name: "HTTP so‘rov", icon: Globe },
+  { name: "Xotira", icon: Database },
+  { name: "Kalkulyator", icon: Calculator },
+  { name: "Sana/vaqt", icon: Clock },
+];
+
+const schedules = ["Qo‘lda", "Har soat", "Har kuni", "Har hafta"];
+
+const carouselCards: { icon: LucideIcon; title: string; text: string }[] = [
+  {
+    icon: Bot,
+    title: "Agent nima?",
+    text: "Mustaqil ishlaydigan AI yordamchi: o‘z maqsadi, qoidalari, toollari va xotirasi bor.",
+  },
+  {
+    icon: Wrench,
+    title: "Tool nima?",
+    text: "Agent o‘ylaydi, tool harakat qiladi: Telegram, veb-qidiruv, API.",
+  },
+  {
+    icon: Users,
+    title: "AI Jamoa",
+    text: "Mijoz → Lead → Taklif → Shartnoma: agentlar zanjir bo‘lib ishlaydi.",
+  },
+  {
+    icon: Clock,
+    title: "24/7 avtonom",
+    text: "Jadval bo‘yicha agent o‘zi ishga tushadi.",
+  },
+  {
+    icon: Database,
+    title: "Xotira",
+    text: "Agent muhim faktlarni eslab qoladi.",
+  },
+  {
+    icon: Shield,
+    title: "Xavfsizlik",
+    text: "Tokenlar shifrlangan holda saqlanadi.",
+  },
+  {
+    icon: Store,
+    title: "Marketplace",
+    text: "Tez orada: agentlaringizni soting va daromad qiling.",
+  },
+];
+
+const soonContent: Record<
+  SoonKey,
+  { icon: LucideIcon; description: string; bullets: string[] }
+> = {
+  Marketplace: {
+    icon: Store,
+    description: "Tayyor agentlarni toping va bir bosishda o‘zingizniki qiling.",
+    bullets: ["Reyting va sharhlar", "Kategoriyalar bo‘yicha qidiruv", "Bir bosishda o‘rnatish"],
+  },
+  "Mening toollarim": {
+    icon: Wrench,
+    description: "Barcha ulangan toollarni bir joyda boshqaring.",
+    bullets: ["Tokenlarni xavfsiz saqlash", "Toolni bir nechta agentga ulash", "Foydalanish statistikasi"],
+  },
+  "Sotuvchi paneli": {
+    icon: Crown,
+    description: "Agentingizni soting va daromad oling.",
+    bullets: ["75% daromad sizga", "Sotuvlar va reyting statistikasi", "Oylik to‘lovlar"],
+  },
+  "To'lovlar": {
+    icon: Wallet,
+    description: "Obuna va to‘lovlarni qulay boshqaring.",
+    bullets: ["Payme va Click orqali to‘lov", "To‘lov tarixi", "Tarifni bir bosishda yangilash"],
+  },
+};
+
+let messageId = 0;
+const nextMessageId = () => ++messageId;
 
 function AgentCreatePage() {
-  return <AgentCreatePageInner />;
-}
-
-function AgentCreatePageInner() {
   const navigate = useNavigate();
+  const [phase, setPhase] = useState<Phase>("home");
   const [prompt, setPrompt] = useState("");
-  const [phase, setPhase] = useState<Phase>("hero");
-
+  const [draft, setDraft] = useState<Draft>(initialDraft);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [followUp, setFollowUp] = useState("");
-  const chatEndRef = useRef<HTMLDivElement | null>(null);
-  const [attachments, setAttachments] = useState<File[]>([]);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [step, setStep] = useState(0);
+  const [typing, setTyping] = useState(false);
+  const [composer, setComposer] = useState("");
+  const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [published, setPublished] = useState(false);
+  const [readyInteracted, setReadyInteracted] = useState(false);
+  const [flash, setFlash] = useState("");
+  const [mobilePanel, setMobilePanel] = useState<MobilePanel>("chat");
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [soon, setSoon] = useState<SoonKey | null>(null);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [toast, setToast] = useState("");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [carouselPaused, setCarouselPaused] = useState(false);
+  const timers = useRef<number[]>([]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const promptRef = useRef<HTMLTextAreaElement>(null);
 
-  // Publish modal state
-  const [publishOpen, setPublishOpen] = useState(false);
-  const [pubName, setPubName] = useState("");
-  const [pubDesc, setPubDesc] = useState("");
-  const [pubCategory, setPubCategory] = useState("Automation");
-  const [pubIconUrl, setPubIconUrl] = useState<string | null>(null);
-  const [pubError, setPubError] = useState<string | null>(null);
-  const iconInputRef = useRef<HTMLInputElement | null>(null);
-
-  const resetPublishForm = () => {
-    setPubName("");
-    setPubDesc("");
-    setPubCategory("Automation");
-    setPubIconUrl(null);
-    setPubError(null);
-  };
-
-  const handleIconPick = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") setPubIconUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleCreateAgent = () => {
-    const name = pubName.trim();
-    const desc = pubDesc.trim();
-    if (!name) {
-      setPubError("Agent nomini kiriting.");
-      return;
-    }
-    if (!desc) {
-      setPubError("Qisqa tavsif kiriting.");
-      return;
-    }
-    const newAgent = {
-      id: `${Date.now()}`,
-      name,
-      description: desc,
-      createdAt: new Date().toISOString(),
-      status: "active" as const,
-      tools: [] as string[],
-      lastActivity: new Date().toISOString(),
-      iconUrl: pubIconUrl ?? undefined,
-      category: pubCategory,
-    };
-    try {
-      const raw = localStorage.getItem("agentus:agents");
-      const list = raw ? (JSON.parse(raw) as unknown[]) : [];
-      const next = [newAgent, ...(Array.isArray(list) ? list : [])];
-      localStorage.setItem("agentus:agents", JSON.stringify(next));
-    } catch {
-      /* ignore */
-    }
-    setPublishOpen(false);
-    resetPublishForm();
-    navigate({ to: "/agentlarim" });
+  const later = (callback: () => void, delay = 560) => {
+    const timer = window.setTimeout(callback, delay);
+    timers.current.push(timer);
   };
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, phase]);
+    return () => timers.current.forEach(window.clearTimeout);
+  }, []);
 
-  const handleSubmit = () => {
-    const text = prompt.trim();
-    if (!text || phase !== "hero") return;
-    const t = nowTime();
-    setMessages([
-      { role: "user", text, time: t },
-      {
-        role: "brain",
-        text: "Demo rejim — hozircha haqiqiy AI ulanmagan. Bu yerda Agentus Brain sizning promtingiz asosida jonli agent qurgan bo'lardi va natija chap tomonda paydo bo'ladi.",
-        time: t,
-      },
-    ]);
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(""), 3200);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, typing, step, selectedTools]);
+
+  useEffect(() => {
+    if (phase !== "builder" || step !== 0 || carouselPaused) return;
+    const timer = window.setInterval(
+      () => setCarouselIndex((index) => (index + 1) % carouselCards.length),
+      4000,
+    );
+    return () => window.clearInterval(timer);
+  }, [phase, step, carouselPaused]);
+
+  const showToast = (text: string) => setToast(text);
+
+  const startBuilder = (text: string) => {
+    const clean = text.trim();
+    if (!clean) return;
+    setDraft({ ...initialDraft, prompt: clean });
+    setMessages([{ id: nextMessageId(), role: "user", text: clean }]);
     setPrompt("");
-    setPhase("building");
+    setStep(0);
+    setTyping(true);
+    setPublished(false);
+    setReadyInteracted(false);
+    setSelectedTools([]);
+    setComposer("");
+    setMobilePanel("chat");
+    setPhase("builder");
+    setMobileMenu(false);
+    later(() => setTyping(false), 650);
   };
 
-  const sendFollowUp = () => {
-    const text = followUp.trim();
-    if (!text && attachments.length === 0) return;
-    const attachNote =
-      attachments.length > 0
-        ? `\n\n📎 Ilova: ${attachments.map((f) => f.name).join(", ")}`
-        : "";
-    setMessages((m) => [
-      ...m,
-      { role: "user", text: (text || "(fayl yuborildi)") + attachNote, time: nowTime() },
+  const goHome = () => {
+    setPhase("home");
+    setMobileMenu(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const updateDraft = (currentStep: number, value: string | string[]) => {
+    setDraft((current) => {
+      if (currentStep === 0) return { ...current, name: String(value) };
+      if (currentStep === 1) return { ...current, icon: String(value) };
+      if (currentStep === 2) return { ...current, direction: String(value) };
+      if (currentStep === 3) return { ...current, tools: value as string[] };
+      return { ...current, schedule: String(value) };
+    });
+    const fields = ["name", "icon", "direction", "tools", "schedule"];
+    setFlash(fields[currentStep]);
+    later(() => setFlash(""), 800);
+  };
+
+  const answer = (value: string | string[], display?: string) => {
+    if (typing || step >= questions.length) return;
+    if (Array.isArray(value) && value.length === 0) return;
+    if (!Array.isArray(value) && !value.trim()) return;
+    const currentStep = step;
+    const answerText = display ?? (Array.isArray(value) ? value.join(", ") : value);
+    setMessages((current) => [
+      ...current,
+      { id: nextMessageId(), role: "assistant", text: questions[currentStep] },
+      { id: nextMessageId(), role: "user", text: answerText },
+    ]);
+    updateDraft(currentStep, value);
+    setComposer("");
+    setStep(currentStep + 1);
+    setTyping(true);
+    later(() => setTyping(false));
+  };
+
+  const toggleTool = (name: string) => {
+    setSelectedTools((current) =>
+      current.includes(name) ? current.filter((tool) => tool !== name) : [...current, name],
+    );
+  };
+
+  const sendReadyEdit = (text: string) => {
+    setReadyInteracted(true);
+    setMessages((current) => [
+      ...current,
+      { id: nextMessageId(), role: "user", text },
+    ]);
+    const normalized = text.toLowerCase();
+    let field = "instructions";
+    setDraft((current) => {
+      if (normalized.startsWith("nomini")) {
+        field = "name";
+        const name = text
+          .replace(/^nomini\s*:?/i, "")
+          .replace(/o['‘’]zgartir/gi, "")
+          .trim();
+        return { ...current, name: name || current.name };
+      }
+      if (normalized.includes("tool")) {
+        field = "tools";
+        return {
+          ...current,
+          tools: current.tools.includes("Web qidiruv")
+            ? current.tools
+            : [...current.tools, "Web qidiruv"],
+        };
+      }
+      return { ...current, instructions: text };
+    });
+    setFlash(field);
+    setTyping(true);
+    later(() => {
+      setTyping(false);
+      setFlash("");
+      setMessages((current) => [
+        ...current,
+        {
+          id: nextMessageId(),
+          role: "assistant",
+          text: "O‘zgartirish jonli ko‘rinishga qo‘shildi.",
+        },
+      ]);
+    });
+  };
+
+  const submitComposer = (event?: FormEvent) => {
+    event?.preventDefault();
+    const text = composer.trim();
+    if (!text || typing) return;
+    if (step < questions.length) answer(text);
+    else sendReadyEdit(text);
+    setComposer("");
+  };
+
+  const publish = () => {
+    if (published) {
+      navigate({ to: "/agentlarim" });
+      return;
+    }
+    setPublished(true);
+    showToast("Agent e’lon qilindi");
+  };
+
+  const testAgent = () => {
+    setMessages((current) => [
+      ...current,
       {
-        role: "brain",
-        text: "Qabul qilindi. (Demo — hozircha haqiqiy AI ulanmagan.)",
-        time: nowTime(),
+        id: nextMessageId(),
+        role: "assistant",
+        text: "Sinov uchun chatga buyruq yozing — o‘zgartirish jonli ko‘rinishda aks etadi.",
       },
     ]);
-    setFollowUp("");
-    setAttachments([]);
+    setReadyInteracted(true);
+    setMobilePanel("chat");
+  };
+
+  const openNewAgent = () => {
+    goHome();
+    later(() => {
+      promptRef.current?.focus();
+      promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
   };
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      {/* SIDEBAR — building fazasida yashirinadi, jonli maydonga joy beriladi */}
-      <aside
-        className={`${phase === "building" ? "hidden" : "hidden lg:flex"} w-[220px] shrink-0 flex-col border-r border-border/60 bg-background`}
-      >
-        <div className="px-6 py-6">
-          <Link to="/" className="inline-flex">
-            <img src={wordmark} alt="AGENTUS" className="h-6 w-auto" draggable={false} />
-          </Link>
-        </div>
+    <div className="agent-workspace" data-theme={theme}>
+      <Sidebar
+        builder={phase === "builder"}
+        mobileOpen={mobileMenu}
+        onClose={() => setMobileMenu(false)}
+        onHome={goHome}
+        onSoon={setSoon}
+        onNotice={showToast}
+      />
 
-        <nav className="flex-1 space-y-0.5 px-3">
-          {navItems.map(({ icon: Icon, label, active }) => {
-            if (active) {
-              return (
-                <span
-                  key={label}
-                  className="flex items-center gap-3 rounded-lg bg-primary/15 px-3 py-2.5 text-sm font-medium text-foreground"
-                >
-                  <Icon className="h-4 w-4 text-primary" />
-                  {label}
-                </span>
-              );
-            }
-            if (label === "Agentlarim") {
-              return (
-                <Link
-                  key={label}
-                  to="/agentlarim"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Link>
-              );
-            }
-            if (label === "Mening toollarim") {
-              return (
-                <Link
-                  key={label}
-                  to="/mening-toollarim"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Link>
-              );
-            }
-            if (label === "Sotuvchi paneli") {
-              return (
-                <Link
-                  key={label}
-                  to="/seller"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Link>
-              );
-            }
-            return (
+      <main className={`workspace-main ${phase === "builder" ? "is-builder" : ""}`}>
+        <img className="workspace-horizon" src={heroPlanet} alt="" draggable={false} />
+        <div className="workspace-stars" aria-hidden="true" />
+
+        <header className="workspace-topbar">
+          <div className="topbar-title">
+            <button
+              className="icon-button mobile-menu-button"
+              type="button"
+              onClick={() => setMobileMenu(true)}
+              aria-label="Menyuni ochish"
+            >
+              <Menu />
+            </button>
+            <span>Agentus</span>
+            <ChevronRight aria-hidden="true" />
+            <strong>{phase === "home" ? "Asosiy" : "Agent yaratish"}</strong>
+          </div>
+          <div className="topbar-actions">
+            <button
+              className="icon-button"
+              type="button"
+              onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
+              aria-label={theme === "dark" ? "Yorug‘ mavzuga o‘tish" : "Tungi mavzuga o‘tish"}
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </button>
+            <span className="language-chip">UZ</span>
+            <div className="topbar-popover-wrap">
               <button
-                key={label}
+                className="icon-button notification-button"
                 type="button"
-                disabled
-                title="Bu bo'lim hali ishlab chiqilmoqda"
-                className="flex w-full cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground opacity-70 hover:opacity-100"
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Pro Plan card (demo — plan tizimi hali ulanmagan) */}
-        <div className="mx-3 mb-3 rounded-xl border border-border/60 bg-card/60 p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <Box className="h-4 w-4 text-primary" />
-            <p className="text-sm font-semibold">Pro Plan</p>
-            <span className="ml-auto rounded border border-border/60 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">
-              Demo
-            </span>
-          </div>
-          <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-            Barcha premium imkoniyatlardan foydalaning.
-          </p>
-          <button
-            type="button"
-            disabled
-            title="To'lov tizimi hali ulanmagan"
-            className="w-full cursor-not-allowed rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground opacity-80"
-          >
-            Rejani yangilash
-          </button>
-        </div>
-
-        {/* User profile (demo hisob) */}
-        <div className="border-t border-border/60 px-3 py-4">
-          <div className="flex items-center gap-3 rounded-lg px-2 py-1.5">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">
-              <User className="h-4 w-4" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">Azizbek</p>
-              <p className="truncate text-[11px] text-muted-foreground">Demo hisob</p>
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="mt-3 px-2">
-            <div className="h-1 w-full overflow-hidden rounded-full bg-border/60">
-              <div className="h-full w-[0%] bg-primary" />
-            </div>
-            <p className="mt-1.5 text-[10px] text-muted-foreground">0 / 0 agent (demo)</p>
-          </div>
-        </div>
-      </aside>
-
-      {/* MAIN */}
-      <main className="relative isolate flex flex-1 flex-col overflow-hidden">
-        {/* Planet horizon */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55vh]">
-          <img
-            src={heroPlanet}
-            alt=""
-            className="h-full w-full object-cover object-top"
-            style={{
-              filter:
-                "saturate(1.65) contrast(1.12) brightness(1.08) hue-rotate(-12deg)",
-              opacity: 0.55,
-            }}
-            draggable={false}
-          />
-          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-background via-background/70 to-transparent" />
-        </div>
-        <div
-          className="pointer-events-none absolute inset-0 -z-20"
-          style={{
-            background:
-              "radial-gradient(ellipse 70% 45% at 50% 105%, oklch(0.58 0.22 25 / 0.35), transparent 65%), radial-gradient(ellipse 60% 50% at 90% 10%, oklch(0.22 0.14 25 / 0.5), transparent 60%), var(--background)",
-          }}
-        />
-
-        {/* TOP BAR — Lovable-style */}
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur">
-          <div className="flex items-center gap-3">
-            <Link
-              to="/agentlarim"
-              className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card hover:text-primary"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Oldingi bo‘limga qaytish</span>
-              <span className="sm:hidden">Ortga</span>
-            </Link>
-            <Link to="/" className="inline-flex lg:hidden">
-              <img src={wordmark} alt="AGENTUS" className="h-5 w-auto" draggable={false} />
-            </Link>
-            <span className="hidden rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary lg:inline-flex">
-              Demo simulyatsiya
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled
-              title="Ulashish funksiyasi hali ulanmagan"
-              className="inline-flex items-center gap-2 rounded-lg border border-border/60 bg-card/60 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Share2 className="h-4 w-4" />
-              Share
-            </button>
-            <button
-              type="button"
-              onClick={() => setPublishOpen(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              <Upload className="h-4 w-4" />
-              Publish
-            </button>
-          </div>
-        </div>
-
-        {/* HERO */}
-        {phase === "hero" && (
-          <div className="relative mx-auto flex min-h-0 flex-1 flex-col items-center justify-center px-6 pb-16 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 py-1.5 pl-1.5 pr-4 text-sm text-primary backdrop-blur">
-              <span className="rounded-full bg-primary px-2.5 py-0.5 text-[11px] font-semibold text-primary-foreground">
-                Demo
-              </span>
-              <span>Agent yaratish simulyatsiyasi</span>
-            </div>
-
-            <h1 className="mt-8 text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
-              Qanday agent quramiz, Azizbek?
-            </h1>
-
-            {/* Prompt box */}
-            <div className="mt-10 w-full max-w-2xl rounded-3xl border border-border bg-card/80 p-4 shadow-2xl shadow-black/40 backdrop-blur">
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
+                onClick={() => {
+                  setNotificationsOpen((value) => !value);
+                  setProfileOpen(false);
                 }}
-                placeholder="Agentusdan hisobot yig'uvchi agent qurishni so'rang..."
-                rows={2}
-                className="w-full resize-none bg-transparent px-2 py-2 text-left text-base text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
-              <div className="mt-2 flex items-center justify-end">
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={!prompt.trim()}
-                  className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-                >
-                  Yaratish
-                  <Send className="h-4 w-4" />
-                </button>
-              </div>
+                aria-label="Bildirishnomalar"
+                aria-expanded={notificationsOpen}
+              >
+                <Bell />
+              </button>
+              {notificationsOpen && (
+                <div className="topbar-popover">
+                  <strong>Bildirishnomalar</strong>
+                  <p>Yangi bildirishnoma yo‘q</p>
+                </div>
+              )}
             </div>
-
-            {/* Example chips */}
-            <div className="mt-6 flex w-full max-w-2xl flex-wrap justify-center gap-2">
-              {examples.map(({ icon: Icon, text }) => (
-                <button
-                  key={text}
-                  type="button"
-                  onClick={() => setPrompt(text)}
-                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition-colors hover:border-primary/60 hover:text-foreground"
-                >
-                  <Icon className="h-3.5 w-3.5 text-primary" />
-                  {text}
-                </button>
-              ))}
+            <div className="topbar-popover-wrap">
+              <button
+                className="topbar-avatar"
+                type="button"
+                onClick={() => {
+                  setProfileOpen((value) => !value);
+                  setNotificationsOpen(false);
+                }}
+                aria-label="Profil ma’lumotlari"
+                aria-expanded={profileOpen}
+              >
+                A
+              </button>
+              {profileOpen && (
+                <div className="topbar-popover profile-popover">
+                  <strong>Azizbek</strong>
+                  <p>Pro tarif</p>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </header>
 
-        {/* SPLIT VIEW: preview left, chat right */}
-        {phase !== "hero" && (
-          <div className="grid flex-1 gap-0 overflow-hidden lg:grid-cols-[1fr_420px]">
-            {/* PREVIEW PANEL */}
-            <section className="relative flex min-h-0 flex-col items-center justify-center overflow-hidden p-8">
-              <div className="pointer-events-none absolute inset-0 opacity-40">
-                <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-3xl" />
-              </div>
-              <div className="relative flex flex-col items-center text-center">
-                <span className="relative grid h-20 w-20 place-items-center rounded-full border border-primary/40 bg-primary/10">
-                  <span className="absolute inset-0 animate-ping rounded-full border border-primary/40" />
-                  <Brain className="h-8 w-8 text-primary" />
-                </span>
-                <h2 className="mt-6 text-xl font-semibold tracking-tight">
-                  Agentus Brain ishlayapti…
-                </h2>
-                <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-                  Sizning agentingiz shu yerda jonli qurilib boradi. Natija tayyor bo'lgach,
-                  bu maydonda paydo bo'ladi.
-                </p>
-                <div className="mt-6 flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                </div>
-              </div>
-            </section>
-
-            {/* CHAT PANEL */}
-            <section className="flex h-full min-h-0 flex-col border-l border-border/60 bg-card/60 backdrop-blur">
-              <header className="flex items-center gap-3 border-b border-border/60 px-4 py-4">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-primary/15 text-primary">
-                  <Brain className="h-5 w-5" />
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">Agentus Brain</p>
-                  <p className="flex items-center gap-1.5 text-[11px] text-emerald-400">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                    Online
-                  </p>
-                </div>
-              </header>
-
-              <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
-                {messages.map((m, i) => (
-                  <div key={i} className="animate-fade-in">
-                    {m.role === "user" ? (
-                      <div className="flex justify-end">
-                        <div className="max-w-[85%] rounded-2xl rounded-br-sm border border-primary/50 bg-primary/10 px-3.5 py-2 text-sm text-foreground">
-                          <p className="whitespace-pre-wrap">{m.text}</p>
-                          <p className="mt-1 text-right text-[10px] text-muted-foreground">
-                            {m.time}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-start gap-2">
-                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/15 text-primary">
-                          <Brain className="h-3.5 w-3.5" />
-                        </span>
-                        <div className="max-w-[85%] rounded-2xl rounded-bl-sm border border-border/60 bg-background/50 px-3.5 py-2 text-sm">
-                          <p className="whitespace-pre-wrap">{m.text}</p>
-                          <p className="mt-1 text-[10px] text-muted-foreground">{m.time}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                <div ref={chatEndRef} />
-              </div>
-
-              <div className="border-t border-border/60 p-3">
-                {attachments.length > 0 && (
-                  <div className="mb-2 flex flex-wrap gap-1.5">
-                    {attachments.map((file, i) => (
-                      <span
-                        key={`${file.name}-${i}`}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-card/60 px-2 py-1 text-[11px] text-muted-foreground"
-                      >
-                        <Paperclip className="h-3 w-3" />
-                        <span className="max-w-[140px] truncate">{file.name}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setAttachments((a) => a.filter((_, idx) => idx !== i))
-                          }
-                          className="text-muted-foreground hover:text-foreground"
-                          aria-label="O'chirish"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-background/60 px-3 py-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/*,application/pdf,.doc,.docx,.txt,.csv,.xlsx"
-                    className="hidden"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files ?? []);
-                      if (files.length > 0) {
-                        setAttachments((a) => [...a, ...files]);
-                      }
-                      e.target.value = "";
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                    aria-label="Rasm yoki fayl qo'shish"
-                    title="Rasm yoki fayl qo'shish"
-                  >
-                    <Paperclip className="h-4 w-4" />
-                  </button>
-                  <input
-                    value={followUp}
-                    onChange={(e) => setFollowUp(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        sendFollowUp();
-                      }
-                    }}
-                    placeholder="Xabaringizni yozing..."
-                    className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={sendFollowUp}
-                    disabled={!followUp.trim() && attachments.length === 0}
-                    className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-                  >
-                    <Send className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </section>
+        {phase === "home" ? (
+          <HomeView
+            prompt={prompt}
+            promptRef={promptRef}
+            onPrompt={setPrompt}
+            onStart={startBuilder}
+            onNew={openNewAgent}
+          />
+        ) : (
+          <div className="builder-shell">
+            <div className="builder-mobile-tabs" role="tablist" aria-label="Agent qurish ko‘rinishi">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mobilePanel === "chat"}
+                className={mobilePanel === "chat" ? "active" : ""}
+                onClick={() => setMobilePanel("chat")}
+              >
+                Chat
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mobilePanel === "live"}
+                className={mobilePanel === "live" ? "active" : ""}
+                onClick={() => setMobilePanel("live")}
+              >
+                Jonli ko‘rinish
+              </button>
+            </div>
+            <div className="builder-grid">
+              <ChatPanel
+                mobilePanel={mobilePanel}
+                messages={messages}
+                step={step}
+                typing={typing}
+                selectedTools={selectedTools}
+                composer={composer}
+                readyInteracted={readyInteracted}
+                chatEndRef={chatEndRef}
+                onAnswer={answer}
+                onToggleTool={toggleTool}
+                onComposer={setComposer}
+                onSubmit={submitComposer}
+              />
+              <LivePanel
+                mobilePanel={mobilePanel}
+                draft={draft}
+                step={step}
+                flash={flash}
+                published={published}
+                carouselIndex={carouselIndex}
+                carouselPaused={carouselPaused}
+                onCarousel={setCarouselIndex}
+                onPause={setCarouselPaused}
+                onPublish={publish}
+                onTest={testAgent}
+              />
+            </div>
           </div>
         )}
       </main>
 
-      {/* PUBLISH MODAL */}
-      {publishOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
-            onClick={() => setPublishOpen(false)}
-          />
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-border/60 bg-card p-6 shadow-2xl">
-            <div className="mb-5 flex items-start justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Agentni chop etish</h2>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Ma'lumotlarni to'ldiring — agent "Agentlarim" ro'yxatiga qo'shiladi.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setPublishOpen(false)}
-                className="grid h-8 w-8 place-items-center rounded-md text-muted-foreground hover:bg-card/60 hover:text-foreground"
-                aria-label="Yopish"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* Ikonka */}
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => iconInputRef.current?.click()}
-                  className="relative grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-xl border border-border/60 bg-primary/10 text-primary hover:border-primary/60"
-                >
-                  {pubIconUrl ? (
-                    <img src={pubIconUrl} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <Bot className="h-6 w-6" />
-                  )}
-                </button>
-                <input
-                  ref={iconInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) handleIconPick(f);
-                    e.target.value = "";
-                  }}
-                />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">Ikonka</p>
-                  <p className="text-xs text-muted-foreground">
-                    Rasm yuklang (ixtiyoriy). Bo'sh qoldirilsa standart belgi.
-                  </p>
-                  {pubIconUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setPubIconUrl(null)}
-                      className="mt-1 text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-                    >
-                      Olib tashlash
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                  Agent nomi
-                </label>
-                <input
-                  value={pubName}
-                  onChange={(e) => setPubName(e.target.value)}
-                  placeholder="Masalan, Telegram hisobotchi"
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary/60 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                  Qisqa tavsif
-                </label>
-                <textarea
-                  value={pubDesc}
-                  onChange={(e) => setPubDesc(e.target.value)}
-                  rows={3}
-                  placeholder="Bu agent nima qiladi?"
-                  className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary/60 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                  Kategoriya
-                </label>
-                <select
-                  value={pubCategory}
-                  onChange={(e) => setPubCategory(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary/60 focus:outline-none"
-                >
-                  <option value="Communication">Kommunikatsiya</option>
-                  <option value="Data">Ma'lumotlar</option>
-                  <option value="Automation">Avtomatlashtirish</option>
-                  <option value="AI">AI</option>
-                  <option value="Files">Fayllar</option>
-                </select>
-              </div>
-
-              {pubError && (
-                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-                  {pubError}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-6 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setPublishOpen(false)}
-                className="rounded-lg border border-border/60 bg-transparent px-4 py-2 text-sm font-medium text-foreground hover:bg-card/60"
-              >
-                Bekor qilish
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateAgent}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
-              >
-                Yaratish
-              </button>
-            </div>
-          </div>
+      {soon && <ComingSoonModal section={soon} onClose={() => setSoon(null)} />}
+      {toast && (
+        <div className="workspace-toast" role="status">
+          <Check />
+          {toast}
         </div>
       )}
+    </div>
+  );
+}
+
+function Sidebar({
+  builder,
+  mobileOpen,
+  onClose,
+  onHome,
+  onSoon,
+  onNotice,
+}: {
+  builder: boolean;
+  mobileOpen: boolean;
+  onClose: () => void;
+  onHome: () => void;
+  onSoon: (key: SoonKey) => void;
+  onNotice: (text: string) => void;
+}) {
+  const items: {
+    label: string;
+    icon: LucideIcon;
+    active?: boolean;
+    to?: "/agentlarim";
+    soon?: SoonKey;
+    badge?: boolean;
+  }[] = [
+    { label: "Asosiy", icon: Home, active: true },
+    { label: "Agentlarim", icon: Bot, to: "/agentlarim" },
+    { label: "AI jamoalar", icon: Users },
+    { label: "Statistika", icon: BarChart3 },
+    { label: "Marketplace", icon: Store, soon: "Marketplace", badge: true },
+    { label: "Mening toollarim", icon: Wrench, soon: "Mening toollarim", badge: true },
+    { label: "Sotuvchi paneli", icon: Crown, soon: "Sotuvchi paneli", badge: true },
+    { label: "To'lovlar", icon: Wallet, soon: "To'lovlar", badge: true },
+    { label: "Sozlamalar", icon: Settings },
+  ];
+
+  const content = (
+    <>
+      <div className="sidebar-brand">
+        <Link to="/" aria-label="Agentus bosh sahifasi">
+          <img src={wordmark} alt="AGENTUS" draggable={false} />
+        </Link>
+        <span className="collapsed-brand">A.</span>
+        <button className="icon-button sidebar-close" type="button" onClick={onClose} aria-label="Menyuni yopish">
+          <X />
+        </button>
+      </div>
+      <nav className="sidebar-nav" aria-label="Asosiy bo‘limlar">
+        {items.map(({ label, icon: Icon, active, to, soon, badge }) => {
+          const className = `sidebar-link ${active ? "active" : ""}`;
+          if (to) {
+            return (
+              <Link key={label} to={to} className={className} title={label} onClick={onClose}>
+                <Icon />
+                <span className="sidebar-label">{label}</span>
+              </Link>
+            );
+          }
+          return (
+            <button
+              key={label}
+              type="button"
+              className={className}
+              title={label}
+              onClick={() => {
+                if (active) onHome();
+                else if (soon) onSoon(soon);
+                else onNotice(`${label} hozircha mavjud emas`);
+                onClose();
+              }}
+            >
+              <Icon />
+              <span className="sidebar-label">{label}</span>
+              {badge && <span className="soon-badge">Tez orada</span>}
+            </button>
+          );
+        })}
+      </nav>
+      <div className="sidebar-bottom">
+        <div className="plan-card">
+          <div className="plan-title"><Box /><strong>Pro Plan</strong></div>
+          <p>Barcha premium imkoniyatlardan foydalaning.</p>
+          <button className="neon-button" type="button" onClick={() => onNotice("Rejani yangilash tez orada mavjud bo‘ladi")}>
+            Rejani yangilash
+          </button>
+        </div>
+        <div className="sidebar-usage">
+          <UsageLine label="Agentlar" value="3 / 10" percent={30} />
+          <UsageLine label="So‘rovlar" value="1 240 / 5 000" percent={24.8} />
+        </div>
+        <button className="sidebar-user" type="button" onClick={() => onNotice("Azizbek · Pro tarif")} title="Azizbek, Pro tarif">
+          <span className="user-avatar"><User /></span>
+          <span className="sidebar-label user-copy"><strong>Azizbek</strong><small>Pro tarif</small></span>
+          <ChevronDown className="sidebar-label" />
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {mobileOpen && <button className="sidebar-overlay" type="button" onClick={onClose} aria-label="Menyuni yopish" />}
+      <aside className={`workspace-sidebar ${builder ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`}>
+        {content}
+      </aside>
+    </>
+  );
+}
+
+function UsageLine({ label, value, percent }: { label: string; value: string; percent: number }) {
+  return (
+    <div className="usage-line">
+      <div><span>{label}</span><strong>{value}</strong></div>
+      <div className="meter-track"><span style={{ width: `${percent}%` }} /></div>
+    </div>
+  );
+}
+
+function HomeView({
+  prompt,
+  promptRef,
+  onPrompt,
+  onStart,
+  onNew,
+}: {
+  prompt: string;
+  promptRef: React.RefObject<HTMLTextAreaElement | null>;
+  onPrompt: (value: string) => void;
+  onStart: (prompt: string) => void;
+  onNew: () => void;
+}) {
+  const submit = () => onStart(prompt);
+  const promptKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault();
+      submit();
+    }
+  };
+
+  return (
+    <div className="home-content">
+      <section className="home-hero">
+        <div className="hero-pill"><Sparkles /> Agent yaratish</div>
+        <h1>Qanday agent quramiz, <span>Azizbek?</span></h1>
+        <p className="hero-description">G‘oyangizni yozing — Agentus uni birga shakllantiramiz.</p>
+        <div className="home-prompt-card">
+          <textarea
+            ref={promptRef}
+            value={prompt}
+            onChange={(event) => onPrompt(event.target.value)}
+            onKeyDown={promptKeyDown}
+            placeholder="Agentusdan hisobot yig'uvchi agent qurishni so'rang…"
+            rows={3}
+            aria-label="Agent g‘oyasi"
+          />
+          <div className="prompt-footer">
+            <span><kbd>Ctrl</kbd><Plus /><kbd>Enter</kbd></span>
+            <button className="neon-button create-button" type="button" disabled={!prompt.trim()} onClick={submit}>
+              Yaratish <Send />
+            </button>
+          </div>
+        </div>
+        <div className="suggestion-grid">
+          {suggestions.map(({ icon: Icon, text }) => (
+            <button key={text} type="button" onClick={() => onPrompt(text)}>
+              <Icon /><span>{text}</span>
+            </button>
+          ))}
+        </div>
+        <a className="home-scroll-cue" href="#recent-agents" aria-label="So‘nggi agentlarga o‘tish">
+          <span />Pastga suring
+        </a>
+      </section>
+
+      <div className="home-sections">
+        <section className="dashboard-section" id="recent-agents">
+          <div className="section-title-row">
+            <div><span className="section-kicker">Ish maydoningiz</span><h2>So‘nggi agentlarim</h2></div>
+            <Link to="/agentlarim" className="text-link">Barchasini ko‘rish <ArrowRight /></Link>
+          </div>
+          <div className="recent-grid">
+            {recentAgents.map(({ name, icon: Icon, status }) => (
+              <article className="dashboard-card recent-card" key={name}>
+                <div className="recent-card-top">
+                  <span className="agent-icon"><Icon /></span>
+                  <StatusPill status={status} />
+                </div>
+                <h3>{name}</h3>
+                <p>Oxirgi ishga tushirish: 2 soat oldin</p>
+                <button className="glass-button" type="button" onClick={() => onStart(`${name} agentini sinash`)}>
+                  <Play /> Sinash
+                </button>
+              </article>
+            ))}
+            <button className="new-agent-card" type="button" onClick={onNew}>
+              <Plus /><strong>Yangi agent</strong><span>G‘oyadan ishlaydigan agentgacha</span>
+            </button>
+          </div>
+        </section>
+
+        <section className="dashboard-split-section">
+          <div className="dashboard-section usage-section">
+            <div className="section-title-row"><div><span className="section-kicker">Joriy oy</span><h2>Foydalanish</h2></div></div>
+            <div className="usage-cards">
+              <UsageMetric icon={Bot} label="Agentlar" value="3 / 10" percent={30} />
+              <UsageMetric icon={Wrench} label="Tool'lar" value="4 / 10" percent={40} />
+              <UsageMetric icon={Zap} label="Oylik so‘rovlar" value="1 240 / 5 000" percent={24.8} />
+            </div>
+          </div>
+          <div className="dashboard-section checklist-section">
+            <div className="section-title-row">
+              <div><span className="section-kicker">Ilk qadamlar</span><h2>Boshlash uchun</h2></div>
+              <span className="checklist-progress">1/4</span>
+            </div>
+            <div className="checklist">
+              {["Agent yarating", "Tool ulang", "Agentni sinang", "Jadvalga qo‘ying"].map((item, index) => (
+                <div className={index === 0 ? "done" : ""} key={item}>
+                  {index === 0 ? <Check /> : <Circle />}<span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const className = status === "Faol" ? "active" : status === "Qoralama" ? "draft" : "paused";
+  return <span className={`status-pill ${className}`}><span />{status}</span>;
+}
+
+function UsageMetric({ icon: Icon, label, value, percent }: { icon: LucideIcon; label: string; value: string; percent: number }) {
+  return (
+    <div className="usage-metric dashboard-card">
+      <div><span className="metric-icon"><Icon /></span><span>{label}</span><strong>{value}</strong></div>
+      <div className="meter-track"><span style={{ width: `${percent}%` }} /></div>
+    </div>
+  );
+}
+
+function ChatPanel({
+  mobilePanel,
+  messages,
+  step,
+  typing,
+  selectedTools,
+  composer,
+  readyInteracted,
+  chatEndRef,
+  onAnswer,
+  onToggleTool,
+  onComposer,
+  onSubmit,
+}: {
+  mobilePanel: MobilePanel;
+  messages: ChatMessage[];
+  step: number;
+  typing: boolean;
+  selectedTools: string[];
+  composer: string;
+  readyInteracted: boolean;
+  chatEndRef: React.RefObject<HTMLDivElement | null>;
+  onAnswer: (value: string | string[], display?: string) => void;
+  onToggleTool: (name: string) => void;
+  onComposer: (value: string) => void;
+  onSubmit: (event?: FormEvent) => void;
+}) {
+  const ready = step >= questions.length;
+  return (
+    <section className={`chat-panel ${mobilePanel === "chat" ? "mobile-active" : ""}`} aria-label="Agentus yordamchisi">
+      <header className="chat-header">
+        <span className="assistant-avatar"><Brain /></span>
+        <div><h2>Agentus yordamchisi</h2><p><span />Savol {Math.min(step + 1, 5)} / 5</p></div>
+        <span className="assistant-status" />
+      </header>
+      <div className="chat-messages">
+        {messages.map((message) => <ChatBubble key={message.id} message={message} />)}
+        {!typing && (!ready || !readyInteracted) && (
+          <div className="current-question">
+            <ChatBubble
+              message={{
+                id: -1,
+                role: "assistant",
+                text: ready
+                  ? "Agent tayyor! Endi chat orqali xohlagan narsani o‘zgartirishingiz mumkin."
+                  : questions[step],
+              }}
+            />
+            {!ready && (
+              <div className="quick-replies">
+                {step === 0 && (
+                  <><button type="button" onClick={() => onAnswer("Hisobot yig‘uvchi")}>Hisobot yig‘uvchi</button><button type="button" onClick={() => onAnswer("Daily Reporter")}>Daily Reporter</button></>
+                )}
+                {step === 1 && (
+                  <div className="icon-choice-grid">
+                    {iconChoices.map(({ id, icon: Icon, label }) => (
+                      <button key={id} type="button" onClick={() => onAnswer(id, label)} aria-label={label}><Icon /><span>{label}</span></button>
+                    ))}
+                  </div>
+                )}
+                {step === 2 && directions.map((direction) => <button key={direction} type="button" onClick={() => onAnswer(direction)}>{direction}</button>)}
+                {step === 3 && (
+                  <div className="tool-picker">
+                    <div className="tool-choice-grid">
+                      {toolChoices.map(({ name, icon: Icon }) => (
+                        <button key={name} type="button" className={selectedTools.includes(name) ? "selected" : ""} onClick={() => onToggleTool(name)} aria-pressed={selectedTools.includes(name)}>
+                          <Icon />{name}{selectedTools.includes(name) && <Check />}
+                        </button>
+                      ))}
+                    </div>
+                    {selectedTools.includes("Telegram") && (
+                      <div className="telegram-fields">
+                        <label><span>Bot token</span><div><LockKeyhole /><input type="password" autoComplete="off" placeholder="Bot tokenni kiriting" /></div></label>
+                        <label><span>Chat ID</span><div><MessageCircle /><input inputMode="numeric" placeholder="Chat ID ni kiriting" /></div></label>
+                        <p><LockKeyhole />Shifrlangan holda saqlanadi</p>
+                      </div>
+                    )}
+                    <button className="neon-button tools-continue" type="button" disabled={selectedTools.length === 0} onClick={() => onAnswer(selectedTools)}>Davom etish <ArrowRight /></button>
+                  </div>
+                )}
+                {step === 4 && (
+                  <div className="schedule-picker">
+                    {schedules.map((schedule) => (
+                      <button key={schedule} type="button" onClick={() => onAnswer(schedule)}>{schedule}{schedule !== "Qo‘lda" && <span>Pro</span>}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        {typing && <TypingIndicator />}
+        <div ref={chatEndRef} />
+      </div>
+      <div className="chat-composer-wrap">
+        {ready && (
+          <div className="edit-hints">
+            {["Nomini o‘zgartir", "Tool qo‘sh", "Qoidalarni qisqartir"].map((hint) => (
+              <button key={hint} type="button" onClick={() => onComposer(hint === "Nomini o‘zgartir" ? "Nomini: " : hint)}>{hint}</button>
+            ))}
+          </div>
+        )}
+        <form className="chat-composer" onSubmit={onSubmit}>
+          <input
+            value={composer}
+            onChange={(event) => onComposer(event.target.value)}
+            placeholder={ready ? "Agentga o‘zgartirish yozing…" : step === 0 ? "Agent nomini yozing…" : "Javobingizni yozing…"}
+            aria-label="Agentus yordamchisiga xabar"
+          />
+          <button type="submit" disabled={!composer.trim() || typing} aria-label="Xabarni yuborish"><Send /></button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+function ChatBubble({ message }: { message: ChatMessage }) {
+  return (
+    <div className={`chat-bubble-row ${message.role}`}>
+      {message.role === "assistant" && <span className="mini-avatar"><Brain /></span>}
+      <div className="chat-bubble">{message.text}</div>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="chat-bubble-row assistant typing-row">
+      <span className="mini-avatar"><Brain /></span>
+      <div className="chat-bubble"><span /><span /><span /></div>
+    </div>
+  );
+}
+
+function LivePanel({
+  mobilePanel,
+  draft,
+  step,
+  flash,
+  published,
+  carouselIndex,
+  carouselPaused,
+  onCarousel,
+  onPause,
+  onPublish,
+  onTest,
+}: {
+  mobilePanel: MobilePanel;
+  draft: Draft;
+  step: number;
+  flash: string;
+  published: boolean;
+  carouselIndex: number;
+  carouselPaused: boolean;
+  onCarousel: (index: number) => void;
+  onPause: (paused: boolean) => void;
+  onPublish: () => void;
+  onTest: () => void;
+}) {
+  const ready = step >= questions.length;
+  return (
+    <section className={`live-panel ${mobilePanel === "live" ? "mobile-active" : ""}`} aria-label="Agentning jonli ko‘rinishi">
+      <div className="live-panel-glow" aria-hidden="true" />
+      {ready && (
+        <div className="live-actions">
+          <button className="glass-button" type="button" onClick={onTest}><Play />Sinab ko‘rish</button>
+          <button className="neon-button" type="button" onClick={onPublish}>
+            {published ? <>Agentga o‘tish <ArrowRight /></> : <><Upload />Publish</>}
+          </button>
+        </div>
+      )}
+      {step === 0 ? (
+        <div className="waiting-state">
+          <div className="carousel-heading"><span>AGENTUS BILAN TANISHING</span><h2>Agentingiz shu yerda shakllanadi</h2></div>
+          <div
+            className="info-carousel"
+            onMouseEnter={() => onPause(true)}
+            onMouseLeave={() => onPause(false)}
+          >
+            {carouselCards.map(({ icon: Icon, title, text }, index) => {
+              let offset = index - carouselIndex;
+              if (offset > 3) offset -= carouselCards.length;
+              if (offset < -3) offset += carouselCards.length;
+              const style = {
+                "--offset": offset,
+                "--depth": Math.abs(offset),
+                zIndex: 10 - Math.abs(offset),
+              } as CSSProperties;
+              return (
+                <article className={`info-card ${Math.abs(offset) > 2 ? "hidden-card" : ""}`} style={style} key={title} aria-hidden={offset !== 0}>
+                  <span className="info-card-icon"><Icon /></span>
+                  <h3>{title}</h3><p>{text}</p>
+                  <span className="info-card-number">0{index + 1}</span>
+                </article>
+              );
+            })}
+          </div>
+          <div className="carousel-dots">
+            {carouselCards.map((card, index) => (
+              <button key={card.title} type="button" className={index === carouselIndex ? "active" : ""} onClick={() => onCarousel(index)} aria-label={`${index + 1}-karta`} aria-current={index === carouselIndex ? "true" : undefined} />
+            ))}
+          </div>
+          <p className="carousel-caption">Agentus savollaringizga javob bergach agent shu yerda shakllanadi.</p>
+        </div>
+      ) : (
+        <AgentLiveCard draft={draft} step={step} flash={flash} published={published} ready={ready} />
+      )}
+    </section>
+  );
+}
+
+function AgentLiveCard({ draft, step, flash, published, ready }: { draft: Draft; step: number; flash: string; published: boolean; ready: boolean }) {
+  const progress = Math.round((step / questions.length) * 100);
+  const selectedIcon = iconChoices.find((choice) => choice.id === draft.icon)?.icon ?? Bot;
+  const SelectedIcon = selectedIcon;
+  return (
+    <div className={`agent-live-wrap ${ready ? "ready" : ""}`}>
+      <div className="agent-live-heading">
+        <div><span className="section-kicker">Jonli agent</span><h2>{ready ? "Agentingiz tayyor" : "Agent qurilmoqda"}</h2></div>
+        <div className="readiness">
+          <div className="progress-ring" style={{ "--progress": `${progress * 3.6}deg` } as CSSProperties}><span>{progress}%</span></div>
+          <div><strong>Tayyorlik {progress}%</strong><StatusPill status={published ? "Faol" : "Qoralama"} /></div>
+        </div>
+      </div>
+      <article className="agent-profile-card">
+        <div className="agent-profile-top">
+          <div className={`live-agent-icon ${flash === "icon" ? "field-flash" : ""}`}><SelectedIcon /></div>
+          <div className="agent-name-block">
+            {draft.name ? <h3 className={flash === "name" ? "field-flash" : ""}>{draft.name}</h3> : <span className="skeleton skeleton-title" />}
+            {draft.name ? <p>{draft.prompt}</p> : <span className="skeleton skeleton-text" />}
+          </div>
+        </div>
+        <div className="agent-chips">
+          {draft.direction ? <span className={`agent-chip ${flash === "direction" ? "field-flash" : ""}`}><Layers />{draft.direction}</span> : <span className="skeleton skeleton-chip" />}
+          {draft.tools.map((tool) => <span className={`agent-chip ${flash === "tools" ? "field-flash" : ""}`} key={tool}><Wrench />{tool}</span>)}
+          {step <= 3 && <span className="skeleton skeleton-chip" />}
+          {draft.schedule ? <span className={`agent-chip ${flash === "schedule" ? "field-flash" : ""}`}><CalendarClock />{draft.schedule}</span> : <span className="skeleton skeleton-chip" />}
+        </div>
+        <div className="agent-detail-grid">
+          <section><h4><Zap />Maqsad</h4><p>{draft.prompt}</p></section>
+          <section><h4><BookOpen />Ko‘rsatmalar</h4><p>{draft.instructions || "Foydalanuvchi bergan maqsad asosida vazifalarni aniq va tartibli bajaradi."}</p></section>
+        </div>
+        <section className="codex-rules">
+          <h4><Shield />Codex qoidalari</h4>
+          <ul>
+            <li>Maqsaddan chetga chiqmaslik</li>
+            <li>Aniq va qisqa javob berish</li>
+            <li>Tool'larni faqat zaruratda ishlatish</li>
+            <li>Noaniq ma’lumotni tekshirish</li>
+          </ul>
+        </section>
+      </article>
+    </div>
+  );
+}
+
+function ComingSoonModal({ section, onClose }: { section: SoonKey; onClose: () => void }) {
+  const content = soonContent[section];
+  const Icon = content.icon;
+  const [registered, setRegistered] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>("button:not([disabled]), [href], input, [tabindex]:not([tabindex='-1'])") ?? []);
+    focusable()[0]?.focus();
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab") return;
+      const elements = focusable();
+      if (!elements.length) return;
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      previous?.focus();
+    };
+  }, [onClose]);
+
+  return (
+    <div className="modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div className="coming-modal" role="dialog" aria-modal="true" aria-labelledby="coming-title" ref={dialogRef}>
+        <button className="icon-button modal-close" type="button" onClick={onClose} aria-label="Yopish"><X /></button>
+        <span className="coming-icon"><Icon /></span>
+        <div className="coming-title"><h2 id="coming-title">{section}</h2><span className="soon-badge">Tez orada</span></div>
+        <p className="coming-description">{content.description} Yangi imkoniyatlar tayyor bo‘lganda shu bo‘limda ochiladi.</p>
+        <div className="coming-preview" aria-hidden="true">
+          <div className="preview-sidebar"><span /><span /><span /></div>
+          <div className="preview-content"><span /><div><i /><i /><i /></div><span /><span /></div>
+        </div>
+        <div className="coming-benefits">
+          <strong>Nimalar bo‘ladi</strong>
+          <ul>{content.bullets.map((bullet) => <li key={bullet}><Check />{bullet}</li>)}</ul>
+        </div>
+        <div className="coming-actions">
+          <button className="glass-button" type="button" onClick={onClose}>Yopish</button>
+          <button className="neon-button" type="button" disabled={registered} onClick={() => setRegistered(true)}>
+            {registered ? <>Ro‘yxatga olindingiz <Check /></> : <>Chiqqanda xabar bering <Bell /></>}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
