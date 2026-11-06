@@ -1,3 +1,4 @@
+import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -13,21 +14,20 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
+  useI18n();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">{t("app.common.page_not_found")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
+          {t("app.common.the_page_youre_looking_for_doesnt")}</p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
-          </Link>
+            {t("app.common.go_home")}</Link>
         </div>
       </div>
     </div>
@@ -35,6 +35,7 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: import("@tanstack/react-router").ErrorComponentProps) {
+  useI18n();
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -45,11 +46,9 @@ function ErrorComponent({ error, reset }: import("@tanstack/react-router").Error
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
+          {t("app.common.this_page_didnt_load")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
+          {t("app.common.something_went_wrong_on_our_end")}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -58,30 +57,28 @@ function ErrorComponent({ error, reset }: import("@tanstack/react-router").Error
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
-          </button>
+            {t("app.common.try_again")}</button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
-          </a>
+            {t("app.common.go_home")}</a>
         </div>
       </div>
     </div>
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = localized(() => (createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Agentus — Aqlli AI agentlarni oddiy tilda yarating" },
-      { name: "description", content: "Agentus bilan oddiy tilda yozing va sizning ishingizni bajaradigan aqlli AI agentni bir daqiqada yarating." },
+      { title: t("app.common.agentus_aqlli_ai_agentlarni_oddiy_tilda") },
+      { name: "description", content: t("app.common.agentus_bilan_oddiy_tilda_yozing_va") },
       { name: "author", content: "Agentus" },
-      { property: "og:title", content: "Agentus — AI agent yaratish platformasi" },
-      { property: "og:description", content: "Oddiy tilda yozing, Agentus siz uchun aqlli agentni yaratadi." },
+      { property: "og:title", content: t("app.common.agentus_ai_agent_yaratish_platformasi") },
+      { property: "og:description", content: t("app.common.oddiy_tilda_yozing_agentus_siz_uchun") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Agentus" },
@@ -101,9 +98,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
-});
+})));
 
 function RootShell({ children }: { children: ReactNode }) {
+  useI18n();
   return (
     <html lang="uz">
       <head>
@@ -118,6 +116,7 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
+  useI18n();
   const { queryClient } = Route.useRouteContext();
 
   return (
