@@ -1,3 +1,4 @@
+import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import type { ComponentType } from "react";
 import {
   Calendar,
@@ -200,267 +201,267 @@ export function toolStatus(
   return instancesForTool(instances, tool.id).length > 0 ? "ready" : "configs-needed";
 }
 
-const f = {
-  apiKey: { key: "api_key", label: "API kaliti", type: "secret" as const, placeholder: "sk_live_••••••••", required: true, help: "Provayder konsolidan yarating." },
-  oauth: { key: "oauth", label: "OAuth 2.0 tizimiga kirish", type: "oauth" as const, required: true, help: "Hisobingiz bilan bog'lanish uchun avtorizatsiya oching." },
-  clientId: { key: "client_id", label: "Mijoz identifikatori", type: "text" as const, placeholder: "1234567890-xxxxx.apps.googleusercontent.com", required: true },
-  clientSecret: { key: "client_secret", label: "Mijoz siri", type: "secret" as const, placeholder: "GOCSPX-••••••••", required: true },
-  refreshToken: { key: "refresh_token", label: "Tokenni yangilash", type: "secret" as const, placeholder: "1//0g••••••••" },
-  botToken: { key: "bot_token", label: "Bot tokeni", type: "secret" as const, placeholder: "123456:AAH••••••••", required: true, help: "@BotFather orqali oling." },
-  channelId: { key: "channel_id", label: "Kanal identifikatori", type: "text" as const, placeholder: "@my_channel yoki -1001234567890" },
-  webhook: { key: "webhook_url", label: "Vebhuk URL manzili", type: "url" as const, placeholder: "https://api.agentus.uz/hooks/..." },
-  baseUrl: { key: "base_url", label: "Asosiy URL", type: "url" as const, placeholder: "https://api.example.com", required: true },
-  spreadsheetId: { key: "spreadsheet_id", label: "Elektron jadval identifikatori", type: "text" as const, placeholder: "1AbC••••XYZ" },
-  workspaceId: { key: "workspace_id", label: "Ish maydoni identifikatori", type: "text" as const, placeholder: "ws_••••" },
-};
+const f = localized(() => ({
+  apiKey: { key: "api_key", label: t("app.catalog.api_kaliti"), type: "secret" as const, placeholder: "sk_live_••••••••", required: true, help: t("app.catalog.provayder_konsolidan_yarating") },
+  oauth: { key: "oauth", label: t("app.catalog.oauth_20_tizimiga_kirish"), type: "oauth" as const, required: true, help: t("app.catalog.hisobingiz_bilan_boglanish_uchun_avtorizatsiya_oching") },
+  clientId: { key: "client_id", label: t("app.catalog.mijoz_identifikatori"), type: "text" as const, placeholder: "1234567890-xxxxx.apps.googleusercontent.com", required: true },
+  clientSecret: { key: "client_secret", label: t("app.catalog.mijoz_siri"), type: "secret" as const, placeholder: "GOCSPX-••••••••", required: true },
+  refreshToken: { key: "refresh_token", label: t("app.catalog.tokenni_yangilash"), type: "secret" as const, placeholder: "1//0g••••••••" },
+  botToken: { key: "bot_token", label: t("app.catalog.bot_tokeni"), type: "secret" as const, placeholder: "123456:AAH••••••••", required: true, help: t("app.catalog.botfather_orqali_oling") },
+  channelId: { key: "channel_id", label: t("app.catalog.kanal_identifikatori"), type: "text" as const, placeholder: t("app.catalog.mychannel_yoki_1001234567890") },
+  webhook: { key: "webhook_url", label: t("app.catalog.vebhuk_url_manzili"), type: "url" as const, placeholder: "https://api.agentus.uz/hooks/..." },
+  baseUrl: { key: "base_url", label: t("app.catalog.asosiy_url"), type: "url" as const, placeholder: "https://api.example.com", required: true },
+  spreadsheetId: { key: "spreadsheet_id", label: t("app.catalog.elektron_jadval_identifikatori"), type: "text" as const, placeholder: "1AbC••••XYZ" },
+  workspaceId: { key: "workspace_id", label: t("app.catalog.ish_maydoni_identifikatori"), type: "text" as const, placeholder: "ws_••••" },
+}));
 
 // Instance (konfiguratsiya) uchun tayyor maydon shablonlari.
-const inst = {
+const inst = localized(() => ({
   notes: {
-    key: "notes", label: "Izohlar", type: "textarea" as const,
-    placeholder: "Bu konfiguratsiya nima uchun ishlatiladi?",
+    key: "notes", label: t("app.catalog.izohlar"), type: "textarea" as const,
+    placeholder: t("app.catalog.bu_konfiguratsiya_nima_uchun_ishlatiladi"),
   } satisfies InstanceField,
   writeMode: {
-    key: "write_mode", label: "Yozish rejimi", type: "select" as const,
+    key: "write_mode", label: t("app.catalog.yozish_rejimi"), type: "select" as const,
     options: [
-      { value: "append", label: "Qo'shish" },
-      { value: "replace", label: "Almashtirish" },
-      { value: "update", label: "Yangilash" },
+      { value: "append", label: t("app.catalog.qoshish") },
+      { value: "replace", label: t("app.catalog.almashtirish") },
+      { value: "update", label: t("app.workspace.yangilash") },
     ],
   } satisfies InstanceField,
-};
+}));
 
-const sheetsInstanceFields: InstanceField[] = [
-  { key: "spreadsheet", label: "Elektron jadval", type: "text", placeholder: "Hisobot.xlsx", required: true, help: "Fayl nomi yoki Spreadsheet ID." },
-  { key: "sheet", label: "Varaq", type: "text", placeholder: "Sheet1" },
-  { key: "column", label: "Ustun", type: "text", placeholder: "A" },
+const sheetsInstanceFields: InstanceField[] = localized(() => ([
+  { key: "spreadsheet", label: t("app.catalog.elektron_jadval"), type: "text", placeholder: "Hisobot.xlsx", required: true, help: t("app.catalog.fayl_nomi_yoki_spreadsheet_id") },
+  { key: "sheet", label: t("app.catalog.varaq"), type: "text", placeholder: "Sheet1" },
+  { key: "column", label: t("app.catalog.ustun"), type: "text", placeholder: "A" },
   inst.writeMode,
-  { key: "folder", label: "Standart papka", type: "text", placeholder: "Reports/2026" },
+  { key: "folder", label: t("app.catalog.standart_papka"), type: "text", placeholder: "Reports/2026" },
   inst.notes,
-];
+]));
 
-const telegramInstanceFields: InstanceField[] = [
-  { key: "chat_id", label: "Chat / kanal", type: "text", placeholder: "@my_channel yoki -1001234567890", required: true },
-  { key: "template", label: "Xabar shabloni", type: "textarea", placeholder: "Assalomu alaykum, {name}..." },
+const telegramInstanceFields: InstanceField[] = localized(() => ([
+  { key: "chat_id", label: t("app.catalog.chat_kanal"), type: "text", placeholder: t("app.catalog.mychannel_yoki_1001234567890"), required: true },
+  { key: "template", label: t("app.catalog.xabar_shabloni"), type: "textarea", placeholder: t("app.catalog.assalomu_alaykum_name") },
   inst.notes,
-];
+]));
 
-const gmailInstanceFields: InstanceField[] = [
-  { key: "from_alias", label: "Yuboruvchi alias", type: "text", placeholder: "noreply@company.uz", required: true },
-  { key: "subject_template", label: "Mavzu shabloni", type: "text", placeholder: "Haftalik hisobot — {date}" },
-  { key: "body_template", label: "Xabar shabloni", type: "textarea", placeholder: "Salom, ..." },
+const gmailInstanceFields: InstanceField[] = localized(() => ([
+  { key: "from_alias", label: t("app.catalog.yuboruvchi_alias"), type: "text", placeholder: "noreply@company.uz", required: true },
+  { key: "subject_template", label: t("app.catalog.mavzu_shabloni"), type: "text", placeholder: t("app.catalog.haftalik_hisobot_date") },
+  { key: "body_template", label: t("app.catalog.xabar_shabloni"), type: "textarea", placeholder: "Salom, ..." },
   inst.notes,
-];
+]));
 
-const calendarInstanceFields: InstanceField[] = [
-  { key: "calendar_id", label: "Kalendar", type: "text", placeholder: "primary yoki calendar@group.calendar.google.com", required: true },
-  { key: "default_duration", label: "Standart davomiylik", type: "text", placeholder: "30 daqiqa" },
+const calendarInstanceFields: InstanceField[] = localized(() => ([
+  { key: "calendar_id", label: t("app.catalog.kalendar"), type: "text", placeholder: t("app.catalog.primary_yoki_calendargroupcalendargooglecom"), required: true },
+  { key: "default_duration", label: t("app.catalog.standart_davomiylik"), type: "text", placeholder: "30 daqiqa" },
   inst.notes,
-];
+]));
 
-const httpInstanceFields: InstanceField[] = [
-  { key: "endpoint", label: "Endpoint", type: "text", placeholder: "/v1/orders", required: true },
-  { key: "method", label: "Method", type: "select", options: [
-    { value: "GET", label: "GET" }, { value: "POST", label: "POST" },
-    { value: "PUT", label: "PUT" }, { value: "DELETE", label: "DELETE" },
+const httpInstanceFields: InstanceField[] = localized(() => ([
+  { key: "endpoint", label: t("app.catalog.endpoint"), type: "text", placeholder: "/v1/orders", required: true },
+  { key: "method", label: t("app.catalog.method"), type: "select", options: [
+    { value: "GET", label: t("app.catalog.get") }, { value: "POST", label: t("app.catalog.post") },
+    { value: "PUT", label: t("app.catalog.put") }, { value: "DELETE", label: t("app.catalog.delete") },
   ]},
   inst.notes,
-];
+]));
 
-const sqlInstanceFields: InstanceField[] = [
-  { key: "table", label: "Jadval", type: "text", placeholder: "orders", required: true },
-  { key: "query_template", label: "Query shabloni", type: "textarea", placeholder: "SELECT * FROM orders WHERE ..." },
+const sqlInstanceFields: InstanceField[] = localized(() => ([
+  { key: "table", label: t("app.catalog.jadval"), type: "text", placeholder: "orders", required: true },
+  { key: "query_template", label: t("app.catalog.query_shabloni"), type: "textarea", placeholder: t("app.catalog.select_from_orders_where") },
   inst.notes,
-];
+]));
 
-const notionInstanceFields: InstanceField[] = [
-  { key: "database_id", label: "Baza ID", type: "text", placeholder: "abc123...", required: true },
-  { key: "default_status", label: "Standart status", type: "text", placeholder: "Yangi" },
+const notionInstanceFields: InstanceField[] = localized(() => ([
+  { key: "database_id", label: t("app.catalog.baza_id"), type: "text", placeholder: "abc123...", required: true },
+  { key: "default_status", label: t("app.catalog.standart_status"), type: "text", placeholder: "Yangi" },
   inst.notes,
-];
+]));
 
-const genericInstanceFields: InstanceField[] = [
-  { key: "target", label: "Manzil / resurs", type: "text", placeholder: "Ma'lumot manzili", required: true },
+const genericInstanceFields: InstanceField[] = localized(() => ([
+  { key: "target", label: t("app.catalog.manzil_resurs"), type: "text", placeholder: t("app.catalog.malumot_manzili"), required: true },
   inst.notes,
-];
+]));
 
 export const toolCatalog: ToolDef[] = [
   {
     id: "telegram-bot",
-    name: "Telegram Bot API",
-    description: "Telegram orqali xabar yuborish, qabul qilish va botlarni boshqarish.",
+    name: t("app.catalog.telegram_bot_api"),
+    description: t("app.catalog.telegram_orqali_xabar_yuborish_qabul_qilish"),
     tier: "free", category: "Communication", icon: TelegramIcon,
     accent: "bg-sky-500/15 text-sky-400", version: "1.0.0",
-    permissions: ["Xabar yuborish", "Xabar qabul qilish"],
+    permissions: [t("app.catalog.xabar_yuborish"), t("app.catalog.xabar_qabul_qilish")],
     developer: "Agentus", docsUrl: "https://core.telegram.org/bots/api",
     updatedAt: "2025-06-30", defaultPermissions: ["read", "write"],
     authFields: [f.botToken, f.channelId, f.webhook],
   },
   {
     id: "google-sheets",
-    name: "Google Sheets",
-    description: "Google Sheets jadvaliga ma'lumot yozish, o'qish va yangilash.",
+    name: t("app.catalog.google_sheets"),
+    description: t("app.catalog.google_sheets_jadvaliga_malumot_yozish_oqish"),
     tier: "free", category: "Data", icon: GoogleSheetsIcon,
     accent: "bg-emerald-500/15 text-emerald-400", version: "1.0.0",
-    permissions: ["Sheet o'qish", "Sheet yozish"],
+    permissions: [t("app.catalog.sheet_oqish"), t("app.catalog.sheet_yozish")],
     developer: "Google", docsUrl: "https://developers.google.com/sheets/api",
     updatedAt: "2025-06-12", defaultPermissions: ["read", "write"],
     authFields: [f.oauth, f.clientId, f.clientSecret, f.refreshToken, f.spreadsheetId],
   },
   {
-    id: "gmail", name: "Gmail API",
-    description: "Email yuborish, qabul qilish va avtomatik javob berish.",
+    id: "gmail", name: t("app.catalog.gmail_api"),
+    description: t("app.catalog.email_yuborish_qabul_qilish_va_avtomatik"),
     tier: "free", category: "Communication", icon: GmailIcon,
     accent: "bg-red-500/15 text-red-400", version: "1.0.0",
-    permissions: ["Email yuborish", "Inbox o'qish"],
+    permissions: [t("app.catalog.email_yuborish"), t("app.catalog.inbox_oqish")],
     developer: "Google", docsUrl: "https://developers.google.com/gmail/api",
     updatedAt: "2025-05-28", defaultPermissions: ["read", "write"],
     authFields: [f.oauth, f.clientId, f.clientSecret, f.refreshToken],
   },
   {
-    id: "google-calendar", name: "Google Calendar",
-    description: "Tadbirlar yaratish, uchrashuvlarni boshqarish va eslatmalar qo'shish.",
+    id: "google-calendar", name: t("app.catalog.google_calendar"),
+    description: t("app.catalog.tadbirlar_yaratish_uchrashuvlarni_boshqarish_va_eslatmalar"),
     tier: "free", category: "Automation", icon: GoogleCalendarIcon,
     accent: "bg-blue-500/15 text-blue-400", version: "1.0.0",
-    permissions: ["Event yaratish", "Event o'qish"],
+    permissions: [t("app.catalog.event_yaratish"), t("app.catalog.event_oqish")],
     developer: "Google", docsUrl: "https://developers.google.com/calendar",
     updatedAt: "2025-06-01", defaultPermissions: ["read", "write"],
     authFields: [f.oauth, f.clientId, f.clientSecret, f.refreshToken],
   },
   {
-    id: "pdf-reader", name: "PDF Reader",
-    description: "PDF hujjatlarini o'qish va matnni ajratib olish.",
+    id: "pdf-reader", name: t("app.catalog.pdf_reader"),
+    description: t("app.catalog.pdf_hujjatlarini_oqish_va_matnni_ajratib"),
     tier: "free", category: "Files", icon: PdfReaderIcon,
     accent: "bg-rose-500/15 text-rose-400", version: "1.0.0",
-    permissions: ["Fayl o'qish"],
+    permissions: [t("app.catalog.fayl_oqish")],
     developer: "Agentus", updatedAt: "2025-04-18",
     defaultPermissions: ["read"], authFields: [],
   },
   {
-    id: "http-request", name: "API Connector",
-    description: "REST API orqali tashqi servislar bilan ma'lumot almashish.",
+    id: "http-request", name: t("app.catalog.api_connector"),
+    description: t("app.catalog.rest_api_orqali_tashqi_servislar_bilan"),
     tier: "free", category: "Data", icon: ApiConnectorIcon,
     accent: "bg-indigo-500/15 text-indigo-400", version: "1.0.0",
-    permissions: ["HTTP so'rov yuborish"],
+    permissions: [t("app.catalog.http_sorov_yuborish")],
     developer: "Agentus", updatedAt: "2025-05-10",
     defaultPermissions: ["read", "write"],
     authFields: [f.baseUrl, f.apiKey],
   },
   {
-    id: "browser-ai", name: "Browser AI",
-    description: "Internetda qidirish, saytlarni o'qish, forma to'ldirish va ma'lumot yig'ish.",
+    id: "browser-ai", name: t("app.catalog.browser_ai"),
+    description: t("app.catalog.internetda_qidirish_saytlarni_oqish_forma_toldirish"),
     tier: "pro", category: "Automation", icon: BrowserAiIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Web navigatsiya", "DOM o'qish"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.web_navigatsiya"), t("app.catalog.dom_oqish")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["read", "execute"], authFields: [f.apiKey],
   },
   {
-    id: "vision-ai", name: "Vision AI",
-    description: "Rasmlar, screenshotlar, PDF, diagrammalar va kamerani tahlil qilish.",
+    id: "vision-ai", name: t("app.catalog.vision_ai"),
+    description: t("app.catalog.rasmlar_screenshotlar_pdf_diagrammalar_va_kamerani"),
     tier: "pro", category: "AI", icon: VisionAiIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Rasm tahlili"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.rasm_tahlili")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["read", "execute"], authFields: [f.apiKey],
   },
   {
-    id: "code-runner", name: "Code Runner",
-    description: "Python, JavaScript va boshqa kodlarni yozish, ishga tushirish va natija olish.",
+    id: "code-runner", name: t("app.catalog.code_runner"),
+    description: t("app.catalog.python_javascript_va_boshqa_kodlarni_yozish"),
     tier: "pro", category: "Automation", icon: CodeRunnerIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Kod ishga tushirish"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.kod_ishga_tushirish")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["execute"], authFields: [f.apiKey],
   },
   {
-    id: "database-studio", name: "Database Studio",
-    description: "SQL ma'lumotlar bazalarini boshqarish, o'qish, yozish va tahlil qilish.",
+    id: "database-studio", name: t("app.catalog.database_studio"),
+    description: t("app.catalog.sql_malumotlar_bazalarini_boshqarish_oqish_yozish"),
     tier: "pro", category: "Data", icon: DatabaseStudioIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Query bajarish"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.query_bajarish")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["read", "write", "execute"],
     authFields: [
-      { key: "conn_string", label: "Ulanish satri", type: "secret", placeholder: "postgres://user:pass@host:5432/db", required: true },
+      { key: "conn_string", label: t("app.catalog.ulanish_satri"), type: "secret", placeholder: "postgres://user:pass@host:5432/db", required: true },
     ],
   },
   {
-    id: "cloud-workspace", name: "Cloud Workspace",
-    description: "Google Drive, Dropbox, OneDrive va boshqa bulutli xotiralar bilan ishlash.",
+    id: "cloud-workspace", name: t("app.catalog.cloud_workspace"),
+    description: t("app.catalog.google_drive_dropbox_onedrive_va_boshqa"),
     tier: "pro", category: "Files", icon: CloudWorkspaceIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Fayl o'qish", "Fayl yozish"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.fayl_oqish"), t("app.catalog.fayl_yozish")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["read", "write"], authFields: [f.oauth, f.clientId, f.clientSecret],
   },
   {
-    id: "ai-studio", name: "AI Studio",
-    description: "Turli AI modellardan foydalanish va ularni birgalikda ishlatish (Claude, GPT, Gemini va boshqalar).",
+    id: "ai-studio", name: t("app.catalog.ai_studio"),
+    description: t("app.catalog.turli_ai_modellardan_foydalanish_va_ularni"),
     tier: "pro", category: "AI", icon: AiStudioIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Model chaqirish"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.model_chaqirish")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["execute"], authFields: [f.apiKey],
   },
   {
-    id: "automation-hub", name: "Automation Hub",
-    description: "Triggerlar, schedule, webhook, HTTP so'rovlar va jarayonlarni avtomatlashtirish.",
+    id: "automation-hub", name: t("app.catalog.automation_hub"),
+    description: t("app.catalog.triggerlar_schedule_webhook_http_sorovlar_va"),
     tier: "pro", category: "Automation", icon: AutomationHubIcon,
     accent: "bg-transparent", version: "1.0.0",
-    permissions: ["Workflow ishga tushirish"],
-    developer: "Agentus Labs", updatedAt: "2026-07-01",
+    permissions: [t("app.catalog.workflow_ishga_tushirish")],
+    developer: t("app.catalog.agentus_labs"), updatedAt: "2026-07-01",
     defaultPermissions: ["read", "execute"], authFields: [f.apiKey, f.webhook],
   },
   {
-    id: "instagram-poster", name: "Instagram Auto Poster",
-    description: "Instagram ga avtomatik post joylash.",
+    id: "instagram-poster", name: t("app.catalog.instagram_auto_poster"),
+    description: t("app.catalog.instagram_ga_avtomatik_post_joylash"),
     tier: "marketplace", category: "Communication", icon: Instagram,
     accent: "bg-pink-500/15 text-pink-400", version: "1.2.0",
-    permissions: ["Post joylash"], purchasedAt: "2025-07-12",
-    developer: "Marketplace Studio", updatedAt: "2025-07-12",
+    permissions: [t("app.catalog.post_joylash")], purchasedAt: "2025-07-12",
+    developer: t("app.catalog.marketplace_studio"), updatedAt: "2025-07-12",
     defaultPermissions: ["write"],
     authFields: [f.oauth, f.clientId, f.clientSecret],
   },
   {
-    id: "amazon-kdp", name: "Amazon KDP Publisher",
-    description: "Kitoblarni Amazon KDP ga avtomatik joylash.",
+    id: "amazon-kdp", name: t("app.catalog.amazon_kdp_publisher"),
+    description: t("app.catalog.kitoblarni_amazon_kdp_ga_avtomatik_joylash"),
     tier: "marketplace", category: "Automation", icon: Package,
     accent: "bg-yellow-500/15 text-yellow-400", version: "1.0.0",
-    permissions: ["Kitob yuklash"], purchasedAt: "2025-07-10",
-    developer: "KDP Tools", updatedAt: "2025-07-10",
+    permissions: [t("app.catalog.kitob_yuklash")], purchasedAt: "2025-07-10",
+    developer: t("app.catalog.kdp_tools"), updatedAt: "2025-07-10",
     defaultPermissions: ["write"],
     authFields: [f.apiKey, f.workspaceId],
   },
   {
-    id: "uzum-seller", name: "Uzum Seller",
-    description: "Uzum platformasida sotuvlarni boshqarish.",
+    id: "uzum-seller", name: t("app.catalog.uzum_seller"),
+    description: t("app.catalog.uzum_platformasida_sotuvlarni_boshqarish"),
     tier: "marketplace", category: "Data", icon: ShoppingBag,
     accent: "bg-violet-500/15 text-violet-400", version: "1.1.0",
-    permissions: ["Buyurtma o'qish"], purchasedAt: "2025-07-05",
+    permissions: [t("app.catalog.buyurtma_oqish")], purchasedAt: "2025-07-05",
     developer: "Uzum", updatedAt: "2025-07-05",
     defaultPermissions: ["read", "write"],
     authFields: [f.apiKey, f.workspaceId],
   },
   {
-    id: "trading-bot", name: "Trading Bot Connector",
-    description: "Kripto birjalari bilan ulanish va savdo.",
+    id: "trading-bot", name: t("app.catalog.trading_bot_connector"),
+    description: t("app.catalog.kripto_birjalari_bilan_ulanish_va_savdo"),
     tier: "marketplace", category: "Automation", icon: TrendingUp,
     accent: "bg-emerald-500/15 text-emerald-400", version: "0.8.0",
-    permissions: ["Trade yaratish"], purchasedAt: "2025-06-28",
+    permissions: [t("app.catalog.trade_yaratish")], purchasedAt: "2025-06-28",
     developer: "TradeLab", updatedAt: "2025-06-28",
     defaultPermissions: ["read", "write", "execute"],
     authFields: [
       f.apiKey,
-      { key: "api_secret", label: "API siri", type: "secret", placeholder: "••••••••", required: true },
+      { key: "api_secret", label: t("app.catalog.api_siri"), type: "secret", placeholder: "••••••••", required: true },
     ],
   },
   {
-    id: "notion-integration", name: "Notion Integration",
-    description: "Notion bilan ma'lumot sinxronizatsiyasi.",
+    id: "notion-integration", name: t("app.catalog.notion_integration"),
+    description: t("app.catalog.notion_bilan_malumot_sinxronizatsiyasi"),
     tier: "marketplace", category: "Data", icon: StickyNote,
     accent: "bg-slate-400/15 text-slate-300", version: "1.0.0",
-    permissions: ["Sahifa o'qish", "Sahifa yozish"],
+    permissions: [t("app.catalog.sahifa_oqish"), t("app.catalog.sahifa_yozish")],
     purchasedAt: "2025-06-18",
     developer: "Notion", docsUrl: "https://developers.notion.com",
     updatedAt: "2025-06-18", defaultPermissions: ["read", "write"],

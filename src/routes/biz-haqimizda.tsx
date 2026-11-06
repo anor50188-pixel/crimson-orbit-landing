@@ -1,46 +1,48 @@
+import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Heart, Rocket, SlidersHorizontal, Users } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
 
-export const Route = createFileRoute("/biz-haqimizda")({
+export const Route = localized(() => (createFileRoute("/biz-haqimizda")({
   head: () => ({
     meta: [
-      { title: "Biz haqimizda — Agentus" },
-      { name: "description", content: "Agentus — har bir inson uchun AI jamoa. O'z agentlaringizni yarating, biznesingizga moslashtiring va sun'iy intellekt ekotizimidan foydalaning." },
-      { property: "og:title", content: "Biz haqimizda — Agentus" },
-      { property: "og:description", content: "Agentus — har bir inson uchun AI jamoa. O'z agentlaringizni yarating, biznesingizga moslashtiring." },
+      { title: t("app.common.biz_haqimizda_agentus") },
+      { name: "description", content: t("app.common.agentus_har_bir_inson_uchun_ai") },
+      { property: "og:title", content: t("app.common.biz_haqimizda_agentus") },
+      { property: "og:description", content: t("app.common.agentus_har_bir_inson_uchun_ai_2") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: BizHaqimizda,
-});
+})));
 
-const values = [
+const values = localized(() => ([
   {
     icon: Heart,
-    title: "Inson markazida",
-    desc: "AI insonning o'rnini emas, uning rivojlanishini tezlashtiradi. Har bir funksiya foydalanuvchi hayotini yaxshilaydimi — shu savoldan boshlanadi.",
+    title: t("app.common.inson_markazida"),
+    desc: t("app.common.ai_insonning_ornini_emas_uning_rivojlanishini"),
   },
   {
     icon: Rocket,
-    title: "Oson boshlash",
-    desc: "G'oyadan ishlaydigan AI agentga atigi bir necha daqiqa. Kod yoki murakkab sozlamalar talab qilmaydi.",
+    title: t("app.common.oson_boshlash"),
+    desc: t("app.common.goyadan_ishlaydigan_ai_agentga_atigi_bir"),
   },
   {
     icon: SlidersHorizontal,
-    title: "Cheksiz moslashuv",
-    desc: "Boshlash oson, chuqur moslashtirish esa cheklanmagan. Agentlaringizni o'z biznesingiz va vazifalaringizga qarab o'stiring.",
+    title: t("app.common.cheksiz_moslashuv"),
+    desc: t("app.common.boshlash_oson_chuqur_moslashtirish_esa_cheklanmagan"),
   },
   {
     icon: Users,
-    title: "Hamkor AI jamoasi",
-    desc: "Agentlaringizni birga ishga soling, ulashing va AI jamoalaringizni Marketplace'da dunyo bilan ulisting.",
+    title: t("app.common.hamkor_ai_jamoasi"),
+    desc: t("app.common.agentlaringizni_birga_ishga_soling_ulashing_va"),
   },
-];
+]));
 
 function BizHaqimizda() {
+  useI18n();
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* Header */}
@@ -52,23 +54,19 @@ function BizHaqimizda() {
           </Link>
           <nav className="hidden items-center gap-10 md:flex">
             <Link to="/" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Bosh sahifa
-            </Link>
+              {t("app.common.bosh_sahifa")}</Link>
             <a href="/#xususiyatlar" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-              Xususiyatlar
-            </a>
+              {t("app.common.xususiyatlar")}</a>
             <Link
               to="/biz-haqimizda"
               className="text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
-              Biz haqimizda
-            </Link>
+              {t("app.common.biz_haqimizda")}</Link>
             <Link
               to="/roadmap"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              Yo'l xaritasi
-            </Link>
+              {t("app.common.yol_xaritasi")}</Link>
           </nav>
         </div>
       </header>
@@ -97,34 +95,27 @@ function BizHaqimizda() {
             draggable={false}
           />
           <h1 className="mt-8 text-3xl font-bold tracking-tight md:text-4xl">
-            Biz haqimizda
-          </h1>
+            {t("app.common.biz_haqimizda")}</h1>
           <p className="mt-6 max-w-2xl text-balance text-xl text-foreground/90 md:text-2xl">
-            <span className="text-primary">Agentus</span> — har bir inson uchun AI jamoa.
-          </p>
+            <span className="text-primary">Agentus</span> {t("app.common.har_bir_inson_uchun_ai_jamoa")}</p>
         </div>
       </section>
 
       {/* About */}
       <section className="border-t border-border/60 bg-background">
         <div className="mx-auto max-w-3xl px-6 py-20">
-          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Kompaniya haqida</p>
+          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">{t("app.common.kompaniya_haqida")}</p>
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Agentus — har bir inson uchun AI jamoa
-          </h2>
+            {t("app.common.agentus_har_bir_inson_uchun_ai_3")}</h2>
           <div className="mt-8 space-y-5 text-base leading-relaxed text-foreground/90">
             <p>
-              Biz ishonamizki, muvaffaqiyatga erishish faqat katta kompaniyalarniki emas. Har bir inson, tadbirkor, freelancer va startap asoschisi ham o'zining sun'iy intellekt jamoasiga ega bo'lishi kerak.
-            </p>
+              {t("app.common.biz_ishonamizki_muvaffaqiyatga_erishish_faqat_katta")}</p>
             <p>
-              Agentus aynan shu maqsadda yaratilmoqda. Bugun ko'plab insonlar o'z g'oyalarini amalga oshirishni xohlaydi, lekin vaqt, mablag' yoki jamoa yetishmaydi. Agentus aynan shu muammoni hal qilish uchun mo'ljallangan.
-            </p>
+              {t("app.common.agentus_aynan_shu_maqsadda_yaratilmoqda_bugun")}</p>
             <p>
-              Bu yerda siz o'zingizga agentlaringizni yaratasiz, ularni biznesingizga moslashtirasiz, kerakli tool va integratsiyalarni ulaysiz, AI jamoalaringizni birgalikda ishlatasiz, vaqtingizni tejaysiz va samaradorlikni oshirasiz.
-            </p>
+              {t("app.common.bu_yerda_siz_ozingizga_agentlaringizni_yaratasiz")}</p>
             <p>
-              Agentus AI platformasi emas. Bu — o'z g'oyalarini tatbiq etishni talab qiladigan insonlar uchun yaratilayotgan AI ekotizimidir.
-            </p>
+              {t("app.common.agentus_ai_platformasi_emas_bu_oz")}</p>
           </div>
         </div>
       </section>
@@ -132,38 +123,35 @@ function BizHaqimizda() {
       {/* Mission */}
       <section className="border-t border-border/60 bg-background">
         <div className="mx-auto max-w-3xl px-6 py-20">
-          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Missiya</p>
+          <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">{t("app.common.missiya")}</p>
           <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Bizning maqsadimiz oddiy
-          </h2>
+            {t("app.common.bizning_maqsadimiz_oddiy")}</h2>
           <p className="mt-6 text-base leading-relaxed text-foreground/90">
-            Har qanday odamga bir necha daqiqada o'ziga mos AI agent yoki AI jamoaga yordam berish.
-          </p>
+            {t("app.common.har_qanday_odamga_bir_necha_daqiqada")}</p>
           <ul className="mt-8 space-y-4 text-base leading-relaxed text-foreground/90">
             <li className="flex gap-3">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              <span>O'zingizga agentlaringizni yaratasiz.</span>
+              <span>{t("app.common.ozingizga_agentlaringizni_yaratasiz")}</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              <span>Ularni biznesingizga moslashtirasiz.</span>
+              <span>{t("app.common.ularni_biznesingizga_moslashtirasiz")}</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              <span>Kerakli tool va integratsiyalarni ulaysiz.</span>
+              <span>{t("app.common.kerakli_tool_va_integratsiyalarni_ulaysiz")}</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              <span>AI jamoalaringizni birgalikda ishlatasiz.</span>
+              <span>{t("app.common.ai_jamoalaringizni_birgalikda_ishlatasiz")}</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              <span>Vaqtingizni tejaysiz va samaradorlikni oshirasiz.</span>
+              <span>{t("app.common.vaqtingizni_tejaysiz_va_samaradorlikni_oshirasiz")}</span>
             </li>
           </ul>
           <p className="mt-8 text-base leading-relaxed text-foreground/90">
-            Biz AI insonniga emas, insonning rivojlanishiga ishonamiz. Buning uchun Agentusning har bir funksiyasi bitta savol asosida yaratiladi: <em className="text-foreground">“Bu foydalanuvchining hayotini yaxshilaydimi?”</em> Agar javob ha bo'lsa, biz uni quramiz. Agar javob yo'q bo'lsa, biz uni qayta o'ylaymiz.
-          </p>
+            {t("app.common.biz_ai_insonniga_emas_insonning_rivojlanishiga")}<em className="text-foreground">{t("app.common.bu_foydalanuvchining_hayotini_yaxshilaydimi")}</em> {t("app.common.agar_javob_ha_bolsa_biz_uni")}</p>
         </div>
       </section>
 
@@ -171,11 +159,9 @@ function BizHaqimizda() {
       <section className="border-t border-border/60 bg-background">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <p className="mb-4 text-center text-xs uppercase tracking-widest text-muted-foreground">
-            Asosiy qadriyatlar
-          </p>
+            {t("app.common.asosiy_qadriyatlar")}</p>
           <h2 className="text-center text-2xl font-bold tracking-tight md:text-3xl">
-            Nega Agentus?
-          </h2>
+            {t("app.common.nega_agentus")}</h2>
           <div className="mt-10 grid gap-x-10 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
             {values.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="flex gap-4">
@@ -195,10 +181,9 @@ function BizHaqimizda() {
       {/* Slogan */}
       <section className="border-t border-border/60 bg-background">
         <div className="mx-auto flex max-w-3xl flex-col items-center px-6 py-20 text-center">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Bizning shiorimiz</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("app.common.bizning_shiorimiz")}</p>
           <p className="mt-6 text-2xl font-semibold italic leading-snug text-foreground md:text-3xl">
-            “Boshlash oson. Chuqur moslashtirish esa cheklanmagan.”
-          </p>
+            {t("app.common.boshlash_oson_chuqur_moslashtirish_esa_cheklanmagan_2")}</p>
         </div>
       </section>
 
@@ -210,15 +195,13 @@ function BizHaqimizda() {
             className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             <ArrowLeft className="h-4 w-4" />
-            Bosh sahifaga qaytish
-          </Link>
+            {t("app.common.bosh_sahifaga_qaytish")}</Link>
         </div>
       </section>
 
       <footer className="border-t border-border/60">
         <div className="mx-auto max-w-7xl px-6 py-6 text-center text-xs text-muted-foreground">
-          © 2026 Agentus — ishlab chiqilmoqda
-        </div>
+          {t("app.common.2026_agentus_ishlab_chiqilmoqda")}</div>
       </footer>
     </div>
   );
