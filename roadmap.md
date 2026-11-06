@@ -9,3 +9,8 @@
 - [x] Add layered planet imagery and a continuous interactive knowledge carousel.
 - [x] Verify desktop/mobile wizard, carousel controls, theme and reduced motion.
 - [ ] Hide the Lovable badge (blocked: permission declined).
+
+## Premium mission control refresh
+- [x] Refresh floating shell, cosmic Home and borderless surfaces while preserving flows.
+- [x] Restyle usage, onboarding, templates, builder and carousel; add command search.
+- [x] Optimize existing imagery and verify desktop/mobile interactions.

@@ -63,7 +63,8 @@ import { KnowledgeCarousel } from "@/components/knowledge-carousel";
 function Button(props: ButtonProps) {
   return <DesignButton variant="workspace" size="workspace" {...props} />;
 }
-import wordmark from "@/assets/agentus-wordmark.png";
+import { AIText, WorkspaceCommandPalette } from "@/components/workspace-command";
+const wordmark = "/images/agentus-wordmark.webp";
 
 export const Route = createFileRoute("/agent-yaratish")({
   component: AgentCreatePage,
@@ -250,6 +251,7 @@ function AgentCreatePage() {
   const [toast, setToast] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
   const timers = useRef<number[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLTextAreaElement>(null);
@@ -272,6 +274,14 @@ function AgentCreatePage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, typing, step, selectedTools]);
+
+  useEffect(() => {
+    const shortcut = (event: globalThis.KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); setCommandOpen(value => !value); }
+    };
+    window.addEventListener("keydown", shortcut);
+    return () => window.removeEventListener("keydown", shortcut);
+  }, []);
 
   const showToast = (text: string) => setToast(text);
 
@@ -434,7 +444,7 @@ function AgentCreatePage() {
         {phase === "home" && <WorkspaceCosmos />}
 
         <header className="workspace-topbar">
-          <div className="topbar-title">
+          <div className={`topbar-title ${phase === "home" ? "home-topbar-title" : ""}`}>
             <Button
               className="icon-button mobile-menu-button"
               type="button"
@@ -448,6 +458,7 @@ function AgentCreatePage() {
             <strong>{phase === "home" ? "Asosiy" : "Agent yaratish"}</strong>
           </div>
           <div className="topbar-actions">
+            <Button className="icon-button command-trigger" type="button" aria-label="Tezkor qidiruv" title="Tezkor qidiruv" onClick={() => setCommandOpen(true)}>⌘K</Button>
             <Button
               className="icon-button"
               type="button"
@@ -456,7 +467,7 @@ function AgentCreatePage() {
             >
               {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
-            <span className="language-chip">UZ</span>
+            <div className="language-segments" aria-label="Til"><Button type="button" aria-pressed="true">UZ</Button>{["RU", "EN"].map(language => <Button key={language} type="button" onClick={() => showToast(`${language} tili tez orada mavjud bo‘ladi`)}>{language}</Button>)}</div>
             <div className="topbar-popover-wrap">
               <Button
                 className="icon-button notification-button"
@@ -507,6 +518,8 @@ function AgentCreatePage() {
             onPrompt={setPrompt}
             onStart={startBuilder}
             onNew={openNewAgent}
+            onSoon={setSoon}
+            onNotice={showToast}
           />
         ) : (
           <div className="builder-shell">
@@ -559,6 +572,13 @@ function AgentCreatePage() {
         )}
       </main>
 
+      {commandOpen && <WorkspaceCommandPalette onClose={() => setCommandOpen(false)} commands={[
+        ...recentAgents.map(agent => ({ label: agent.name, group: "Agentlar", run: () => startBuilder(`${agent.name} agentini sinash`) })),
+        ...suggestions.map(item => ({ label: item.text, group: "Shablonlar", run: () => { goHome(); setPrompt(item.text); later(() => promptRef.current?.focus(), 100); } })),
+        { label: "Asosiy", group: "Sahifalar", run: goHome },
+        { label: "Agentlarim", group: "Sahifalar", run: () => { navigate({ to: "/agentlarim" }); } },
+        ...(["Marketplace", "Mening toollarim", "Sotuvchi paneli", "To'lovlar"] as SoonKey[]).map(label => ({ label, group: "Sahifalar", run: () => setSoon(label) })),
+      ]} />}
       {soon && <ComingSoonModal section={soon} onClose={() => setSoon(null)} />}
       {toast && (
         <div className="workspace-toast" role="status">
@@ -597,11 +617,11 @@ function Sidebar({
     { label: "Agentlarim", icon: Bot, to: "/agentlarim" },
     { label: "AI jamoalar", icon: Users },
     { label: "Statistika", icon: BarChart3 },
+    { label: "Sozlamalar", icon: Settings },
     { label: "Marketplace", icon: Store, soon: "Marketplace", badge: true },
     { label: "Mening toollarim", icon: Wrench, soon: "Mening toollarim", badge: true },
     { label: "Sotuvchi paneli", icon: Crown, soon: "Sotuvchi paneli", badge: true },
     { label: "To'lovlar", icon: Wallet, soon: "To'lovlar", badge: true },
-    { label: "Sozlamalar", icon: Settings },
   ];
 
   const content = (
@@ -616,19 +636,20 @@ function Sidebar({
         </Button>
       </div>
       <nav className="sidebar-nav" aria-label="Asosiy bo‘limlar">
-        {items.map(({ label, icon: Icon, active, to, soon, badge }) => {
+        {items.map(({ label, icon: Icon, active, to, soon }, index) => {
           const className = `sidebar-link ${active ? "active" : ""}`;
           if (to) {
             return (
               <Link key={label} to={to} className={className} title={label} onClick={onClose}>
                 <Icon />
-                <span className="sidebar-label">{label}</span>
+                <span className="sidebar-label"><AIText text={label} /></span>
               </Link>
             );
           }
           return (
+            <div key={label} className={soon ? "soon-nav-item" : "nav-item"}>
+            {index === 5 && <p className="sidebar-group-title">Tez orada</p>}
             <Button
-              key={label}
               type="button"
               className={className}
               title={label}
@@ -640,23 +661,18 @@ function Sidebar({
               }}
             >
               <Icon />
-              <span className="sidebar-label">{label}</span>
-              {badge && <span className="soon-badge"><Clock />Tez orada</span>}
+              <span className="sidebar-label"><AIText text={label} /></span>
+              {soon && <Clock className="nav-clock" />}
             </Button>
+            </div>
           );
         })}
       </nav>
       <div className="sidebar-bottom">
         <div className="plan-card">
-          <div className="plan-title"><Box /><strong>Pro Plan</strong><span className="pro-accent">Namuna</span></div>
-          <p>Barcha premium imkoniyatlardan foydalaning.</p>
-          <Button className="neon-button" type="button" onClick={() => onNotice("Rejani yangilash tez orada mavjud bo‘ladi")}>
-            Rejani yangilash
-          </Button>
-        </div>
-        <div className="sidebar-usage">
+          <div className="plan-title"><span className="pro-accent">Pro</span><strong>Pro Plan</strong></div>
           <UsageLine label="Agentlar" value="3 / 10" percent={30} />
-          <UsageLine label="So‘rovlar" value="1 240 / 5 000" percent={24.8} />
+          <Button className="neon-button" type="button" onClick={() => onNotice("Rejani yangilash tez orada mavjud bo‘ladi")}>Yangilash <ArrowRight /></Button>
         </div>
         <Button className="sidebar-user" type="button" onClick={() => onNotice("Azizbek · Pro tarif")} title="Azizbek, Pro tarif">
           <span className="user-avatar"><User /></span>
@@ -692,13 +708,26 @@ function HomeView({
   onPrompt,
   onStart,
   onNew,
+  onSoon,
+  onNotice,
 }: {
   prompt: string;
   promptRef: React.RefObject<HTMLTextAreaElement | null>;
   onPrompt: (value: string) => void;
   onStart: (prompt: string) => void;
   onNew: () => void;
+  onSoon: (key: SoonKey) => void;
+  onNotice: (text: string) => void;
 }) {
+  const [popover, setPopover] = useState<"templates" | "tools" | "language" | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const scroll = () => setScrolled(window.scrollY > 30);
+    scroll(); window.addEventListener("scroll", scroll, { passive: true });
+    return () => window.removeEventListener("scroll", scroll);
+  }, []);
+  const chooseSuggestion = (text: string) => { onPrompt(text); setPopover(null); promptRef.current?.focus(); };
+  const shortLabels = ["Telegram hisobot agenti", "Instagram kontent agenti", "Mijozlar boti", "Excel tahlilchi"];
   const submit = () => onStart(prompt);
   const promptKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
@@ -710,9 +739,9 @@ function HomeView({
   return (
     <div className="home-content">
       <section className="home-hero">
-        <div className="hero-pill"><Sparkles /> Agent yaratish <span className="demo-label">Namuna</span></div>
+        <div className="hero-pill"><Sparkles /> Agent yaratish</div>
         <h1>Qanday agent quramiz, <span>Azizbek?</span></h1>
-        <p className="hero-description">G‘oyangizni yozing — Agentus uni birga shakllantiramiz.</p>
+        <p className="hero-description">G'oyangizni yozing. Agentus uni birga shakllantiradi.</p>
         <div className="home-prompt-card">
           <textarea
             ref={promptRef}
@@ -724,25 +753,35 @@ function HomeView({
             aria-label="Agent g‘oyasi"
           />
           <div className="prompt-footer">
-            <span><kbd>Ctrl</kbd><Plus /><kbd>Enter</kbd></span>
+            <div className="composer-options">
+              <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "templates" ? null : "templates")} aria-expanded={popover === "templates"}><Layers />Shablon tanlash</Button>
+              <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "tools" ? null : "tools")} aria-expanded={popover === "tools"}><Wrench />Tool'lar</Button>
+              <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "language" ? null : "language")} aria-expanded={popover === "language"}>Til: UZ</Button>
+            </div>
+            <span className="prompt-shortcut">⌘ ↵</span>
             <Button className="neon-button create-button" type="button" disabled={!prompt.trim()} onClick={submit}>
               Yaratish <Send />
             </Button>
           </div>
+          {popover && <div className="composer-popover">
+            {popover === "templates" && suggestions.map((item, index) => <Button key={item.text} type="button" onClick={() => chooseSuggestion(item.text)}>{shortLabels[index]}<ArrowRight /></Button>)}
+            {popover === "tools" && <><p>Tool'lar agent yaratish bosqichida tanlanadi.</p><Button type="button" onClick={() => { setPopover(null); onSoon("Mening toollarim"); }}>Mening toollarim<ArrowRight /></Button></>}
+            {popover === "language" && <>{["UZ", "RU", "EN"].map(language => <Button key={language} type="button" onClick={() => { setPopover(null); if (language !== "UZ") onNotice(`${language} tili tez orada mavjud bo‘ladi`); }}>{language}{language === "UZ" && <Check />}</Button>)}</>}
+          </div>}
         </div>
         <div className="suggestion-grid">
-          {suggestions.map(({ icon: Icon, text }) => (
-            <Button key={text} type="button" onClick={() => onPrompt(text)}>
-              <Icon /><span>{text}</span>
+          {suggestions.map(({ icon: Icon, text }, index) => (
+            <Button key={text} type="button" onClick={() => chooseSuggestion(text)}>
+              <span className="suggestion-icon"><Icon /></span><span>{shortLabels[index]}</span>
             </Button>
           ))}
         </div>
-        <a className="home-scroll-cue" href="#recent-agents" aria-label="So‘nggi agentlarga o‘tish">
+        <a className={`home-scroll-cue ${scrolled ? "scrolled" : ""}`} href="#recent-agents" aria-label="So‘nggi agentlarga o‘tish">
           <Mouse />Pastga suring
         </a>
       </section>
 
-      <div className="home-sections">
+      <div className="home-sections"><p className="workspace-sample-note">Ko‘rgazma ma’lumotlari · haqiqiy foydalanish natijalari emas</p>
         <section className="dashboard-section" id="recent-agents">
           <div className="section-title-row">
             <div><span className="section-kicker">Ish maydoningiz</span><h2>So‘nggi agentlarim</h2></div>
@@ -750,7 +789,7 @@ function HomeView({
           </div>
           <div className="recent-grid">
             {recentAgents.map(({ name, icon: Icon, status }) => (
-              <article className="dashboard-card recent-card" key={name}>
+              <article className="dashboard-card recent-card" key={name} onPointerMove={event => { const box = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--spot-x", `${event.clientX - box.left}px`); event.currentTarget.style.setProperty("--spot-y", `${event.clientY - box.top}px`); }}>
                 <div className="recent-card-top">
                   <span className="agent-icon"><Icon /></span>
                   <StatusPill status={status} />
@@ -763,7 +802,7 @@ function HomeView({
               </article>
             ))}
             <Button className="new-agent-card" type="button" onClick={onNew}>
-              <Plus /><strong>Yangi agent</strong><span>G‘oyadan ishlaydigan agentgacha</span>
+              <span className="new-agent-orbit"><Plus /></span><strong>Yangi agent yarating</strong><span>G‘oyadan ishlaydigan agentgacha</span>
             </Button>
           </div>
         </section>
@@ -771,7 +810,7 @@ function HomeView({
         <section className="dashboard-split-section">
           <div className="dashboard-section usage-section">
             <div className="section-title-row"><div><span className="section-kicker">Joriy oy</span><h2>Foydalanish</h2></div></div>
-            <div className="usage-cards">
+            <div className="usage-cards elevated-surface">
               <UsageMetric icon={Bot} label="Agentlar" value="3 / 10" percent={30} />
               <UsageMetric icon={Wrench} label="Tool'lar" value="4 / 10" percent={40} />
               <UsageMetric icon={Zap} label="Oylik so‘rovlar" value="1 240 / 5 000" percent={24.8} />
@@ -782,14 +821,16 @@ function HomeView({
               <div><span className="section-kicker">Ilk qadamlar</span><h2>Boshlash uchun</h2></div>
               <span className="checklist-progress">1/4</span>
             </div>
-            <div className="checklist">
-              {["Agent yarating", "Tool ulang", "Agentni sinang", "Jadvalga qo‘ying"].map((item, index) => (
-                <div className={index === 0 ? "done" : ""} key={item}>
-                  {index === 0 ? <Check /> : <Circle />}<span>{item}</span>
-                </div>
-              ))}
+            <div className="checklist elevated-surface">
+              <div className="onboarding-top"><div className="metric-ring" style={{ "--progress": "90deg" } as CSSProperties}><strong>1/4</strong></div><div><strong>Birinchi qadam qo‘yildi</strong><p>Agent yarating</p></div></div>
+              <div className="onboarding-steps">{["Agent yarating", "Tool ulang", "Agentni sinang", "Jadvalga qo‘ying"].map((item, index) => <div className={index === 0 ? "done" : ""} key={item}><span>{index === 0 ? <Check /> : index + 1}</span><small>{item}</small></div>)}</div>
+              <Button className="neon-button" type="button" onClick={() => onSoon("Mening toollarim")}>Keyingi: Tool ulang <ArrowRight /></Button>
             </div>
           </div>
+        </section>
+        <section className="dashboard-section templates-section">
+          <div className="section-title-row"><div><span className="section-kicker">G‘oyadan boshlang</span><h2>Tayyor shablonlar</h2></div><Button className="text-link" type="button" onClick={() => { promptRef.current?.focus(); promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setPopover("templates"); }}>Barchasini ko‘rish <ArrowRight /></Button></div>
+          <div className="template-rail">{suggestions.map(({ icon: Icon, text }, index) => <article className={`template-tile template-${index}`} key={text}><div className="template-cover"><Icon /></div><h3>{shortLabels[index]}</h3><Button className="glass-button" type="button" onClick={() => { chooseSuggestion(text); promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>Tanlash <ArrowRight /></Button></article>)}</div>
         </section>
       </div>
     </div>
@@ -802,12 +843,28 @@ function StatusPill({ status }: { status: string }) {
 }
 
 function UsageMetric({ icon: Icon, label, value, percent }: { icon: LucideIcon; label: string; value: string; percent: number }) {
-  return (
-    <div className="usage-metric dashboard-card">
-      <div><span className="metric-icon"><Icon /></span><span>{label}</span><strong>{value}</strong></div>
-      <div className="meter-track"><span style={{ width: `${percent}%` }} /></div>
-    </div>
-  );
+  const root = useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(0);
+  const [numeral, limit] = value.split(" / ");
+  const total = Number(numeral?.replaceAll(" ", ""));
+  useEffect(() => {
+    const node = root.current; if (!node) return;
+    let frame = 0;
+    const observer = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      observer.disconnect();
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setCount(total); return; }
+      const start = performance.now();
+      const tick = (time: number) => { const fraction = Math.min((time - start) / 900, 1); setCount(Math.round(total * (1 - (1 - fraction) ** 3))); if (fraction < 1) frame = requestAnimationFrame(tick); };
+      frame = requestAnimationFrame(tick);
+    }, { threshold: .3 });
+    observer.observe(node);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); };
+  }, [total]);
+  return <div className="usage-metric" ref={root}>
+    <div className="metric-ring" style={{ "--progress": `${percent * 3.6}deg` } as CSSProperties}><strong>{count.toLocaleString("en-US").replaceAll(",", " ")}</strong><small>/ {limit}</small></div>
+    <p><Icon />{label}</p><small>Joriy oy</small>
+  </div>;
 }
 
 function ChatPanel({
@@ -931,7 +988,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
   return (
     <div className={`chat-bubble-row ${message.role}`}>
       {message.role === "assistant" && <span className="mini-avatar"><Brain /></span>}
-      <div className="chat-bubble">{message.text}</div>
+      <div className="chat-bubble"><AIText text={message.text} /></div>
     </div>
   );
 }
