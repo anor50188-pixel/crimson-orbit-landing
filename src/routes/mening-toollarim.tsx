@@ -1,3 +1,7 @@
+import { WorkspaceCosmos } from '@/components/workspace-cosmos';
+import { CosmicEnding } from '@/components/cosmic-ending';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { t as translate, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -59,46 +63,47 @@ export const Route = createFileRoute("/mening-toollarim")({
   component: MeningToollarimPage,
   head: () => ({
     meta: [
-      { title: "Mening toollarim — Agentus" },
-      { property: "og:title", content: "Mening toollarim — Agentus" },
-      { property: "og:description", content: "Agentus tool katalogi, o'rnatilgan toollar va konfiguratsiyalarni boshqaring." },
+      { title: translate("app.tools.mening_toollarim_agentus") },
+      { property: "og:title", content: translate("app.tools.mening_toollarim_agentus") },
+      { property: "og:description", content: translate("app.tools.agentus_tool_katalogi_ornatilgan_toollar_va") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
-          "Toollaringizni boshqaring va yordamchi agentlaringizga ulang.",
+          translate("app.tools.toollaringizni_boshqaring_va_yordamchi_agentlaringizga_ulang"),
       },
     ],
   }),
 });
 
-const navItems = [
-  { icon: Home, label: "Asosiy", to: "/" as const },
-  { icon: Bot, label: "Agentlarim", to: "/agentlarim" as const },
-  { icon: Store, label: "Marketplace" },
+const navItems = localized(() => ([
+  { icon: Home, label: translate("app.workspace.asosiy"), to: "/" as const },
+  { icon: Bot, label: translate("app.workspace.agentlarim"), to: "/agentlarim" as const },
+  { icon: Store, label: translate("app.workspace.marketplace") },
   {
     icon: Wrench,
-    label: "Mening toollarim",
+    label: translate("app.workspace.mening_toollarim"),
     to: "/mening-toollarim" as const,
     active: true,
   },
-  { icon: Crown, label: "Sotuvchi paneli", to: "/seller" as const },
-  { icon: Wallet, label: "To'lovlar" },
-  { icon: Settings, label: "Sozlamalar" },
-];
+  { icon: Crown, label: translate("app.workspace.sotuvchi_paneli"), to: "/seller" as const },
+  { icon: Wallet, label: translate("app.workspace.tolovlar") },
+  { icon: Settings, label: translate("app.workspace.sozlamalar") },
+]));
 
 const catalog = toolCatalog;
 const USER_IS_PRO = true;
 
-const tabs = [
-  { id: "all", label: "Barcha toollar" },
-  { id: "free", label: "Free toollar" },
-  { id: "pro", label: "Pro toollar" },
-] as const;
+const tabs = localized(() => ([
+  { id: "all", label: translate("app.tools.barcha_toollar") },
+  { id: "free", label: translate("app.tools.free_toollar") },
+  { id: "pro", label: translate("app.tools.pro_toollar") },
+] as const));
 type TabId = (typeof tabs)[number]["id"];
 
 function ToollarimStars() {
+  useI18n();
   const stars = useMemo(
     () =>
       Array.from({ length: 70 }, (_, i) => ({
@@ -132,7 +137,7 @@ function ToollarimStars() {
 function formatDate(iso?: string) {
   if (!iso) return "—";
   const d = new Date(iso);
-  return d.toLocaleDateString("uz-UZ", {
+  return d.toLocaleDateString(getLocale(), {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -142,7 +147,7 @@ function formatDate(iso?: string) {
 function formatDateTime(iso?: string) {
   if (!iso) return "—";
   const d = new Date(iso);
-  return d.toLocaleString("uz-UZ", {
+  return d.toLocaleString(getLocale(), {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -164,6 +169,7 @@ function emptyConfig(tool: ToolDef): ToolConfig {
 }
 
 function MeningToollarimPage() {
+  useI18n();
   const [installed, setInstalled] = useState<string[]>([]);
   const [configs, setConfigs] = useState<Record<string, ToolConfig>>({});
   const [instances, setInstances] = useState<ToolInstance[]>([]);
@@ -263,7 +269,7 @@ function MeningToollarimPage() {
   );
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="cosmic-page flex min-h-screen bg-background text-foreground">
       <aside className="hidden w-[220px] shrink-0 flex-col border-r border-border/60 bg-background lg:flex">
         <div className="px-6 py-6">
           <Link to="/" className="inline-flex">
@@ -301,31 +307,28 @@ function MeningToollarimPage() {
             <span className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
               <Sparkles className="h-3.5 w-3.5" />
             </span>
-            Pro Plan
-          </div>
+            {translate("app.workspace.pro_plan")}</div>
           <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-            Barcha premium imkoniyatlardan foydalaning.
-          </p>
+            {translate("app.agents.barcha_premium_imkoniyatlardan_foydalaning")}</p>
           <button
             type="button"
             disabled
             className="w-full cursor-not-allowed rounded-lg bg-primary/80 px-3 py-2 text-xs font-medium text-primary-foreground opacity-70"
           >
-            Rejani yangilash
-          </button>
+            {translate("app.tools.rejani_yangilash")}</button>
         </div>
         <div className="mx-3 mb-4 flex items-center gap-3 rounded-xl border border-border/60 bg-card/40 px-3 py-2.5">
           <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
             A
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium">Azizbek</p>
-            <p className="truncate text-[10px] text-primary/80">Pro Plan</p>
+            <p className="truncate text-sm font-medium">{translate("app.workspace.azizbek")}</p>
+            <p className="truncate text-[10px] text-primary/80">{translate("app.workspace.pro_plan")}</p>
           </div>
         </div>
       </aside>
 
-      <main className="relative flex-1 overflow-hidden">
+      <main className="relative flex-1 overflow-hidden"><WorkspaceCosmos continuous/>
         {/* Cinematic red/black space background */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <img
@@ -349,18 +352,17 @@ function MeningToollarimPage() {
           <div className="absolute bottom-[14%] left-[8%] h-14 w-14 rounded-full bg-gradient-to-br from-[oklch(0.3_0.1_25)] to-[oklch(0.12_0.04_25)] opacity-60 shadow-[0_0_40px_-8px_oklch(0.5_0.2_25/0.4)]" />
         </div>
         <header className="relative flex items-center justify-between border-b border-border/60 px-6 py-4">
-          <div />
+          <LanguageSwitcher/>
           <div className="flex items-center gap-3">
             <button
               type="button"
               className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-muted-foreground hover:bg-card/60 hover:text-foreground"
             >
-              <HelpCircle className="h-4 w-4" /> Yordam markazi
-            </button>
+              <HelpCircle className="h-4 w-4" /> {translate("app.tools.yordam_markazi")}</button>
             <button
               type="button"
               className="rounded-lg p-2 text-muted-foreground hover:bg-card/60 hover:text-foreground"
-              aria-label="Bildirishnomalar"
+              aria-label={translate("app.workspace.bildirishnomalar")}
             >
               <Bell className="h-4 w-4" />
             </button>
@@ -368,7 +370,7 @@ function MeningToollarimPage() {
               <div className="grid h-6 w-6 place-items-center rounded-full bg-primary/20 text-[11px] font-semibold text-primary">
                 A
               </div>
-              <span className="text-sm">Azizbek</span>
+              <span className="text-sm">{translate("app.workspace.azizbek")}</span>
               <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
             </div>
           </div>
@@ -381,10 +383,9 @@ function MeningToollarimPage() {
           }`}
         >
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold tracking-tight">Mening toollarim</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{translate("app.workspace.mening_toollarim")}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Toollaringizni boshqaring va agentlaringizga ulang.
-            </p>
+              {translate("app.tools.toollaringizni_boshqaring_va_agentlaringizga_ulang")}</p>
           </div>
 
           <div className="mb-5 flex flex-wrap gap-2">
@@ -409,8 +410,8 @@ function MeningToollarimPage() {
           </div>
 
           <div className="mb-5 grid grid-cols-2 gap-3">
-            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label="Jami toollar" value={String(stats.total)} hint="Barcha bepul toollaringiz" />
-            <StatCard icon={<Check className="h-4 w-4" />} accent="bg-emerald-500/15 text-emerald-400" label="O'rnatilgan" value={String(stats.installed)} hint="Foydalanishga tayyor" />
+            <StatCard icon={<Wrench className="h-4 w-4" />} accent="bg-primary/15 text-primary" label={translate("app.tools.jami_toollar")} value={String(stats.total)} hint={translate("app.tools.barcha_bepul_toollaringiz")} />
+            <StatCard icon={<Check className="h-4 w-4" />} accent="bg-emerald-500/15 text-emerald-400" label="O'rnatilgan" value={String(stats.installed)} hint={translate("app.tools.foydalanishga_tayyor")} />
           </div>
 
           <div className="mb-6 flex flex-col gap-3 rounded-xl border border-border/60 bg-card/40 p-3 md:flex-row md:items-center">
@@ -419,26 +420,25 @@ function MeningToollarimPage() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Tool qidirish..."
+                placeholder={translate("app.tools.tool_qidirish")}
                 className="w-full rounded-lg border border-border/60 bg-background/60 py-2.5 pl-10 pr-3 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary/60"
               />
             </div>
             <div className="flex flex-wrap gap-2">
               <FilterPill label="Barchasi" />
-              <FilterPill label="Tavsiya etilgan" />
+              <FilterPill label={translate("app.tools.tavsiya_etilgan")} />
               <button
                 type="button"
                 disabled
-                title="Rejalashtirilgan"
+                title={translate("app.agents.rejalashtirilgan")}
                 className="inline-flex cursor-not-allowed items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground opacity-80"
               >
-                <Plus className="h-4 w-4" /> Tool qo'shish
-              </button>
+                <Plus className="h-4 w-4" /> {translate("app.agents.tool_qoshish")}</button>
             </div>
           </div>
 
           {grouped.free.length > 0 && (
-            <ToolSection dotClass="bg-emerald-500" title="Free toollar" count={grouped.free.length} subtitle="Agentus tomonidan bepul beriladigan asosiy toollar.">
+            <ToolSection dotClass="bg-emerald-500" title={translate("app.tools.free_toollar")} count={grouped.free.length} subtitle={translate("app.tools.agentus_tomonidan_bepul_beriladigan_asosiy_toollar")}>
               <ToolGrid>
                 {grouped.free.map((t) => (
                   <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
@@ -448,7 +448,7 @@ function MeningToollarimPage() {
           )}
 
           {grouped.pro.length > 0 && (
-            <ToolSection dotClass="bg-primary" title="Pro toollar" count={grouped.pro.length} subtitle="Kengaytirilgan imkoniyatlar — Pro rejasi uchun.">
+            <ToolSection dotClass="bg-primary" title={translate("app.tools.pro_toollar")} count={grouped.pro.length} subtitle={translate("app.tools.kengaytirilgan_imkoniyatlar_pro_rejasi_uchun")}>
               <ToolGrid>
                 {grouped.pro.map((t) => (
                   <ToolCard key={t.id} tool={t} config={configs[t.id]} instanceCount={instancesForTool(instances, t.id).length} installed={installed.includes(t.id)} installing={installing === t.id} isPro={USER_IS_PRO} onInstall={() => install(t)} onUninstall={() => uninstall(t.id)} onOpenSettings={() => setDrawerId(t.id)} />
@@ -459,9 +459,10 @@ function MeningToollarimPage() {
 
           {filtered.length === 0 && (
             <div className="rounded-xl border border-dashed border-border/60 bg-card/30 px-6 py-16 text-center">
-              <p className="text-sm text-muted-foreground">Hech narsa topilmadi.</p>
+              <p className="text-sm text-muted-foreground">{translate("app.agents.hech_narsa_topilmadi")}</p>
             </div>
           )}
+          <CosmicEnding/>
         </div>
 
         {drawerId && (
@@ -507,6 +508,7 @@ function MeningToollarimPage() {
 // Kartochka va boshqa yordamchi komponentlar
 // ————————————————————————————————————————————————————————————————
 function StatCard({ icon, accent, label, value, hint }: { icon: React.ReactNode; accent: string; label: string; value: string; hint: string }) {
+  useI18n();
   return (
     <div className="rounded-xl border border-border/60 bg-card/40 p-4">
       <div className="flex items-start gap-3">
@@ -515,7 +517,7 @@ function StatCard({ icon, accent, label, value, hint }: { icon: React.ReactNode;
           <p className="text-xs text-muted-foreground">{label}</p>
           <p className="mt-0.5 text-xl font-semibold">
             {value}
-            <span className="ml-1 text-xs font-normal text-muted-foreground">ta</span>
+            <span className="ml-1 text-xs font-normal text-muted-foreground">{translate("app.tools.ta")}</span>
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>
         </div>
@@ -525,6 +527,7 @@ function StatCard({ icon, accent, label, value, hint }: { icon: React.ReactNode;
 }
 
 function FilterPill({ label }: { label: string }) {
+  useI18n();
   return (
     <button type="button" disabled className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm text-muted-foreground opacity-80">
       {label}
@@ -534,6 +537,7 @@ function FilterPill({ label }: { label: string }) {
 }
 
 function ToolSection({ dotClass, title, count, subtitle, children }: { dotClass: string; title: string; count: number; subtitle: string; children: React.ReactNode }) {
+  useI18n();
   return (
     <section className="mb-8">
       <div className="mb-3 flex items-end justify-between gap-4">
@@ -545,8 +549,7 @@ function ToolSection({ dotClass, title, count, subtitle, children }: { dotClass:
           <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>
         </div>
         <button type="button" disabled className="cursor-not-allowed text-xs text-primary/80 opacity-80">
-          Barchasini ko'rish →
-        </button>
+          {translate("app.tools.barchasini_korish")}</button>
       </div>
       {children}
     </section>
@@ -554,24 +557,25 @@ function ToolSection({ dotClass, title, count, subtitle, children }: { dotClass:
 }
 
 function ToolGrid({ children }: { children: React.ReactNode }) {
+  useI18n();
   return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{children}</div>;
 }
 
 function statusPill(status: ConnectionStatus, configured: boolean) {
-  if (!configured) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Konfiguratsiya kerak" };
-  if (status === "connected") return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" };
-  if (status === "expired") return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Muddati tugagan" };
-  if (status === "invalid") return { cls: "bg-red-500/15 text-red-400", dot: "bg-red-400", label: "Noto'g'ri hisob" };
-  if (status === "disconnected") return { cls: "bg-red-500/15 text-red-400", dot: "bg-red-400", label: "Ulanish amalga oshmadi" };
-  return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Konfiguratsiya kerak" };
+  if (!configured) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: translate("app.agents.konfiguratsiya_kerak") };
+  if (status === "connected") return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: translate("app.tools.tayyor") };
+  if (status === "expired") return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: translate("app.tools.muddati_tugagan") };
+  if (status === "invalid") return { cls: "bg-red-500/15 text-red-400", dot: "bg-red-400", label: translate("app.tools.notogri_hisob") };
+  if (status === "disconnected") return { cls: "bg-red-500/15 text-red-400", dot: "bg-red-400", label: translate("app.tools.ulanish_amalga_oshmadi") };
+  return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: translate("app.agents.konfiguratsiya_kerak") };
 }
 
 // Ikki qatlamli holat: (o'rnatilgan, autentifikatsiya, konfiguratsiyalar soni)
 function statusPillV2(installed: boolean, authed: boolean, instanceCount: number) {
-  if (!installed) return { cls: "bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/60", label: "O'rnatilmagan" };
-  if (!authed) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: "Autentifikatsiya kerak" };
-  if (instanceCount === 0) return { cls: "bg-sky-500/15 text-sky-400", dot: "bg-sky-400", label: "Konfiguratsiya kerak" };
-  return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" };
+  if (!installed) return { cls: "bg-muted/40 text-muted-foreground", dot: "bg-muted-foreground/60", label: translate("app.tools.ornatilmagan") };
+  if (!authed) return { cls: "bg-amber-500/15 text-amber-400", dot: "bg-amber-400", label: translate("app.agents.autentifikatsiya_kerak") };
+  if (instanceCount === 0) return { cls: "bg-sky-500/15 text-sky-400", dot: "bg-sky-400", label: translate("app.agents.konfiguratsiya_kerak") };
+  return { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: translate("app.tools.tayyor") };
 }
 
 function ToolCard({
@@ -587,6 +591,7 @@ function ToolCard({
   onUninstall: () => void;
   onOpenSettings: () => void;
 }) {
+  useI18n();
   const Icon = tool.icon;
   const locked = tool.tier === "pro" && !isPro && !installed;
   const isProImg = tool.tier === "pro" && tool.accent === "bg-transparent";
@@ -594,7 +599,7 @@ function ToolCard({
   const ready = authed && instanceCount > 0;
   const pill =
     tool.tier === "free"
-      ? { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: "Tayyor" }
+      ? { cls: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400", label: translate("app.tools.tayyor") }
       : installed
         ? statusPillV2(installed, authed, instanceCount)
         : null;
@@ -636,7 +641,7 @@ function ToolCard({
             </span>
           )}
           {!installed && tool.tier === "pro" && (
-            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">Pro</span>
+            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">{translate("app.workspace.pro")}</span>
           )}
         </div>
       </div>
@@ -646,7 +651,7 @@ function ToolCard({
       <p className="mb-3 text-[10px] text-muted-foreground/70">
         v{tool.version}
         <span className="mx-1.5">•</span>
-        <span>Konfiguratsiya: {installed ? instanceCount : 0} ta</span>
+        <span>{translate("app.tools.konfiguratsiya")}{installed ? instanceCount : 0} {translate("app.tools.ta")}</span>
       </p>
 
       <div className="mt-auto flex items-center gap-2">
@@ -657,21 +662,20 @@ function ToolCard({
               onClick={onOpenSettings}
               className="flex-1 rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
             >
-              {tool.tier === "free" ? "Sozlash" : !authed ? "Autentifikatsiya qilish" : instanceCount === 0 ? "Konfiguratsiya qo'shish" : "Sozlash"}
+              {tool.tier === "free" ? "Sozlash" : !authed ? translate("app.tools.autentifikatsiya_qilish") : instanceCount === 0 ? translate("app.tools.konfiguratsiya_qoshish") : "Sozlash"}
             </button>
             <button
               type="button"
               onClick={onUninstall}
               className="rounded-lg border border-border/60 bg-background/40 p-1.5 text-muted-foreground transition-colors hover:border-red-500/40 hover:text-red-400"
-              aria-label="Olib tashlash"
+              aria-label={translate("app.tools.olib_tashlash")}
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </>
         ) : locked ? (
           <button type="button" disabled className="flex-1 cursor-not-allowed rounded-lg border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs text-muted-foreground opacity-70">
-            <Lock className="mr-1 inline h-3 w-3" /> Pro Reja
-          </button>
+            <Lock className="mr-1 inline h-3 w-3" /> {translate("app.tools.pro_reja")}</button>
         ) : (
           <button
             type="button"
@@ -681,8 +685,7 @@ function ToolCard({
           >
             {installing ? (
               <span className="inline-flex items-center gap-1.5">
-                <Loader2 className="h-3 w-3 animate-spin" /> O'rnatilmoqda...
-              </span>
+                <Loader2 className="h-3 w-3 animate-spin" /> {translate("app.tools.ornatilmoqda")}</span>
             ) : (
               "O'rnatish"
             )}
@@ -698,21 +701,21 @@ function ToolCard({
 // ————————————————————————————————————————————————————————————————
 type DrawerTab = "general" | "auth" | "instances" | "permissions" | "logs";
 
-const drawerTabs: { id: DrawerTab; label: string; icon: typeof Info }[] = [
-  { id: "general", label: "Umumiy", icon: Info },
-  { id: "auth", label: "Autentifikatsiya", icon: ShieldCheck },
-  { id: "instances", label: "Konfiguratsiyalar", icon: Settings },
-  { id: "permissions", label: "Ruxsatnomalar", icon: Lock },
-  { id: "logs", label: "Yozuvlar", icon: History },
-];
+const drawerTabs: { id: DrawerTab; label: string; icon: typeof Info }[] = localized(() => ([
+  { id: "general", label: translate("app.tools.umumiy"), icon: Info },
+  { id: "auth", label: translate("app.tools.autentifikatsiya"), icon: ShieldCheck },
+  { id: "instances", label: translate("app.tools.konfiguratsiyalar"), icon: Settings },
+  { id: "permissions", label: translate("app.tools.ruxsatnomalar"), icon: Lock },
+  { id: "logs", label: translate("app.tools.yozuvlar"), icon: History },
+]));
 
-const permissionMeta: Record<PermissionKey, { label: string; desc: string }> = {
-  read: { label: "O'qish", desc: "Tool ma'lumotlarini o'qishga ruxsat beradi." },
-  write: { label: "Yozish", desc: "Yangi ma'lumot yaratish va yangilash imkonini beradi." },
-  delete: { label: "O'chirish", desc: "Ma'lumotlarni tanlab o'chirishga ruxsat beradi." },
-  execute: { label: "Bajarish", desc: "Tool amallari va workflow'larni ishga tushiradi." },
-  admin: { label: "Administrator", desc: "To'liq boshqaruv — ehtiyot bo'lib ishlating." },
-};
+const permissionMeta: Record<PermissionKey, { label: string; desc: string }> = localized(() => ({
+  read: { label: translate("app.tools.oqish"), desc: translate("app.tools.tool_malumotlarini_oqishga_ruxsat_beradi") },
+  write: { label: translate("app.tools.yozish"), desc: translate("app.tools.yangi_malumot_yaratish_va_yangilash_imkonini") },
+  delete: { label: translate("app.tools.ochirish"), desc: translate("app.tools.malumotlarni_tanlab_ochirishga_ruxsat_beradi") },
+  execute: { label: translate("app.tools.bajarish"), desc: translate("app.tools.tool_amallari_va_workflowlarni_ishga_tushiradi") },
+  admin: { label: translate("app.tools.administrator"), desc: translate("app.tools.toliq_boshqaruv_ehtiyot_bolib_ishlating") },
+}));
 
 function ToolDrawer({
   tool, installed, config, instances, onClose, onUninstall, onPersist, onPersistInstances,
@@ -726,6 +729,7 @@ function ToolDrawer({
   onPersist: (cfg: ToolConfig) => void;
   onPersistInstances: (list: ToolInstance[]) => void;
 }) {
+  useI18n();
   const Icon = tool.icon;
   const [tab, setTab] = useState<DrawerTab>("general");
   const [draft, setDraft] = useState<ToolConfig>(config);
@@ -774,7 +778,7 @@ function ToolDrawer({
         activity: [
           {
             at: new Date().toISOString(),
-            message: ok ? "Sinov ulanishi muvaffaqiyatli" : "Ulanish amalga oshmadi",
+            message: ok ? translate("app.tools.sinov_ulanishi_muvaffaqiyatli") : translate("app.tools.ulanish_amalga_oshmadi"),
             kind: (ok ? "success" : "error") as ActivityKind,
           },
           ...d.activity,
@@ -786,12 +790,12 @@ function ToolDrawer({
 
   const disconnect = () => {
     setDraft((d) => ({ ...d, connection: "disconnected" }));
-    pushActivity("Ulanish uzildi", "info");
+    pushActivity(translate("app.tools.ulanish_uzildi"), "info");
   };
 
   const reconnect = () => {
     setDraft((d) => ({ ...d, connection: "unconfigured" }));
-    pushActivity("Qayta ulanish talab qilindi", "info");
+    pushActivity(translate("app.tools.qayta_ulanish_talab_qilindi"), "info");
   };
 
   const startOauth = () => {
@@ -807,7 +811,7 @@ function ToolDrawer({
         },
         lastTestedAt: new Date().toISOString(),
         activity: [
-          { at: new Date().toISOString(), message: "OAuth avtorizatsiya bajarildi (Demo rejimi)", kind: "success" as ActivityKind },
+          { at: new Date().toISOString(), message: translate("app.tools.oauth_avtorizatsiya_bajarildi_demo_rejimi"), kind: "success" as ActivityKind },
           ...d.activity,
         ].slice(0, 25),
       }));
@@ -819,7 +823,7 @@ function ToolDrawer({
     const next: ToolConfig = {
       ...draft,
       activity: [
-        { at: new Date().toISOString(), message: "Konfiguratsiya saqlandi", kind: "success" as ActivityKind },
+        { at: new Date().toISOString(), message: translate("app.tools.konfiguratsiya_saqlandi"), kind: "success" as ActivityKind },
         ...draft.activity,
       ].slice(0, 25),
     };
@@ -850,7 +854,7 @@ function ToolDrawer({
               <Icon className="h-5 w-5" />
             </span>
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Tool sozlamalari</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{translate("app.tools.tool_sozlamalari")}</p>
               <div className="mt-0.5 flex items-center gap-2">
                 <h2 className="truncate text-lg font-semibold">{tool.name}</h2>
                 <span className="rounded-md border border-border/60 bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground">
@@ -863,7 +867,7 @@ function ToolDrawer({
               </span>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground" aria-label="Yopish">
+          <button type="button" onClick={onClose} className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground" aria-label={translate("app.workspace.yopish")}>
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -951,8 +955,7 @@ function ToolDrawer({
             onClick={onUninstall}
             className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-400 transition-colors hover:bg-red-500/20"
           >
-            <Trash2 className="h-3.5 w-3.5" /> O'chirish
-          </button>
+            <Trash2 className="h-3.5 w-3.5" /> {translate("app.tools.ochirish")}</button>
         ) : (
           <span />
         )}
@@ -962,8 +965,7 @@ function ToolDrawer({
             onClick={onClose}
             className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            Yopish
-          </button>
+            {translate("app.workspace.yopish")}</button>
           {tab !== "instances" && (
           <button
             type="button"
@@ -975,8 +977,7 @@ function ToolDrawer({
                 : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
             }`}
           >
-            <Check className="h-3.5 w-3.5" /> Saqlash
-          </button>
+            <Check className="h-3.5 w-3.5" /> {translate("app.tools.saqlash")}</button>
           )}
         </div>
       </div>
@@ -995,19 +996,20 @@ function ToolDrawer({
 }
 
 function GeneralTab({ tool, config }: { tool: ToolDef; config: ToolConfig }) {
+  useI18n();
   return (
     <div className="space-y-5">
       <div>
-        <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">Tavsif</p>
+        <p className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">{translate("app.tools.tavsif")}</p>
         <p className="leading-relaxed">{tool.description}</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <InfoCell label="Dasturchi" value={tool.developer ?? "Agentus"} />
         <InfoCell label="Versiya" value={`v${tool.version}`} />
-        <InfoCell label="Kategoriya" value={tool.category} />
-        <InfoCell label="Oxirgi yangilanish" value={formatDate(tool.updatedAt)} />
-        {tool.purchasedAt && <InfoCell label="Sotib olingan" value={formatDate(tool.purchasedAt)} />}
-        <InfoCell label="Oxirgi sinov" value={formatDateTime(config.lastTestedAt)} />
+        <InfoCell label={translate("app.seller.kategoriya")} value={tool.category} />
+        <InfoCell label={translate("app.tools.oxirgi_yangilanish")} value={formatDate(tool.updatedAt)} />
+        {tool.purchasedAt && <InfoCell label={translate("app.tools.sotib_olingan")} value={formatDate(tool.purchasedAt)} />}
+        <InfoCell label={translate("app.tools.oxirgi_sinov")} value={formatDateTime(config.lastTestedAt)} />
       </div>
       <div className="flex flex-wrap gap-2">
         {tool.docsUrl ? (
@@ -1017,25 +1019,23 @@ function GeneralTab({ tool, config }: { tool: ToolDef; config: ToolConfig }) {
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/40 hover:text-foreground"
           >
-            <ExternalLink className="h-3.5 w-3.5" /> Hujjatlar <ExternalLink className="h-3 w-3" />
+            <ExternalLink className="h-3.5 w-3.5" /> {translate("app.tools.hujjatlar")}<ExternalLink className="h-3 w-3" />
           </a>
         ) : (
           <button type="button" disabled className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground opacity-70">
-            <ExternalLink className="h-3.5 w-3.5" /> Hujjatlar — Backend kutilmoqda
-          </button>
+            <ExternalLink className="h-3.5 w-3.5" /> {translate("app.tools.hujjatlar_backend_kutilmoqda")}</button>
         )}
       </div>
       <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
         <div className="mb-1 flex items-center gap-1.5 text-foreground">
-          <Info className="h-3.5 w-3.5 text-primary" /> Demo rejimi
-        </div>
-        Backend hozircha ulanmagan. Kiritilgan qiymatlar faqat brauzeringizda saqlanadi va real API'larga yuborilmaydi.
-      </div>
+          <Info className="h-3.5 w-3.5 text-primary" /> {translate("app.tools.demo_rejimi")}</div>
+        {translate("app.tools.backend_hozircha_ulanmagan_kiritilgan_qiymatlar_faqat")}</div>
     </div>
   );
 }
 
 function InfoCell({ label, value }: { label: string; value: string }) {
+  useI18n();
   return (
     <div className="rounded-lg border border-border/60 bg-card/30 px-3 py-2">
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
@@ -1060,13 +1060,13 @@ function AuthTab({
   onDisconnect: () => void;
   onReconnect: () => void;
 }) {
+  useI18n();
   const fields = tool.authFields ?? [];
   if (fields.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
         <Zap className="mx-auto mb-2 h-4 w-4 text-primary" />
-        Bu tool uchun autentifikatsiya talab qilinmaydi. Darrov foydalanishingiz mumkin.
-      </div>
+        {translate("app.tools.bu_tool_uchun_autentifikatsiya_talab_qilinmaydi")}</div>
     );
   }
 
@@ -1084,12 +1084,10 @@ function AuthTab({
                 </div>
                 {connected ? (
                   <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-0.5 text-[11px] text-emerald-400">
-                    <Check className="h-3 w-3" /> Ulangan
-                  </span>
+                    <Check className="h-3 w-3" /> {translate("app.agents.ulangan")}</span>
                 ) : (
                   <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-[11px] text-amber-400">
-                    <AlertCircle className="h-3 w-3" /> Sozlanmagan
-                  </span>
+                    <AlertCircle className="h-3 w-3" /> {translate("app.tools.sozlanmagan")}</span>
                 )}
               </div>
               <button
@@ -1099,7 +1097,7 @@ function AuthTab({
                 className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary hover:bg-primary/20 disabled:opacity-70"
               >
                 {oauthLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Link2 className="h-3.5 w-3.5" />}
-                {connected ? "Qayta avtorizatsiya" : "Avtorizatsiya oching"}
+                {connected ? translate("app.tools.qayta_avtorizatsiya") : translate("app.tools.avtorizatsiya_oching")}
               </button>
             </div>
           );
@@ -1129,7 +1127,7 @@ function AuthTab({
                     type="button"
                     onClick={() => setReveal((r) => ({ ...r, [field.key]: !r[field.key] }))}
                     className="rounded p-1 text-muted-foreground hover:text-foreground"
-                    aria-label="Ko'rsatish/yashirish"
+                    aria-label={translate("app.tools.korsatishyashirish")}
                   >
                     {shown ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                   </button>
@@ -1143,7 +1141,7 @@ function AuthTab({
                     }
                   }}
                   className="rounded p-1 text-muted-foreground hover:text-foreground"
-                  aria-label="Nusxa olish"
+                  aria-label={translate("app.agents.nusxa_olish")}
                 >
                   <Copy className="h-3.5 w-3.5" />
                 </button>
@@ -1155,7 +1153,7 @@ function AuthTab({
 
       <div className="rounded-lg border border-border/60 bg-card/40 p-3">
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-xs font-medium">Ulanish holati</p>
+          <p className="text-xs font-medium">{translate("app.tools.ulanish_holati")}</p>
           <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium ${statusPill(draft.connection, allRequiredFilled).cls}`}>
             <span className={`h-1.5 w-1.5 rounded-full ${statusPill(draft.connection, allRequiredFilled).dot}`} />
             {statusPill(draft.connection, allRequiredFilled).label}
@@ -1181,22 +1179,20 @@ function AuthTab({
             ) : (
               <Zap className="h-3.5 w-3.5" />
             )}
-            {testing === "ok" ? "Muvaffaqiyatli" : testing === "fail" ? "Qayta urinib ko'ring" : "Sinov ulanishi"}
+            {testing === "ok" ? "Muvaffaqiyatli" : testing === "fail" ? translate("app.tools.qayta_urinib_koring") : translate("app.tools.sinov_ulanishi")}
           </button>
           <button
             type="button"
             onClick={onReconnect}
             className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
           >
-            <RefreshCw className="h-3.5 w-3.5" /> Qayta ulaning
-          </button>
+            <RefreshCw className="h-3.5 w-3.5" /> {translate("app.tools.qayta_ulaning")}</button>
           <button
             type="button"
             onClick={onDisconnect}
             className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground hover:border-red-500/40 hover:text-red-400"
           >
-            <Unplug className="h-3.5 w-3.5" /> Uzish
-          </button>
+            <Unplug className="h-3.5 w-3.5" /> {translate("app.tools.uzish")}</button>
         </div>
       </div>
     </div>
@@ -1209,6 +1205,7 @@ function PermissionsTab({
   perms: Partial<Record<PermissionKey, boolean>>;
   onToggle: (k: PermissionKey) => void;
 }) {
+  useI18n();
   const keys: PermissionKey[] = ["read", "write", "delete", "execute", "admin"];
   return (
     <div className="space-y-2">
@@ -1250,19 +1247,19 @@ function InstancesTab({
   onDelete: (id: string) => void;
   onGoAuth: () => void;
 }) {
+  useI18n();
   if (!authed) {
     return (
       <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
         <ShieldCheck className="mx-auto mb-2 h-5 w-5 text-amber-400" />
-        <p className="mb-1 text-sm text-foreground">Avval autentifikatsiyani yakunlang</p>
-        <p className="mb-3">Bir marta ulanganingizdan so'ng, cheksiz konfiguratsiya yaratishingiz mumkin.</p>
+        <p className="mb-1 text-sm text-foreground">{translate("app.tools.avval_autentifikatsiyani_yakunlang")}</p>
+        <p className="mb-3">{translate("app.tools.bir_marta_ulanganingizdan_song_cheksiz_konfiguratsiya")}</p>
         <button
           type="button"
           onClick={onGoAuth}
           className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
         >
-          <ShieldCheck className="h-3.5 w-3.5" /> Autentifikatsiyaga o'tish
-        </button>
+          <ShieldCheck className="h-3.5 w-3.5" /> {translate("app.tools.autentifikatsiyaga_otish")}</button>
       </div>
     );
   }
@@ -1271,27 +1268,24 @@ function InstancesTab({
     <div className="space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium">Konfiguratsiyalar</p>
+          <p className="text-sm font-medium">{translate("app.tools.konfiguratsiyalar")}</p>
           <p className="mt-0.5 text-[11px] text-muted-foreground">
-            Bir tool uchun bir nechta konfiguratsiya yaratishingiz mumkin.
-          </p>
+            {translate("app.tools.bir_tool_uchun_bir_nechta_konfiguratsiya")}</p>
         </div>
         <button
           type="button"
           onClick={onNew}
           className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
         >
-          <Plus className="h-3.5 w-3.5" /> Yangi konfiguratsiya
-        </button>
+          <Plus className="h-3.5 w-3.5" /> {translate("app.tools.yangi_konfiguratsiya")}</button>
       </div>
 
       {instances.length === 0 ? (
         <div className="rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-xs text-muted-foreground">
           <Settings className="mx-auto mb-2 h-5 w-5 text-primary/70" />
-          <p>Hali konfiguratsiya yo'q.</p>
+          <p>{translate("app.agents.hali_konfiguratsiya_yoq")}</p>
           <p className="mt-1 opacity-70">
-            "Yangi konfiguratsiya" bosib birinchi manzilingizni qo'shing.
-          </p>
+            {translate("app.tools.yangi_konfiguratsiya_bosib_birinchi_manzilingizni_qoshing")}</p>
         </div>
       ) : (
         <ul className="space-y-2">
@@ -1307,24 +1301,22 @@ function InstancesTab({
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium">{inst.name || "Nomsiz konfiguratsiya"}</p>
+                    <p className="truncate text-sm font-medium">{inst.name || translate("app.tools.nomsiz_konfiguratsiya")}</p>
                     <span className="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
-                      Tayyor
-                    </span>
+                      {translate("app.tools.tayyor")}</span>
                   </div>
                   {target && (
                     <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{target}</p>
                   )}
                   <p className="mt-0.5 text-[10px] text-muted-foreground/80">
-                    Agentlarda: {inst.connectedAgentIds.length} ta
-                  </p>
+                    {translate("app.tools.agentlarda")}{inst.connectedAgentIds.length} {translate("app.tools.ta")}</p>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => onEdit(inst)}
                     className="rounded p-1.5 text-muted-foreground hover:bg-background/60 hover:text-foreground"
-                    aria-label="Tahrirlash"
+                    aria-label={translate("app.tools.tahrirlash")}
                   >
                     <Settings className="h-3.5 w-3.5" />
                   </button>
@@ -1332,7 +1324,7 @@ function InstancesTab({
                     type="button"
                     onClick={() => onDelete(inst.id)}
                     className="rounded p-1.5 text-muted-foreground hover:bg-red-500/10 hover:text-red-400"
-                    aria-label="O'chirish"
+                    aria-label={translate("app.tools.ochirish")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -1345,11 +1337,8 @@ function InstancesTab({
 
       <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
         <div className="mb-1 flex items-center gap-1.5 text-foreground">
-          <Info className="h-3.5 w-3.5 text-primary" /> Eslatma
-        </div>
-        Barcha konfiguratsiyalar bitta ulangan akkaunt va ruxsatlar orqali ishlaydi.
-        API yoki OAuth sozlamalarini o'zgartirish uchun Autentifikatsiya bo'limidan foydalaning.
-      </div>
+          <Info className="h-3.5 w-3.5 text-primary" /> {translate("app.tools.eslatma")}</div>
+        {translate("app.tools.barcha_konfiguratsiyalar_bitta_ulangan_akkaunt_va")}</div>
     </div>
   );
 }
@@ -1362,6 +1351,7 @@ function InstanceEditor({
   onCancel: () => void;
   onSave: (i: ToolInstance) => void;
 }) {
+  useI18n();
   const [draft, setDraft] = useState<ToolInstance>(instance);
   const fields = tool.instanceFields ?? [];
   const requiredOk = fields
@@ -1383,17 +1373,16 @@ function InstanceEditor({
         <div className="flex items-start justify-between border-b border-border/60 px-5 py-4">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              {tool.name} · Konfiguratsiya
-            </p>
+              {tool.name} {translate("app.tools.konfiguratsiya_2")}</p>
             <h3 className="mt-0.5 text-base font-semibold">
-              {draft.name.trim() || "Yangi konfiguratsiya"}
+              {draft.name.trim() || translate("app.tools.yangi_konfiguratsiya")}
             </h3>
           </div>
           <button
             type="button"
             onClick={onCancel}
             className="rounded-md p-1.5 text-muted-foreground hover:bg-card/60 hover:text-foreground"
-            aria-label="Yopish"
+            aria-label={translate("app.workspace.yopish")}
           >
             <X className="h-4 w-4" />
           </button>
@@ -1402,17 +1391,16 @@ function InstanceEditor({
         <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5 text-sm">
           <div>
             <label className="mb-1 block text-[11px] text-muted-foreground">
-              Konfiguratsiya nomi <span className="text-red-400">*</span>
+              {translate("app.tools.konfiguratsiya_nomi")}<span className="text-red-400">*</span>
             </label>
             <input
               value={draft.name}
               onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-              placeholder="Masalan: Haftalik hisobot"
+              placeholder={translate("app.tools.masalan_haftalik_hisobot")}
               className="w-full rounded-lg border border-border/60 bg-background/60 px-3 py-2 text-sm outline-none focus:border-primary/60"
             />
             <p className="mt-1 text-[10px] text-muted-foreground/80">
-              Agent ichida shu nom bilan ko'rinadi.
-            </p>
+              {translate("app.tools.agent_ichida_shu_nom_bilan_korinadi")}</p>
           </div>
 
           {fields.map((field) => (
@@ -1426,11 +1414,10 @@ function InstanceEditor({
 
           <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
             <div className="mb-1 flex items-center gap-1.5 text-foreground">
-              <Bot className="h-3.5 w-3.5 text-primary" /> Bog'langan agentlar
-            </div>
+              <Bot className="h-3.5 w-3.5 text-primary" /> {translate("app.tools.boglangan_agentlar")}</div>
             {draft.connectedAgentIds.length === 0
-              ? "Hozircha hech qaysi agentga biriktirilmagan. Agentlarim sahifasidan biriktiring."
-              : `${draft.connectedAgentIds.length} ta agent foydalanmoqda.`}
+              ? translate("app.tools.hozircha_hech_qaysi_agentga_biriktirilmagan_agentlarim")
+              : translate("app.tools.v0_ta_agent_foydalanmoqda", { v0: draft.connectedAgentIds.length })}
           </div>
         </div>
 
@@ -1440,8 +1427,7 @@ function InstanceEditor({
             onClick={onCancel}
             className="rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
           >
-            Bekor qilish
-          </button>
+            {translate("app.tools.bekor_qilish")}</button>
           <button
             type="button"
             disabled={!canSave}
@@ -1452,8 +1438,7 @@ function InstanceEditor({
                 : "cursor-not-allowed bg-primary/40 text-primary-foreground/70"
             }`}
           >
-            <Check className="h-3.5 w-3.5" /> Konfiguratsiyani saqlash
-          </button>
+            <Check className="h-3.5 w-3.5" /> {translate("app.tools.konfiguratsiyani_saqlash")}</button>
         </div>
       </aside>
     </>
@@ -1467,6 +1452,7 @@ function InstanceFieldInput({
   value: string;
   onChange: (v: string) => void;
 }) {
+  useI18n();
   const label = (
     <label className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
       <span>
@@ -1533,12 +1519,12 @@ function InstanceFieldInput({
 }
 
 function LogsTab({ activity }: { activity: ToolConfig["activity"] }) {
+  useI18n();
   if (activity.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border/60 bg-card/30 px-4 py-8 text-center text-xs text-muted-foreground">
         <History className="mx-auto mb-2 h-5 w-5 text-primary/70" />
-        Hozircha faoliyat qayd etilmagan.
-      </div>
+        {translate("app.tools.hozircha_faoliyat_qayd_etilmagan")}</div>
     );
   }
   return (

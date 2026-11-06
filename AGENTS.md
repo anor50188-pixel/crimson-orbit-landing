@@ -14,3 +14,6 @@
 - Keep the agent-builder prototype self-contained with page-scoped tokens, local React state and lightweight CSS motion; it uses the uploaded static mock flow and makes no API calls.
 - Share the workspace cosmos and knowledge carousel as presentation components; draw star layers once and animate transforms with RAF, preserving reduced-motion and the local prototype boundary.
 - Keep dashboard glass/elevation styling scoped to the workspace and reuse its command palette for local navigation; this preserves other page themes and the prototype boundary.
+- All UI copy uses typed dictionary keys in src/i18n; add Uzbek, Russian and English entries together and run i18n:check so missing translations cannot ship unnoticed.
+- Keep route objects stable and translate presentation data at render time; persisted user input and internal state IDs must never change with locale.
+- Reuse CosmicEnding and continuous WorkspaceCosmos for scrolling pages; approved top-stage composition remains independent of lower-page atmosphere.

@@ -1,3 +1,4 @@
+import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ArrowLeft, ArrowRight, Bot, Wrench, Users, Clock, Database, Shield, Store, Send, Globe, Zap, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,20 +8,22 @@ type Card = { icon: LucideIcon; title: string; text: string };
 const icons = [Bot, Wrench, Users, Clock, Database, Shield, Store];
 
 function MiniIllustration({ index }: { index: number }) {
+  useI18n();
   const Icon = icons[index] ?? Bot;
   return <div className={`knowledge-illustration illustration-${index}`} aria-hidden="true">
     <span className="illustration-core"><Icon /></span>
     {index === 0 && <div className="robot-lines"><i /><i /><i /></div>}
     {index === 1 && <div className="tool-orbits"><span><Send /></span><span><Globe /></span><span><Zap /></span></div>}
-    {index === 2 && <div className="team-nodes">{["Mijoz", "Lead", "Taklif", "Shartnoma"].map((label, i) => <span key={label} style={{ "--sequence": i } as CSSProperties}>{label}</span>)}</div>}
+    {index === 2 && <div className="team-nodes">{[t("app.landing.mijoz"), t("app.landing.lead"), t("app.landing.taklif"), t("app.landing.shartnoma")].map((label, i) => <span key={label} style={{ "--sequence": i } as CSSProperties}>{label}</span>)}</div>}
     {index === 3 && <div className="clock-sweep" />}
     {index === 4 && <div className="memory-stack"><i /><i /><i /></div>}
     {index === 5 && <div className="lock-scan" />}
-    {index === 6 && <><div className="store-tiles"><i /><i /><i /></div><span className="store-ribbon">Tez orada</span></>}
+    {index === 6 && <><div className="store-tiles"><i /><i /><i /></div><span className="store-ribbon">{t("app.workspace.tez_orada")}</span></>}
   </div>;
 }
 
 export function KnowledgeCarousel({ cards }: { cards: Card[] }) {
+  useI18n();
   const stage = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const angle = useRef(0);
@@ -71,7 +74,7 @@ export function KnowledgeCarousel({ cards }: { cards: Card[] }) {
     return () => cancelAnimationFrame(frame);
   }, [cards]);
   return <>
-    <div ref={stage} className="info-carousel" tabIndex={0} role="region" aria-label="Agentus haqida kartalar"
+    <div ref={stage} className="info-carousel" tabIndex={0} role="region" aria-label={t("app.knowledge.agentus_haqida_kartalar")}
       onMouseEnter={() => { paused.current = true; }} onMouseLeave={() => { if (!focused) paused.current = false; }}
       onFocus={() => { setFocused(true); paused.current = true; }} onBlur={() => { setFocused(false); paused.current = false; }}
       onKeyDown={(event) => { if (event.key === "ArrowRight" || event.key === "ArrowLeft") { event.preventDefault(); choose(active + (event.key === "ArrowRight" ? 1 : -1)); } }}
@@ -86,9 +89,9 @@ export function KnowledgeCarousel({ cards }: { cards: Card[] }) {
       </div>
     </div>
     <div className="carousel-controls">
-      <Button variant="workspace" size="workspace" className="icon-button" aria-label="Oldingi karta" onClick={() => choose(active - 1)}><ArrowLeft /></Button>
+      <Button variant="workspace" size="workspace" className="icon-button" aria-label={t("app.knowledge.oldingi_karta")} onClick={() => choose(active - 1)}><ArrowLeft /></Button>
       <div className="carousel-dots">{cards.map((card, index) => <Button variant="workspace" size="workspace" key={card.title} className={active === index ? "active" : ""} aria-label={`${index + 1}-karta`} aria-current={active === index ? "true" : undefined} onClick={() => choose(index)}><span className="dot-fill" /></Button>)}</div>
-      <Button variant="workspace" size="workspace" className="icon-button" aria-label="Keyingi karta" onClick={() => choose(active + 1)}><ArrowRight /></Button>
+      <Button variant="workspace" size="workspace" className="icon-button" aria-label={t("app.knowledge.keyingi_karta")} onClick={() => choose(active + 1)}><ArrowRight /></Button>
     </div>
   </>;
 }

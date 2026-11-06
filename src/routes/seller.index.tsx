@@ -1,3 +1,7 @@
+import { WorkspaceCosmos } from '@/components/workspace-cosmos';
+import { CosmicEnding } from '@/components/cosmic-ending';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { t as translate, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -27,15 +31,15 @@ export const Route = createFileRoute("/seller/")({
   component: SellerPage,
   head: () => ({
     meta: [
-      { title: "Sotuvchi paneli — Agentus" },
-      { property: "og:title", content: "Sotuvchi paneli — Agentus" },
-      { property: "og:description", content: "Agentus sotuvchi profilini tayyorlash va nashr qilish demo muhiti." },
+      { title: translate("app.seller.sotuvchi_paneli_agentus") },
+      { property: "og:title", content: translate("app.seller.sotuvchi_paneli_agentus") },
+      { property: "og:description", content: translate("app.seller.agentus_sotuvchi_profilini_tayyorlash_va_nashr") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
-          "Agentus Marketplace sotuvchisi bo'lib ro'yxatdan o'ting va AI agentlaringizni soting.",
+          translate("app.seller.agentus_marketplace_sotuvchisi_bolib_royxatdan_oting"),
       },
     ],
   }),
@@ -77,21 +81,22 @@ function clearSeller() {
 }
 
 // —————————————————————— Nav ——————————————————————
-const mainNav = [
-  { icon: Home, label: "Asosiy", to: "/" as const },
-  { icon: Bot, label: "Agentlarim", to: "/agentlarim" as const },
-  { icon: Store, label: "Marketplace", to: null },
-  { icon: Wrench, label: "Mening toollarim", to: "/mening-toollarim" as const },
-  { icon: Wallet, label: "To'lovlar", to: null },
-] as const;
+const mainNav = localized(() => ([
+  { icon: Home, label: translate("app.workspace.asosiy"), to: "/" as const },
+  { icon: Bot, label: translate("app.workspace.agentlarim"), to: "/agentlarim" as const },
+  { icon: Store, label: translate("app.workspace.marketplace"), to: null },
+  { icon: Wrench, label: translate("app.workspace.mening_toollarim"), to: "/mening-toollarim" as const },
+  { icon: Wallet, label: translate("app.workspace.tolovlar"), to: null },
+] as const));
 
-const sellerNav = [
-  { icon: Store, label: "Sotuvchi paneli", active: true },
-  { icon: Settings, label: "Sozlamalar", active: false },
-] as const;
+const sellerNav = localized(() => ([
+  { icon: Store, label: translate("app.workspace.sotuvchi_paneli"), active: true },
+  { icon: Settings, label: translate("app.workspace.sozlamalar"), active: false },
+] as const));
 
 // —————————————————————— Root ——————————————————————
 function SellerPage() {
+  useI18n();
   const [hydrated, setHydrated] = useState(false);
   const [profile, setProfile] = useState<SellerProfile | null>(null);
 
@@ -121,8 +126,9 @@ function SellerPage() {
 
 // —————————————————————— Shell (sidebar + topbar) ——————————————————————
 function Shell({ children }: { children: React.ReactNode }) {
+  useI18n();
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="cosmic-page flex min-h-screen bg-background text-foreground">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border/60 bg-card/40 md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-border/60 px-5">
           <Link to="/" className="inline-flex items-center gap-2">
@@ -150,8 +156,7 @@ function Shell({ children }: { children: React.ReactNode }) {
           })}
 
           <div className="mt-6 px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-            Sotuvchi
-          </div>
+            {translate("app.seller.sotuvchi")}</div>
           {sellerNav.map((item) => {
             const Icon = item.icon;
             return (
@@ -178,39 +183,38 @@ function Shell({ children }: { children: React.ReactNode }) {
                 A
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-foreground">Azizbek</div>
-                <div className="text-[11px] text-primary">Pro Plan</div>
+                <div className="truncate text-sm font-medium text-foreground">{translate("app.workspace.azizbek")}</div>
+                <div className="text-[11px] text-primary">{translate("app.workspace.pro_plan")}</div>
               </div>
               <ArrowRight className="h-3.5 w-3.5 rotate-90 text-muted-foreground" />
             </div>
             <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-background/70">
               <div className="h-full w-[35%] rounded-full bg-gradient-to-r from-primary to-[oklch(0.68_0.24_25)]" />
             </div>
-            <div className="mt-2 text-[11px] text-muted-foreground">7 / 20 agent</div>
+            <div className="mt-2 text-[11px] text-muted-foreground">{translate("app.seller.7_20_agent")}</div>
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/60 p-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[oklch(0.75_0.15_75)]/15 text-[oklch(0.85_0.18_80)] ring-1 ring-inset ring-[oklch(0.75_0.15_75)]/25">
               <Sun className="h-4 w-4" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-foreground">24°C</div>
-              <div className="text-[11px] text-muted-foreground">Sunny</div>
+              <div className="text-sm font-medium text-foreground">{translate("app.seller.24c")}</div>
+              <div className="text-[11px] text-muted-foreground">{translate("app.seller.sunny")}</div>
             </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="relative flex min-w-0 flex-1 flex-col"><WorkspaceCosmos continuous/>
         <header className="flex h-16 items-center justify-between gap-4 border-b border-border/60 px-6">
           <div className="min-w-0">
             <Link
               to="/"
               className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition hover:text-foreground"
             >
-              ← Orqaga
-            </Link>
+              {translate("app.seller.orqaga")}</Link>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2"><LanguageSwitcher/>
             <button
               type="button"
               className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/60 bg-card/40 text-muted-foreground transition hover:text-foreground"
@@ -230,12 +234,12 @@ function Shell({ children }: { children: React.ReactNode }) {
               <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/15 text-[11px] font-semibold text-primary">
                 A
               </div>
-              <span className="hidden text-sm text-foreground/90 sm:inline">Azizbek</span>
+              <span className="hidden text-sm text-foreground/90 sm:inline">{translate("app.workspace.azizbek")}</span>
             </div>
           </div>
         </header>
 
-        <div className="relative min-w-0 flex-1 overflow-y-auto">{children}</div>
+        <div className="relative min-w-0 flex-1 overflow-y-auto">{children}<CosmicEnding/></div>
       </main>
     </div>
   );
@@ -243,6 +247,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 // —————————————————————— Registration ——————————————————————
 function SellerRegistration({ onDone }: { onDone: (p: SellerProfile) => void }) {
+  useI18n();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -288,40 +293,36 @@ function SellerRegistration({ onDone }: { onDone: (p: SellerProfile) => void }) 
 
       <div className="relative mx-auto flex w-full max-w-2xl flex-col items-center px-6 py-16 sm:py-20">
         <h1 className="text-center text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-          Sotuvchi bo'lib
-          <br />
+          {translate("app.seller.sotuvchi_bolib")}<br />
           <span className="bg-gradient-to-r from-primary to-[oklch(0.68_0.24_25)] bg-clip-text text-transparent">
-            ro'yxatdan o'ting
-          </span>
+            {translate("app.seller.royxatdan_oting")}</span>
         </h1>
         <p className="mt-5 max-w-md text-center text-sm leading-relaxed text-muted-foreground">
-          Marketplace orqali AI agentlaringizni sotishni boshlang.
-          <br />
-          Quyidagi ma'lumotlarni to'ldiring va qoidalarga rozilik bildiring.
-        </p>
+          {translate("app.seller.marketplace_orqali_ai_agentlaringizni_sotishni_boshlang")}<br />
+          {translate("app.seller.quyidagi_malumotlarni_toldiring_va_qoidalarga_rozilik")}</p>
 
         <form
           onSubmit={handleSubmit}
           className="mt-10 w-full rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[0_20px_80px_-40px_oklch(0.58_0.22_25/0.6)] backdrop-blur-xl sm:p-8"
         >
           {/* Name */}
-          <Field label="Ism va familiya">
+          <Field label={translate("app.seller.ism_va_familiya")}>
             <IconInput
               icon={<User className="h-4 w-4" />}
               value={name}
               onChange={setName}
-              placeholder="Ismingizni kiriting"
+              placeholder={translate("app.seller.ismingizni_kiriting")}
               autoComplete="name"
             />
           </Field>
 
           {/* Phone */}
-          <Field label="Telefon raqami" className="mt-5">
+          <Field label={translate("app.seller.telefon_raqami")} className="mt-5">
             <IconInput
               icon={<Phone className="h-4 w-4" />}
               value={phone}
               onChange={setPhone}
-              placeholder="+998 90 123 45 67"
+              placeholder={translate("app.seller.998_90_123_45_67")}
               type="tel"
               autoComplete="tel"
             />
@@ -334,19 +335,16 @@ function SellerRegistration({ onDone }: { onDone: (p: SellerProfile) => void }) 
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium text-foreground">
-                Agentus Marketplace qoidalari bilan tanishib chiqing.
-              </div>
+                {translate("app.seller.agentus_marketplace_qoidalari_bilan_tanishib_chiqing")}</div>
               <div className="mt-0.5 text-xs text-muted-foreground">
-                Qoidalar platformada xavfsiz va adolatli muhitni ta'minlash uchun ishlab chiqilgan.
-              </div>
+                {translate("app.seller.qoidalar_platformada_xavfsiz_va_adolatli_muhitni")}</div>
             </div>
             <button
               type="button"
               onClick={() => setOpenRules(true)}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border/60 bg-card/60 px-3.5 py-2 text-xs font-medium text-foreground transition hover:bg-accent/40"
             >
-              Qoidalarni o'qish
-              <ArrowRight className="h-3.5 w-3.5" />
+              {translate("app.seller.qoidalarni_oqish")}<ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
 
@@ -367,8 +365,8 @@ function SellerRegistration({ onDone }: { onDone: (p: SellerProfile) => void }) 
             </button>
             <span className={`text-sm ${accepted ? "text-foreground" : "text-muted-foreground"}`}>
               {accepted
-                ? "Marketplace qoidalariga roziman"
-                : "Men Agentus Marketplace qoidalari bilan tanishdim va ularga roziman."}
+                ? translate("app.seller.marketplace_qoidalariga_roziman")
+                : translate("app.seller.men_agentus_marketplace_qoidalari_bilan_tanishdim")}
             </span>
           </div>
 
@@ -378,15 +376,13 @@ function SellerRegistration({ onDone }: { onDone: (p: SellerProfile) => void }) 
             disabled={!canSubmit}
             className="mt-7 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] text-sm font-semibold text-primary-foreground shadow-[0_10px_40px_-10px_oklch(0.58_0.22_25/0.6)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
           >
-            Davom etish
-            <ArrowRight className="h-4 w-4" />
+            {translate("app.workspace.davom_etish")}<ArrowRight className="h-4 w-4" />
           </button>
         </form>
 
         <div className="mt-6 inline-flex items-center gap-2 text-xs text-muted-foreground">
           <ShieldCheck className="h-3.5 w-3.5 text-primary/80" />
-          Ma'lumotlaringiz xavfsiz saqlanadi.
-        </div>
+          {translate("app.seller.malumotlaringiz_xavfsiz_saqlanadi")}</div>
       </div>
 
       {openRules ? (
@@ -412,6 +408,7 @@ function Field({
   children: React.ReactNode;
   className?: string;
 }) {
+  useI18n();
   return (
     <label className={`block ${className ?? ""}`}>
       <div className="mb-2 text-sm font-medium text-foreground/90">{label}</div>
@@ -435,6 +432,7 @@ function IconInput({
   type?: string;
   autoComplete?: string;
 }) {
+  useI18n();
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/60 px-4 py-3 transition focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/25">
@@ -455,65 +453,66 @@ function IconInput({
 // —————————————————————— Rules modal ——————————————————————
 type Rule = { icon: React.ReactNode; title: string; body: React.ReactNode };
 
-const RULES: Rule[] = [
+const RULES: Rule[] = localized(() => ([
   {
     icon: <ShieldCheck className="h-4 w-4" />,
-    title: "1. Agent sifati",
+    title: translate("app.seller.1_agent_sifati"),
     body:
-      "Marketplace'ga joylanayotgan har bir agent ishlaydigan holatda bo'lishi kerak. Agent kamida bir marta muallif tomonidan sinovdan o'tkazilgan bo'lishi shart.",
+      translate("app.seller.marketplacega_joylanayotgan_har_bir_agent_ishlaydigan"),
   },
   {
     icon: <X className="h-4 w-4" />,
-    title: "2. Taqiqlangan agentlar",
+    title: translate("app.seller.2_taqiqlangan_agentlar"),
     body: (
       <ul className="mt-1 list-disc space-y-1 pl-4 text-muted-foreground">
-        <li>qonunlarga zid faoliyatni osonlashtiruvchi agentlar;</li>
-        <li>kiberjinoyat, hacking, phishing yoki zararli dasturlar yaratishga yordam beruvchi agentlar;</li>
-        <li>firibgarlik, aldov yoki yolg'on ma'lumot tarqatishga xizmat qiluvchi agentlar;</li>
-        <li>noqonuniy qimor va tavakkalga asoslangan agentlar;</li>
-        <li>zo'ravonlik, nafrat yoki diskriminatsiyani targ'ib qiluvchi agentlar.</li>
+        <li>{translate("app.seller.qonunlarga_zid_faoliyatni_osonlashtiruvchi_agentlar")}</li>
+        <li>{translate("app.seller.kiberjinoyat_hacking_phishing_yoki_zararli_dasturlar")}</li>
+        <li>{translate("app.seller.firibgarlik_aldov_yoki_yolgon_malumot_tarqatishga")}</li>
+        <li>{translate("app.seller.noqonuniy_qimor_va_tavakkalga_asoslangan_agentlar")}</li>
+        <li>{translate("app.seller.zoravonlik_nafrat_yoki_diskriminatsiyani_targib_qiluvchi")}</li>
       </ul>
     ),
   },
   {
     icon: <ShieldCheck className="h-4 w-4" />,
-    title: "3. Maxfiylik",
+    title: translate("app.seller.3_maxfiylik"),
     body:
-      "Boshqa insonlarning shaxsiy ma'lumotlari, API kalitlari, maxfiy fayllari yoki ruxsatsiz manbalarga tayangan agentlarni sotish taqiqlanadi.",
+      translate("app.seller.boshqa_insonlarning_shaxsiy_malumotlari_api_kalitlari"),
   },
   {
     icon: <Sparkles className="h-4 w-4" />,
-    title: "4. Intellektual mulk",
+    title: translate("app.seller.4_intellektual_mulk"),
     body:
-      "Siz Marketplace'ga joylanayotgan agent sizga tegishli bo'lishi yoki uni tarqatish huquqiga ega bo'lishingiz kerak. Boshqa shaxslarning mulkini ruxsatsiz ishlatish taqiqlanadi.",
+      translate("app.seller.siz_marketplacega_joylanayotgan_agent_sizga_tegishli"),
   },
   {
     icon: <FileText className="h-4 w-4" />,
-    title: "5. Tavsif va va'dalar",
+    title: translate("app.seller.5_tavsif_va_vadalar"),
     body:
-      "Agent tavsifi haqiqatga mos bo'lishi kerak. Noto'g'ri yoki chalg'ituvchi ma'lumot berish mumkin emas. \"100% foyda beradi\", \"Har doim yutadi\" kabi kafolatlar taqiqlanadi.",
+      translate("app.seller.agent_tavsifi_haqiqatga_mos_bolishi_kerak"),
   },
   {
     icon: <Wallet className="h-4 w-4" />,
-    title: "6. Moliyaviy agentlar",
+    title: translate("app.seller.6_moliyaviy_agentlar"),
     body:
-      "Trading, investitsiya yoki moliyaviy xizmatlarga oid agentlar foyda kafolatlamasligi kerak. Foydalanuvchi o'z qarorlari va risklari uchun o'zi javobgardir.",
+      translate("app.seller.trading_investitsiya_yoki_moliyaviy_xizmatlarga_oid"),
   },
   {
     icon: <ShieldCheck className="h-4 w-4" />,
-    title: "7. Tekshiruv huquqi",
+    title: translate("app.seller.7_tekshiruv_huquqi"),
     body:
-      "Agentus Marketplace'ga yuborilgan har bir agentni tekshirish, baholash va rad etish huquqiga ega. Talablarga javob bermagan agentlar Marketplace'da nashr etilmaydi.",
+      translate("app.seller.agentus_marketplacega_yuborilgan_har_bir_agentni"),
   },
   {
     icon: <X className="h-4 w-4" />,
-    title: "8. Qoidabuzarlik va oqibatlar",
+    title: translate("app.seller.8_qoidabuzarlik_va_oqibatlar"),
     body:
-      "Qoidalarni buzgan agentlar Marketplace'dan olib tashlanadi. Takroriy qoidabuzarliklarda sotuvchi akkaunti vaqtincha yoki doimiy cheklanishi mumkin.",
+      translate("app.seller.qoidalarni_buzgan_agentlar_marketplacedan_olib_tashlanadi"),
   },
-];
+]));
 
 function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () => void }) {
+  useI18n();
   const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
@@ -530,7 +529,7 @@ function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
       <button
-        aria-label="Yopish"
+        aria-label={translate("app.workspace.yopish")}
         type="button"
         onClick={onClose}
         className="absolute inset-0 bg-background/70 backdrop-blur-md"
@@ -543,8 +542,7 @@ function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
             onClick={onClose}
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition hover:text-foreground"
           >
-            ← Orqaga
-          </button>
+            {translate("app.seller.orqaga")}</button>
           <button
             type="button"
             onClick={onClose}
@@ -559,13 +557,11 @@ function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
             <img src={planet} alt="" className="h-full w-full object-contain mix-blend-screen" />
           </div>
           <h2 className="relative text-2xl font-semibold tracking-tight">
-            Agentus Marketplace{" "}
-            <span className="text-primary">qoidalari</span>
+            {translate("app.seller.agentus_marketplace")}{" "}
+            <span className="text-primary">{translate("app.seller.qoidalari")}</span>
           </h2>
           <p className="relative mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
-            Ushbu qoidalar Marketplace'da xavfsiz, adolatli va ishonchli muhit yaratish uchun
-            ishlab chiqilgan. Har bir sotuvchi qoidalarga rioya qilishi shart.
-          </p>
+            {translate("app.seller.ushbu_qoidalar_marketplaceda_xavfsiz_adolatli_va")}</p>
 
           <div className="mt-6 space-y-3">
             {RULES.map((r) => (
@@ -604,8 +600,7 @@ function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
               {agreed ? <Check className="h-3.5 w-3.5" /> : null}
             </span>
             <span className="text-sm text-foreground/90">
-              Men Agentus Marketplace <span className="text-primary">qoidalari</span> bilan tanishdim va ularga roziman.
-            </span>
+              {translate("app.seller.men_agentus_marketplace")}<span className="text-primary">{translate("app.seller.qoidalari")}</span> {translate("app.seller.bilan_tanishdim_va_ularga_roziman")}</span>
           </label>
           <button
             type="button"
@@ -613,8 +608,7 @@ function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
             onClick={onAccept}
             className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] text-sm font-semibold text-primary-foreground shadow-[0_10px_40px_-10px_oklch(0.58_0.22_25/0.6)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
           >
-            Roziman
-          </button>
+            {translate("app.seller.roziman")}</button>
         </div>
       </div>
     </div>
@@ -623,6 +617,7 @@ function RulesModal({ onClose, onAccept }: { onClose: () => void; onAccept: () =
 
 // —————————————————————— Star field ——————————————————————
 function StarField() {
+  useI18n();
   const stars = useMemo(
     () =>
       Array.from({ length: 60 }, (_, i) => ({
@@ -661,6 +656,7 @@ function SellerDashboard({
   profile: SellerProfile;
   onSignOut: () => void;
 }) {
+  useI18n();
   void profile;
   return (
     <>
@@ -718,20 +714,16 @@ function SellerDashboard({
           {/* Title */}
           <h1 className="relative mt-10 text-center text-4xl font-semibold tracking-tight text-foreground sm:text-[42px]">
             <span className="mr-2 inline-block">🎉</span>
-            Tabriklaymiz!
-          </h1>
+            {translate("app.seller.tabriklaymiz")}</h1>
 
           <p className="relative mt-4 text-center text-base text-foreground/90">
-            Siz endi Agentus Marketplace sotuvchisisiz.
-          </p>
+            {translate("app.seller.siz_endi_agentus_marketplace_sotuvchisisiz")}</p>
 
           <div className="relative mx-auto mt-6 h-px w-10 bg-primary" />
 
           <p className="relative mx-auto mt-6 max-w-md text-center text-sm leading-relaxed text-muted-foreground">
-            Endi birinchi agentingizni Marketplace'ga
-            <br />
-            joylashtirishingiz mumkin.
-          </p>
+            {translate("app.seller.endi_birinchi_agentingizni_marketplacega")}<br />
+            {translate("app.seller.joylashtirishingiz_mumkin")}</p>
 
           <Link
             to="/seller/publish/$agentId"
@@ -739,7 +731,7 @@ function SellerDashboard({
             className="relative mx-auto mt-10 flex h-14 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-b from-primary to-[oklch(0.5_0.22_25)] px-6 text-base font-semibold text-primary-foreground shadow-[0_20px_60px_-15px_oklch(0.58_0.22_25/0.9)] transition hover:brightness-110"
           >
             <Rocket className="h-5 w-5" />
-            <span className="flex-1 text-center">Agent tanlash</span>
+            <span className="flex-1 text-center">{translate("app.seller.agent_tanlash")}</span>
             <ArrowRight className="h-5 w-5" />
           </Link>
 
@@ -749,8 +741,7 @@ function SellerDashboard({
             onClick={onSignOut}
             className="relative mx-auto mt-6 block text-[11px] text-muted-foreground/60 transition hover:text-muted-foreground"
           >
-            Demo: ro'yxatdan chiqish
-          </button>
+            {translate("app.seller.demo_royxatdan_chiqish")}</button>
         </div>
       </div>
     </>
@@ -758,6 +749,7 @@ function SellerDashboard({
 }
 
 function ConfettiDots() {
+  useI18n();
   const dots = useMemo(
     () =>
       Array.from({ length: 24 }, (_, i) => ({

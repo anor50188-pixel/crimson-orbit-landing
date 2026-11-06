@@ -4,7 +4,7 @@ const crimsonPlanet = "/images/workspace-crimson-planet.webp";
 const ringedPlanet = "/images/workspace-ringed-planet.webp";
 
 /** Static bitmap/canvas layers; only their transforms and opacity animate. */
-export function WorkspaceCosmos() {
+export function WorkspaceCosmos({ continuous = false }: { continuous?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -53,7 +53,7 @@ export function WorkspaceCosmos() {
     };
   }, []);
   return (
-    <div ref={root} className="workspace-cosmos" aria-hidden="true">
+    <div ref={root} className={`workspace-cosmos ${continuous ? 'continuous-cosmos' : ''}`} aria-hidden="true">
       <img className="cosmos-art" src={cosmos} width={1920} height={1088} alt="" draggable={false} />
       <img className="cosmos-crimson-planet" src={crimsonPlanet} alt="" draggable={false} />
       <img className="cosmos-ringed-planet" src={ringedPlanet} alt="" draggable={false} />
