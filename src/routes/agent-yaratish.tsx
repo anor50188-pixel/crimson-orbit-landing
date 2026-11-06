@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Circle,
   Clock,
+  Code2,
   Crown,
   Database,
   FileSpreadsheet,
