@@ -9,18 +9,20 @@ const flattened = { uz: flatten(uz), ru: flatten(ru), en: flatten(en) };
 type LeafPaths<T> = { [K in keyof T & string]: T[K] extends string ? K : `${K}.${LeafPaths<T[K]>}` }[keyof T & string];
 export type TranslationKey = LeafPaths<typeof uz>;
 let language: Language = 'uz';
+let renderLanguage: Language = 'uz';
 const listeners = new Set<() => void>();
 const missing = new Set<string>(dictionaryDifferences(dictionaries));
 export const getLanguage = () => language;
-export const getLocale = () => locales[language];
+export const getLocale = () => locales[renderLanguage];
 export function setLanguage(next: Language) {
   language = next;
+  renderLanguage = next;
   if (typeof document !== 'undefined') document.documentElement.lang = next;
   try { localStorage.setItem('agentus:language', next); } catch { /* Language still works without storage. */ }
   listeners.forEach(listener => listener());
 }
 export function t(key: TranslationKey, variables?: Variables): string {
-  const value = flattened[language][key];
+  const value = flattened[renderLanguage][key];
   if (value === undefined && import.meta.env.DEV && !missing.has(key)) {
     missing.add(key); console.error(`[i18n] Missing key: ${key}`);
     if (typeof window !== 'undefined') window.dispatchEvent(new Event('agentus:i18n-missing'));
@@ -28,13 +30,13 @@ export function t(key: TranslationKey, variables?: Variables): string {
   return interpolate(value ?? flattened.uz[key] ?? key, variables);
 }
 export function plural(key: 'agent' | 'tool', count: number) {
-  const category = pluralCategory(language, count);
+  const category = pluralCategory(renderLanguage, count);
   return t(`app.shared.${key}_${category}` as TranslationKey, { n: formatNumber(count) });
 }
-export const formatNumber = (number: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat(language === 'uz' ? 'ru-RU' : getLocale(), options).format(number);
+export const formatNumber = (number: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat(renderLanguage === 'uz' ? 'ru-RU' : getLocale(), options).format(number);
 export const formatDate = (date: string | number | Date, options?: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(getLocale(), options).format(new Date(date));
 export const relativeTime = (amount: number, unit: Intl.RelativeTimeFormatUnit) => {
-  if (language === 'uz' && ['hour','minute','day'].includes(unit)) {
+  if (renderLanguage === 'uz' && ['hour','minute','day'].includes(unit)) {
     const key = unit === 'hour' ? 'app.agents.v0_soat_oldin' : unit === 'minute' ? 'app.agents.v0_daqiqa_oldin' : 'app.agents.v0_kun_oldin';
     return t(key, { v0: formatNumber(Math.abs(amount)) });
   }
@@ -44,7 +46,7 @@ export const relativeTime = (amount: number, unit: Intl.RelativeTimeFormatUnit) 
 export function localized<T extends object>(factory: () => T): T {
   let cachedLanguage: Language | null = null;
   let cached: T | null = null;
-  const current = () => { if (!cached || cachedLanguage !== language) { cached = factory(); cachedLanguage = language; } return cached; };
+  const current = () => { if (!cached || cachedLanguage !== renderLanguage) { cached = factory(); cachedLanguage = renderLanguage; } return cached; };
   return new Proxy({} as T, {
     get: (_target, property) => { const value = Reflect.get(current(), property); return typeof value === 'function' ? value.bind(current()) : value; },
     has: (_target, property) => property in current(),
@@ -53,7 +55,13 @@ export function localized<T extends object>(factory: () => T): T {
   });
 }
 const LanguageContext = createContext<Language>('uz');
-export function useI18n() { const active = useContext(LanguageContext); return { language: active, setLanguage, t, plural, formatNumber, formatDate, relativeTime }; }
+export function useI18n() {
+  const active = useContext(LanguageContext);
+  // Deferred routes hydrate with the provider's Uzbek server snapshot first.
+  // Only the browser presentation cursor changes; server locale remains Uzbek.
+  if (typeof window !== 'undefined') renderLanguage = active;
+  return { language: active, setLanguage, t, plural, formatNumber, formatDate, relativeTime };
+}
 export function I18nProvider({ children }: { children: ReactNode }) {
   const active = useSyncExternalStore(listener => { listeners.add(listener); return () => { listeners.delete(listener); }; }, getLanguage, () => 'uz' as Language);
   const issues = useSyncExternalStore(listener => { if (typeof window === 'undefined') return () => {}; window.addEventListener('agentus:i18n-missing', listener); return () => window.removeEventListener('agentus:i18n-missing', listener); }, () => [...missing].join('\n'), () => '');

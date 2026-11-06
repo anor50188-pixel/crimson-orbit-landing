@@ -1027,8 +1027,6 @@ function GeneralTab({ tool, config }: { tool: ToolDef; config: ToolConfig }) {
         )}
       </div>
       <div className="rounded-lg border border-border/60 bg-card/40 p-3 text-[11px] text-muted-foreground">
-        <div className="mb-1 flex items-center gap-1.5 text-foreground">
-          <Info className="h-3.5 w-3.5 text-primary" /> {translate("app.tools.demo_rejimi")}</div>
         {translate("app.tools.backend_hozircha_ulanmagan_kiritilgan_qiymatlar_faqat")}</div>
     </div>
   );

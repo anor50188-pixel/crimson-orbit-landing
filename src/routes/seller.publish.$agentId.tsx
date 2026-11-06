@@ -595,7 +595,7 @@ function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => vo
         <div className="text-[11px] text-[oklch(0.85_0.15_65)]">{translate("app.seller.sizning_daromadingiz")}</div>
         <div className="mt-1 flex items-baseline gap-1.5">
           <span className="text-xl font-semibold text-foreground">${income}</span>
-          <span className="text-[11px] text-muted-foreground">/ sotuv</span>
+          <span className="text-[11px] text-muted-foreground">{translate("app.shared.per_sale")}</span>
         </div>
         <div className="mt-1 text-[11px] text-muted-foreground">{translate("app.seller.agentus_komissiyasi_20")}</div>
       </div>
@@ -606,7 +606,7 @@ function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => vo
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-1">
               <span className="text-lg font-semibold text-foreground">$4.20</span>
-              <span className="text-[11px] text-muted-foreground">/ oy</span>
+              <span className="text-[11px] text-muted-foreground">{translate("app.shared.per_month")}</span>
             </div>
             <span className="rounded-md bg-[oklch(0.55_0.15_160)]/15 px-2 py-0.5 text-[10px] font-medium text-[oklch(0.78_0.16_160)] ring-1 ring-inset ring-[oklch(0.55_0.15_160)]/30">
               {translate("app.tools.tavsiya_etilgan")}</span>

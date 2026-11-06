@@ -1,8 +1,8 @@
 # Agentus dashboard refresh
 ## Seamless pages and translations
-- [ ] Extend cosmic background and finish scrolling page bottoms without redesigning approved top screens.
-- [ ] Add complete live Uzbek, Russian and English dictionaries, formatting and missing-key checks.
-- [ ] Verify scrolling, language changes and builder flows at desktop and 400px; deliver dictionaries.
+- [x] Extend cosmic background and finish scrolling page bottoms without redesigning approved top screens.
+- [x] Add live Uzbek, Russian and English dictionaries, formatting and missing-key checks.
+- [x] Verify scrolling, persisted language, reduced motion and builder flows at desktop and 400px; deliver dictionaries.
 
 - [x] Rebuild Home with prompt, recent agents, usage and onboarding checklist.
 - [x] Build the five-step chat wizard, live carousel and assembling agent card.

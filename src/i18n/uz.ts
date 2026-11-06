@@ -1,4 +1,4 @@
-// Same keys in all languages; Uzbek is the source of truth.
+// Identical keys across Uzbek, Russian and English.
 const dictionary = {
   "app": {
     "common": {
@@ -795,8 +795,24 @@ const dictionary = {
       "tool_few": "{n} ta tool",
       "tool_many": "{n} ta tool",
       "tool_other": "{n} ta tool",
-      "card": "{n}-karta"
+      "card": "{n}-karta",
+      "students": "Talabalar",
+      "business": "Biznes",
+      "marketing": "Marketing",
+      "content": "Kontent",
+      "research": "Tadqiqot",
+      "productivity": "Samaradorlik",
+      "calculator": "Kalkulyator",
+      "date_time": "Sana/vaqt",
+      "pricing": "Narxlar",
+      "free": "Bepul",
+      "per_month": "/ oy",
+      "target_users": "Maqsad: {n}+ foydalanuvchi",
+      "marketing_smm": "Marketing / SMM",
+      "example_flow": "Mijoz → Lead → Taklif → Shartnoma",
+      "name_prefix": "Nomini: ",
+      "per_sale": "/ sotuv"
     }
   }
-};
+} as const;
 export default dictionary;
