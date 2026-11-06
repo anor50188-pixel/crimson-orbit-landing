@@ -1,3 +1,5 @@
+import { CosmicEnding } from '@/components/cosmic-ending';
+import { WorkspaceCosmos } from '@/components/workspace-cosmos';
 import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute } from '@tanstack/react-router';
 import { AboutSection, Directions, FeatureStrip, FinalCTA, HowItWorks, LandingFooter, LandingHeader, PricingSection, RoadmapSection, SpaceHero } from '@/components/landing-sections';
@@ -15,5 +17,5 @@ export const Route = createFileRoute('/')({
 });
 function Landing() {
   useI18n();
-  return <div className="agentus-landing"><a className="skip-link" href="#features">{t("app.landing.asosiy_mazmunga_otish")}</a><LandingHeader/><main><SpaceHero/><HowItWorks/><Directions/><AboutSection/><FeatureStrip/><RoadmapSection/><PricingSection/><FinalCTA/></main><LandingFooter/></div>;
+  return <div className="agentus-landing"><a className="skip-link" href="#features">{t("app.landing.asosiy_mazmunga_otish")}</a><WorkspaceCosmos continuous/><LandingHeader/><main><SpaceHero/><HowItWorks/><Directions/><AboutSection/><FeatureStrip/><RoadmapSection/><PricingSection/><FinalCTA/></main><CosmicEnding/></div>;
 }
