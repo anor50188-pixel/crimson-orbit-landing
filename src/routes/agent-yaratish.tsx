@@ -27,6 +27,7 @@ import {
   Menu,
   MessageCircle,
   Moon,
+  Mouse,
   Play,
   Plus,
   Search,
@@ -55,7 +56,13 @@ import {
   type KeyboardEvent,
 } from "react";
 
-import heroPlanet from "@/assets/hero-planet.jpg";
+import { Button as DesignButton, type ButtonProps } from "@/components/ui/button";
+import { WorkspaceCosmos } from "@/components/workspace-cosmos";
+import { KnowledgeCarousel } from "@/components/knowledge-carousel";
+
+function Button(props: ButtonProps) {
+  return <DesignButton variant="workspace" size="workspace" {...props} />;
+}
 import wordmark from "@/assets/agentus-wordmark.png";
 
 export const Route = createFileRoute("/agent-yaratish")({
@@ -243,8 +250,6 @@ function AgentCreatePage() {
   const [toast, setToast] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const [carouselPaused, setCarouselPaused] = useState(false);
   const timers = useRef<number[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLTextAreaElement>(null);
@@ -267,15 +272,6 @@ function AgentCreatePage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, typing, step, selectedTools]);
-
-  useEffect(() => {
-    if (phase !== "builder" || step !== 0 || carouselPaused) return;
-    const timer = window.setInterval(
-      () => setCarouselIndex((index) => (index + 1) % carouselCards.length),
-      4000,
-    );
-    return () => window.clearInterval(timer);
-  }, [phase, step, carouselPaused]);
 
   const showToast = (text: string) => setToast(text);
 
@@ -435,35 +431,34 @@ function AgentCreatePage() {
       />
 
       <main className={`workspace-main ${phase === "builder" ? "is-builder" : ""}`}>
-        <img className="workspace-horizon" src={heroPlanet} alt="" draggable={false} />
-        <div className="workspace-stars" aria-hidden="true" />
+        {phase === "home" && <WorkspaceCosmos />}
 
         <header className="workspace-topbar">
           <div className="topbar-title">
-            <button
+            <Button
               className="icon-button mobile-menu-button"
               type="button"
               onClick={() => setMobileMenu(true)}
               aria-label="Menyuni ochish"
             >
               <Menu />
-            </button>
+            </Button>
             <span>Agentus</span>
             <ChevronRight aria-hidden="true" />
             <strong>{phase === "home" ? "Asosiy" : "Agent yaratish"}</strong>
           </div>
           <div className="topbar-actions">
-            <button
+            <Button
               className="icon-button"
               type="button"
               onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
               aria-label={theme === "dark" ? "Yorug‘ mavzuga o‘tish" : "Tungi mavzuga o‘tish"}
             >
               {theme === "dark" ? <Sun /> : <Moon />}
-            </button>
+            </Button>
             <span className="language-chip">UZ</span>
             <div className="topbar-popover-wrap">
-              <button
+              <Button
                 className="icon-button notification-button"
                 type="button"
                 onClick={() => {
@@ -474,7 +469,7 @@ function AgentCreatePage() {
                 aria-expanded={notificationsOpen}
               >
                 <Bell />
-              </button>
+              </Button>
               {notificationsOpen && (
                 <div className="topbar-popover">
                   <strong>Bildirishnomalar</strong>
@@ -483,7 +478,7 @@ function AgentCreatePage() {
               )}
             </div>
             <div className="topbar-popover-wrap">
-              <button
+              <Button
                 className="topbar-avatar"
                 type="button"
                 onClick={() => {
@@ -494,7 +489,7 @@ function AgentCreatePage() {
                 aria-expanded={profileOpen}
               >
                 A
-              </button>
+              </Button>
               {profileOpen && (
                 <div className="topbar-popover profile-popover">
                   <strong>Azizbek</strong>
@@ -516,7 +511,7 @@ function AgentCreatePage() {
         ) : (
           <div className="builder-shell">
             <div className="builder-mobile-tabs" role="tablist" aria-label="Agent qurish ko‘rinishi">
-              <button
+              <Button
                 type="button"
                 role="tab"
                 aria-selected={mobilePanel === "chat"}
@@ -524,8 +519,8 @@ function AgentCreatePage() {
                 onClick={() => setMobilePanel("chat")}
               >
                 Chat
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 role="tab"
                 aria-selected={mobilePanel === "live"}
@@ -533,7 +528,7 @@ function AgentCreatePage() {
                 onClick={() => setMobilePanel("live")}
               >
                 Jonli ko‘rinish
-              </button>
+              </Button>
             </div>
             <div className="builder-grid">
               <ChatPanel
@@ -556,10 +551,6 @@ function AgentCreatePage() {
                 step={step}
                 flash={flash}
                 published={published}
-                carouselIndex={carouselIndex}
-                carouselPaused={carouselPaused}
-                onCarousel={setCarouselIndex}
-                onPause={setCarouselPaused}
                 onPublish={publish}
                 onTest={testAgent}
               />
@@ -620,9 +611,9 @@ function Sidebar({
           <img src={wordmark} alt="AGENTUS" draggable={false} />
         </Link>
         <span className="collapsed-brand">A.</span>
-        <button className="icon-button sidebar-close" type="button" onClick={onClose} aria-label="Menyuni yopish">
+        <Button className="icon-button sidebar-close" type="button" onClick={onClose} aria-label="Menyuni yopish">
           <X />
-        </button>
+        </Button>
       </div>
       <nav className="sidebar-nav" aria-label="Asosiy bo‘limlar">
         {items.map(({ label, icon: Icon, active, to, soon, badge }) => {
@@ -636,7 +627,7 @@ function Sidebar({
             );
           }
           return (
-            <button
+            <Button
               key={label}
               type="button"
               className={className}
@@ -650,35 +641,35 @@ function Sidebar({
             >
               <Icon />
               <span className="sidebar-label">{label}</span>
-              {badge && <span className="soon-badge">Tez orada</span>}
-            </button>
+              {badge && <span className="soon-badge"><Clock />Tez orada</span>}
+            </Button>
           );
         })}
       </nav>
       <div className="sidebar-bottom">
         <div className="plan-card">
-          <div className="plan-title"><Box /><strong>Pro Plan</strong></div>
+          <div className="plan-title"><Box /><strong>Pro Plan</strong><span className="pro-accent">Namuna</span></div>
           <p>Barcha premium imkoniyatlardan foydalaning.</p>
-          <button className="neon-button" type="button" onClick={() => onNotice("Rejani yangilash tez orada mavjud bo‘ladi")}>
+          <Button className="neon-button" type="button" onClick={() => onNotice("Rejani yangilash tez orada mavjud bo‘ladi")}>
             Rejani yangilash
-          </button>
+          </Button>
         </div>
         <div className="sidebar-usage">
           <UsageLine label="Agentlar" value="3 / 10" percent={30} />
           <UsageLine label="So‘rovlar" value="1 240 / 5 000" percent={24.8} />
         </div>
-        <button className="sidebar-user" type="button" onClick={() => onNotice("Azizbek · Pro tarif")} title="Azizbek, Pro tarif">
+        <Button className="sidebar-user" type="button" onClick={() => onNotice("Azizbek · Pro tarif")} title="Azizbek, Pro tarif">
           <span className="user-avatar"><User /></span>
           <span className="sidebar-label user-copy"><strong>Azizbek</strong><small>Pro tarif</small></span>
           <ChevronDown className="sidebar-label" />
-        </button>
+        </Button>
       </div>
     </>
   );
 
   return (
     <>
-      {mobileOpen && <button className="sidebar-overlay" type="button" onClick={onClose} aria-label="Menyuni yopish" />}
+      {mobileOpen && <Button className="sidebar-overlay" type="button" onClick={onClose} aria-label="Menyuni yopish" />}
       <aside className={`workspace-sidebar ${builder ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`}>
         {content}
       </aside>
@@ -719,7 +710,7 @@ function HomeView({
   return (
     <div className="home-content">
       <section className="home-hero">
-        <div className="hero-pill"><Sparkles /> Agent yaratish</div>
+        <div className="hero-pill"><Sparkles /> Agent yaratish <span className="demo-label">Namuna</span></div>
         <h1>Qanday agent quramiz, <span>Azizbek?</span></h1>
         <p className="hero-description">G‘oyangizni yozing — Agentus uni birga shakllantiramiz.</p>
         <div className="home-prompt-card">
@@ -734,20 +725,20 @@ function HomeView({
           />
           <div className="prompt-footer">
             <span><kbd>Ctrl</kbd><Plus /><kbd>Enter</kbd></span>
-            <button className="neon-button create-button" type="button" disabled={!prompt.trim()} onClick={submit}>
+            <Button className="neon-button create-button" type="button" disabled={!prompt.trim()} onClick={submit}>
               Yaratish <Send />
-            </button>
+            </Button>
           </div>
         </div>
         <div className="suggestion-grid">
           {suggestions.map(({ icon: Icon, text }) => (
-            <button key={text} type="button" onClick={() => onPrompt(text)}>
+            <Button key={text} type="button" onClick={() => onPrompt(text)}>
               <Icon /><span>{text}</span>
-            </button>
+            </Button>
           ))}
         </div>
         <a className="home-scroll-cue" href="#recent-agents" aria-label="So‘nggi agentlarga o‘tish">
-          <span />Pastga suring
+          <Mouse />Pastga suring
         </a>
       </section>
 
@@ -766,14 +757,14 @@ function HomeView({
                 </div>
                 <h3>{name}</h3>
                 <p>Oxirgi ishga tushirish: 2 soat oldin</p>
-                <button className="glass-button" type="button" onClick={() => onStart(`${name} agentini sinash`)}>
+                <Button className="glass-button" type="button" onClick={() => onStart(`${name} agentini sinash`)}>
                   <Play /> Sinash
-                </button>
+                </Button>
               </article>
             ))}
-            <button className="new-agent-card" type="button" onClick={onNew}>
+            <Button className="new-agent-card" type="button" onClick={onNew}>
               <Plus /><strong>Yangi agent</strong><span>G‘oyadan ishlaydigan agentgacha</span>
-            </button>
+            </Button>
           </div>
         </section>
 
@@ -851,7 +842,7 @@ function ChatPanel({
     <section className={`chat-panel ${mobilePanel === "chat" ? "mobile-active" : ""}`} aria-label="Agentus yordamchisi">
       <header className="chat-header">
         <span className="assistant-avatar"><Brain /></span>
-        <div><h2>Agentus yordamchisi</h2><p><span />Savol {Math.min(step + 1, 5)} / 5</p></div>
+        <div><h2>Agentus yordamchisi</h2><div className="chat-stepper" role="progressbar" aria-label="Agent yaratish bosqichlari" aria-valuemin={0} aria-valuemax={5} aria-valuenow={Math.min(step, 5)}>{questions.map((question, i) => <span key={question} className={i < step ? "complete" : i === step ? "current" : ""} title={question}>{i < step && <Check />}</span>)}</div></div>
         <span className="assistant-status" />
       </header>
       <div className="chat-messages">
@@ -870,23 +861,23 @@ function ChatPanel({
             {!ready && (
               <div className="quick-replies">
                 {step === 0 && (
-                  <><button type="button" onClick={() => onAnswer("Hisobot yig‘uvchi")}>Hisobot yig‘uvchi</button><button type="button" onClick={() => onAnswer("Daily Reporter")}>Daily Reporter</button></>
+                  <><Button type="button" onClick={() => onAnswer("Hisobot yig‘uvchi")}>Hisobot yig‘uvchi</Button><Button type="button" onClick={() => onAnswer("Daily Reporter")}>Daily Reporter</Button></>
                 )}
                 {step === 1 && (
                   <div className="icon-choice-grid">
                     {iconChoices.map(({ id, icon: Icon, label }) => (
-                      <button key={id} type="button" onClick={() => onAnswer(id, label)} aria-label={label}><Icon /><span>{label}</span></button>
+                      <Button key={id} type="button" onClick={() => onAnswer(id, label)} aria-label={label}><Icon /><span>{label}</span></Button>
                     ))}
                   </div>
                 )}
-                {step === 2 && directions.map((direction) => <button key={direction} type="button" onClick={() => onAnswer(direction)}>{direction}</button>)}
+                {step === 2 && directions.map((direction) => <Button key={direction} type="button" onClick={() => onAnswer(direction)}>{direction}</Button>)}
                 {step === 3 && (
                   <div className="tool-picker">
                     <div className="tool-choice-grid">
                       {toolChoices.map(({ name, icon: Icon }) => (
-                        <button key={name} type="button" className={selectedTools.includes(name) ? "selected" : ""} onClick={() => onToggleTool(name)} aria-pressed={selectedTools.includes(name)}>
+                        <Button key={name} type="button" className={selectedTools.includes(name) ? "selected" : ""} onClick={() => onToggleTool(name)} aria-pressed={selectedTools.includes(name)}>
                           <Icon />{name}{selectedTools.includes(name) && <Check />}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                     {selectedTools.includes("Telegram") && (
@@ -896,13 +887,13 @@ function ChatPanel({
                         <p><LockKeyhole />Shifrlangan holda saqlanadi</p>
                       </div>
                     )}
-                    <button className="neon-button tools-continue" type="button" disabled={selectedTools.length === 0} onClick={() => onAnswer(selectedTools)}>Davom etish <ArrowRight /></button>
+                    <Button className="neon-button tools-continue" type="button" disabled={selectedTools.length === 0} onClick={() => onAnswer(selectedTools)}>Davom etish <ArrowRight /></Button>
                   </div>
                 )}
                 {step === 4 && (
                   <div className="schedule-picker">
                     {schedules.map((schedule) => (
-                      <button key={schedule} type="button" onClick={() => onAnswer(schedule)}>{schedule}{schedule !== "Qo‘lda" && <span>Pro</span>}</button>
+                      <Button key={schedule} type="button" onClick={() => onAnswer(schedule)}>{schedule}{schedule !== "Qo‘lda" && <span>Pro</span>}</Button>
                     ))}
                   </div>
                 )}
@@ -911,13 +902,14 @@ function ChatPanel({
           </div>
         )}
         {typing && <TypingIndicator />}
+        {!typing && !ready && <aside className="chat-tip"><Sparkles /><div><strong>Tavsiya</strong><p>{["Yaxshi nom qisqa va aniq bo‘ladi.", "Ikonka agentingiz vazifasini ifodalasin.", "Maqsadingizga mos yo‘nalishni tanlang.", "Faqat kerakli toollarni tanlang.", "Avval qo‘lda sinab ko‘ring."][step]}</p></div></aside>}
         <div ref={chatEndRef} />
       </div>
       <div className="chat-composer-wrap">
         {ready && (
           <div className="edit-hints">
             {["Nomini o‘zgartir", "Tool qo‘sh", "Qoidalarni qisqartir"].map((hint) => (
-              <button key={hint} type="button" onClick={() => onComposer(hint === "Nomini o‘zgartir" ? "Nomini: " : hint)}>{hint}</button>
+              <Button key={hint} type="button" onClick={() => onComposer(hint === "Nomini o‘zgartir" ? "Nomini: " : hint)}>{hint}</Button>
             ))}
           </div>
         )}
@@ -928,7 +920,7 @@ function ChatPanel({
             placeholder={ready ? "Agentga o‘zgartirish yozing…" : step === 0 ? "Agent nomini yozing…" : "Javobingizni yozing…"}
             aria-label="Agentus yordamchisiga xabar"
           />
-          <button type="submit" disabled={!composer.trim() || typing} aria-label="Xabarni yuborish"><Send /></button>
+          <Button type="submit" disabled={!composer.trim() || typing} aria-label="Xabarni yuborish"><Send /></Button>
         </form>
       </div>
     </section>
@@ -959,10 +951,6 @@ function LivePanel({
   step,
   flash,
   published,
-  carouselIndex,
-  carouselPaused,
-  onCarousel,
-  onPause,
   onPublish,
   onTest,
 }: {
@@ -971,56 +959,25 @@ function LivePanel({
   step: number;
   flash: string;
   published: boolean;
-  carouselIndex: number;
-  carouselPaused: boolean;
-  onCarousel: (index: number) => void;
-  onPause: (paused: boolean) => void;
   onPublish: () => void;
   onTest: () => void;
 }) {
   const ready = step >= questions.length;
   return (
     <section className={`live-panel ${mobilePanel === "live" ? "mobile-active" : ""}`} aria-label="Agentning jonli ko‘rinishi">
-      <div className="live-panel-glow" aria-hidden="true" />
+      <WorkspaceCosmos />
       {ready && (
         <div className="live-actions">
-          <button className="glass-button" type="button" onClick={onTest}><Play />Sinab ko‘rish</button>
-          <button className="neon-button" type="button" onClick={onPublish}>
+          <Button className="glass-button" type="button" onClick={onTest}><Play />Sinab ko‘rish</Button>
+          <Button className="neon-button" type="button" onClick={onPublish}>
             {published ? <>Agentga o‘tish <ArrowRight /></> : <><Upload />Publish</>}
-          </button>
+          </Button>
         </div>
       )}
       {step === 0 ? (
         <div className="waiting-state">
           <div className="carousel-heading"><span>AGENTUS BILAN TANISHING</span><h2>Agentingiz shu yerda shakllanadi</h2></div>
-          <div
-            className="info-carousel"
-            onMouseEnter={() => onPause(true)}
-            onMouseLeave={() => onPause(false)}
-          >
-            {carouselCards.map(({ icon: Icon, title, text }, index) => {
-              let offset = index - carouselIndex;
-              if (offset > 3) offset -= carouselCards.length;
-              if (offset < -3) offset += carouselCards.length;
-              const style = {
-                "--offset": offset,
-                "--depth": Math.abs(offset),
-                zIndex: 10 - Math.abs(offset),
-              } as CSSProperties;
-              return (
-                <article className={`info-card ${Math.abs(offset) > 2 ? "hidden-card" : ""}`} style={style} key={title} aria-hidden={offset !== 0}>
-                  <span className="info-card-icon"><Icon /></span>
-                  <h3>{title}</h3><p>{text}</p>
-                  <span className="info-card-number">0{index + 1}</span>
-                </article>
-              );
-            })}
-          </div>
-          <div className="carousel-dots">
-            {carouselCards.map((card, index) => (
-              <button key={card.title} type="button" className={index === carouselIndex ? "active" : ""} onClick={() => onCarousel(index)} aria-label={`${index + 1}-karta`} aria-current={index === carouselIndex ? "true" : undefined} />
-            ))}
-          </div>
+          <KnowledgeCarousel cards={carouselCards} />
           <p className="carousel-caption">Agentus savollaringizga javob bergach agent shu yerda shakllanadi.</p>
         </div>
       ) : (
@@ -1111,9 +1068,9 @@ function ComingSoonModal({ section, onClose }: { section: SoonKey; onClose: () =
   return (
     <div className="modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <div className="coming-modal" role="dialog" aria-modal="true" aria-labelledby="coming-title" ref={dialogRef}>
-        <button className="icon-button modal-close" type="button" onClick={onClose} aria-label="Yopish"><X /></button>
+        <Button className="icon-button modal-close" type="button" onClick={onClose} aria-label="Yopish"><X /></Button>
         <span className="coming-icon"><Icon /></span>
-        <div className="coming-title"><h2 id="coming-title">{section}</h2><span className="soon-badge">Tez orada</span></div>
+        <div className="coming-title"><h2 id="coming-title">{section}</h2><span className="soon-badge"><Clock />Tez orada</span></div>
         <p className="coming-description">{content.description} Yangi imkoniyatlar tayyor bo‘lganda shu bo‘limda ochiladi.</p>
         <div className="coming-preview" aria-hidden="true">
           <div className="preview-sidebar"><span /><span /><span /></div>
@@ -1124,10 +1081,10 @@ function ComingSoonModal({ section, onClose }: { section: SoonKey; onClose: () =
           <ul>{content.bullets.map((bullet) => <li key={bullet}><Check />{bullet}</li>)}</ul>
         </div>
         <div className="coming-actions">
-          <button className="glass-button" type="button" onClick={onClose}>Yopish</button>
-          <button className="neon-button" type="button" disabled={registered} onClick={() => setRegistered(true)}>
+          <Button className="glass-button" type="button" onClick={onClose}>Yopish</Button>
+          <Button className={`neon-button ${registered ? "registered" : ""}`} type="button" disabled={registered} onClick={() => setRegistered(true)}>
             {registered ? <>Ro‘yxatga olindingiz <Check /></> : <>Chiqqanda xabar bering <Bell /></>}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
