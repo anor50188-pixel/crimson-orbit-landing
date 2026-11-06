@@ -17,3 +17,4 @@
 - All UI copy uses typed dictionary keys in src/i18n; add Uzbek, Russian and English entries together and run i18n:check so missing translations cannot ship unnoticed.
 - Keep route objects stable and translate presentation data at render time; persisted user input and internal state IDs must never change with locale.
 - Reuse CosmicEnding and continuous WorkspaceCosmos for scrolling pages; approved top-stage composition remains independent of lower-page atmosphere.
+- Keep SSR locale fixed to Uzbek and restore the browser language after hydration; deferred routes use the provider snapshot to avoid translated hydration mismatches.

@@ -365,12 +365,12 @@ function AgentCreatePage() {
       if (/^(nomini|название|name)\s*:/i.test(text.trim())) {
         field = "name";
         const name = text
-          .replace(/^nomini\s*:?/i, "")
+          .replace(/^(nomini|название|name)\s*:?/i, "")
           .replace(/o['‘’]zgartir/gi, "")
           .trim();
         return { ...current, name: name || current.name };
       }
-      if (normalized.includes("tool")) {
+      if (normalized.includes("tool") || normalized.includes("инструмент")) {
         field = "tools";
         return {
           ...current,
