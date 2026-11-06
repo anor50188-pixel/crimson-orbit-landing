@@ -56,7 +56,7 @@ import {
   type ActivityKind,
 } from "@/lib/tools-catalog";
 
-export const Route = localized(() => (createFileRoute("/mening-toollarim")({
+export const Route = createFileRoute("/mening-toollarim")({
   component: MeningToollarimPage,
   head: () => ({
     meta: [
@@ -72,7 +72,7 @@ export const Route = localized(() => (createFileRoute("/mening-toollarim")({
       },
     ],
   }),
-})));
+});
 
 const navItems = localized(() => ([
   { icon: Home, label: t("app.workspace.asosiy"), to: "/" as const },

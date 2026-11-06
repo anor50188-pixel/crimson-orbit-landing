@@ -4,7 +4,7 @@ import { ArrowLeft, Heart, Rocket, SlidersHorizontal, Users } from "lucide-react
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
 
-export const Route = localized(() => (createFileRoute("/biz-haqimizda")({
+export const Route = createFileRoute("/biz-haqimizda")({
   head: () => ({
     meta: [
       { title: t("app.common.biz_haqimizda_agentus") },
@@ -16,7 +16,7 @@ export const Route = localized(() => (createFileRoute("/biz-haqimizda")({
     ],
   }),
   component: BizHaqimizda,
-})));
+});
 
 const values = localized(() => ([
   {

@@ -4,7 +4,7 @@ import { CheckCircle2, Clock, CircleDashed, Target } from "lucide-react";
 import heroPlanet from "@/assets/hero-planet.jpg";
 import wordmark from "@/assets/agentus-wordmark.png";
 
-export const Route = localized(() => (createFileRoute("/roadmap")({
+export const Route = createFileRoute("/roadmap")({
   head: () => ({
     meta: [
       { title: t("app.common.agentus_development_roadmap_agentus") },
@@ -16,7 +16,7 @@ export const Route = localized(() => (createFileRoute("/roadmap")({
     ],
   }),
   component: Roadmap,
-})));
+});
 
 const phases = localized(() => ([
   {

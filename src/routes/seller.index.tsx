@@ -24,7 +24,7 @@ import {
 import wordmark from "@/assets/agentus-wordmark.png";
 import planet from "@/assets/hero-planet.jpg";
 
-export const Route = localized(() => (createFileRoute("/seller/")({
+export const Route = createFileRoute("/seller/")({
   component: SellerPage,
   head: () => ({
     meta: [
@@ -40,7 +40,7 @@ export const Route = localized(() => (createFileRoute("/seller/")({
       },
     ],
   }),
-})));
+});
 
 // —————————————————————— Storage ——————————————————————
 const SELLER_KEY = "agentus:seller-profile";

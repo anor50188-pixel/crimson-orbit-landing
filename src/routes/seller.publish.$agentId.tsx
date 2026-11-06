@@ -26,7 +26,7 @@ import {
 import wordmark from "@/assets/agentus-wordmark.png";
 import planet from "@/assets/hero-planet.jpg";
 
-export const Route = localized(() => (createFileRoute("/seller/publish/$agentId")({
+export const Route = createFileRoute("/seller/publish/$agentId")({
   component: SellerPublishPage,
   head: () => ({
     meta: [
@@ -42,7 +42,7 @@ export const Route = localized(() => (createFileRoute("/seller/publish/$agentId"
       },
     ],
   }),
-})));
+});
 
 // ————— Nav (mirrors seller.tsx sidebar) —————
 const mainNav = localized(() => ([

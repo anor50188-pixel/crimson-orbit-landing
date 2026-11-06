@@ -38,7 +38,7 @@ import {
   type ToolInstance,
 } from "@/lib/tools-catalog";
 
-export const Route = localized(() => (createFileRoute("/agentlarim")({
+export const Route = createFileRoute("/agentlarim")({
   component: AgentlarimPage,
   head: () => ({
     meta: [
@@ -54,7 +54,7 @@ export const Route = localized(() => (createFileRoute("/agentlarim")({
       },
     ],
   }),
-})));
+});
 
 type AgentStatus = "active" | "paused" | "error";
 

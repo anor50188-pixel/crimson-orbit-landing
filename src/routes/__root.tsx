@@ -69,7 +69,7 @@ function ErrorComponent({ error, reset }: import("@tanstack/react-router").Error
   );
 }
 
-export const Route = localized(() => (createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -98,7 +98,7 @@ export const Route = localized(() => (createRootRouteWithContext<{ queryClient: 
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
-})));
+});
 
 function RootShell({ children }: { children: ReactNode }) {
   useI18n();

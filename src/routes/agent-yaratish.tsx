@@ -68,7 +68,7 @@ function Button(props: ButtonProps) {
 import { AIText, WorkspaceCommandPalette } from "@/components/workspace-command";
 const wordmark = "/images/agentus-wordmark.webp";
 
-export const Route = localized(() => (createFileRoute("/agent-yaratish")({
+export const Route = createFileRoute("/agent-yaratish")({
   component: AgentCreatePage,
   head: () => ({
     meta: [
@@ -86,7 +86,7 @@ export const Route = localized(() => (createFileRoute("/agent-yaratish")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-})));
+});
 
 type Phase = "home" | "builder";
 type SoonKey = "Marketplace" | "Mening toollarim" | "Sotuvchi paneli" | "To'lovlar";
@@ -213,17 +213,17 @@ const soonContent: Record<
     description: t("app.workspace.tayyor_agentlarni_toping_va_bir_bosishda"),
     bullets: [t("app.workspace.reyting_va_sharhlar"), t("app.workspace.kategoriyalar_boyicha_qidiruv"), t("app.workspace.bir_bosishda_ornatish")],
   },
-  t("app.workspace.mening_toollarim"): {
+  "Mening toollarim": {
     icon: Wrench,
     description: t("app.workspace.barcha_ulangan_toollarni_bir_joyda_boshqaring"),
     bullets: [t("app.workspace.tokenlarni_xavfsiz_saqlash"), t("app.workspace.toolni_bir_nechta_agentga_ulash"), t("app.workspace.foydalanish_statistikasi")],
   },
-  t("app.workspace.sotuvchi_paneli"): {
+  "Sotuvchi paneli": {
     icon: Crown,
     description: t("app.workspace.agentingizni_soting_va_daromad_oling"),
     bullets: [t("app.workspace.75_daromad_sizga"), t("app.workspace.sotuvlar_va_reyting_statistikasi"), t("app.workspace.oylik_tolovlar")],
   },
-  t("app.workspace.tolovlar"): {
+  "To'lovlar": {
     icon: Wallet,
     description: t("app.workspace.obuna_va_tolovlarni_qulay_boshqaring"),
     bullets: [t("app.workspace.payme_va_click_orqali_tolov"), t("app.workspace.tolov_tarixi"), t("app.workspace.tarifni_bir_bosishda_yangilash")],
