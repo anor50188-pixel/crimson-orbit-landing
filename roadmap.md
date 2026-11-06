@@ -5,7 +5,7 @@
 - [x] Verify the complete flow on desktop and mobile, including keyboard interactions.
 
 ## Cinematic dashboard revision
-- [ ] Improve readability, navigation, Home, chat and coming-soon presentation without removing existing flows.
-- [ ] Add layered planet imagery and a continuous interactive knowledge carousel.
-- [ ] Verify desktop/mobile wizard, carousel controls, theme and reduced motion.
+- [x] Improve readability, navigation, Home, chat and coming-soon presentation without removing existing flows.
+- [x] Add layered planet imagery and a continuous interactive knowledge carousel.
+- [x] Verify desktop/mobile wizard, carousel controls, theme and reduced motion.
 - [ ] Hide the Lovable badge (blocked: permission declined).

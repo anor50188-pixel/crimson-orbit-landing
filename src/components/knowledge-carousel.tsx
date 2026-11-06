@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ArrowLeft, ArrowRight, Bot, Wrench, Users, Clock, Database, Shield, Store, Send, Globe, Zap, Check, type LucideIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bot, Wrench, Users, Clock, Database, Shield, Store, Send, Globe, Zap, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Card = { icon: LucideIcon; title: string; text: string };
@@ -27,9 +27,11 @@ export function KnowledgeCarousel({ cards }: { cards: Card[] }) {
   const paused = useRef(false);
   const dragging = useRef(false);
   const pointer = useRef(0);
+  const holdUntil = useRef(0);
   const [active, setActive] = useState(0);
   const [focused, setFocused] = useState(false);
   const choose = (index: number) => {
+    holdUntil.current = performance.now() + 3500;
     const current = Math.round(-angle.current / (360 / cards.length));
     let delta = index - ((current % cards.length + cards.length) % cards.length);
     if (delta > cards.length / 2) delta -= cards.length;
@@ -51,7 +53,7 @@ export function KnowledgeCarousel({ cards }: { cards: Card[] }) {
         const distance = target.current - angle.current;
         angle.current += reduced.matches ? distance : distance * .13;
         if (Math.abs(distance) < .04) { angle.current = target.current; target.current = null; }
-      } else if (!paused.current && !dragging.current && !reduced.matches) angle.current -= delta * 360 / 14000;
+      } else if (!paused.current && !dragging.current && !reduced.matches && time > holdUntil.current) angle.current -= delta * 360 / 14000;
       element.style.transform = `translateZ(calc(-1 * var(--ring-radius))) rotateY(${angle.current}deg)`;
       children.forEach((child, i) => {
         const degrees = angle.current + i * 360 / cards.length;
