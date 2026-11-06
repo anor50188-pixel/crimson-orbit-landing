@@ -12,3 +12,4 @@
 - Keep the marketing landing page as flat section components with page-scoped CSS tokens and lightweight CSS/RAF animation; this preserves the existing application theme and makes later template porting straightforward.
 - Keep marketing tariffs and roadmap values in a browser-safe data module; the landing shows proposals, never grants subscriptions or simulates backend features.
 - Keep the agent-builder prototype self-contained with page-scoped tokens, local React state and lightweight CSS motion; it uses the uploaded static mock flow and makes no API calls.
+- Share the workspace cosmos and knowledge carousel as presentation components; draw star layers once and animate transforms with RAF, preserving reduced-motion and the local prototype boundary.
