@@ -122,6 +122,15 @@ const suggestions = localized(() => ([
   { icon: FileSpreadsheet, text: t("app.workspace.excel_fayllar_bilan_ishlovchi_agent") },
 ]));
 
+const agentTemplateChips: { id: string; icon: LucideIcon; label: string; prompt: string }[] = localized(() => ([
+  { id: "content-writer", icon: BookOpen, label: t("app.workspace.kontent_yozuvchi"), prompt: t("app.workspace.kontent_yozuvchi_tavsifi") },
+  { id: "coding-assistant", icon: Code2, label: t("app.workspace.kod_yordamchisi"), prompt: t("app.workspace.kod_yordamchisi_tavsifi") },
+  { id: "data-analyst", icon: BarChart3, label: t("app.workspace.malumot_tahlilchisi"), prompt: t("app.workspace.malumot_tahlilchisi_tavsifi") },
+  { id: "marketing-assistant", icon: Megaphone, label: t("app.workspace.marketing_yordamchisi"), prompt: t("app.workspace.marketing_yordamchisi_tavsifi") },
+  { id: "customer-bot", icon: MessageCircle, label: t("app.workspace.mijozlar_boti"), prompt: t("app.workspace.mijozlar_boti_tavsifi") },
+  { id: "task-planner", icon: CalendarClock, label: t("app.workspace.reja_tuzuvchi"), prompt: t("app.workspace.reja_tuzuvchi_tavsifi") },
+]));
+
 const recentAgents = localized(() => ([
   { name: t("app.workspace.hisobot_yiguvchi"), icon: BarChart3, status: t("app.agents.faol") },
   { name: t("app.workspace.kontent_yordamchisi"), icon: Instagram, status: "Qoralama" },
@@ -908,7 +917,12 @@ function ChatPanel({
   onSubmit: (event?: FormEvent) => void;
 }) {
   useI18n();
+  const composerRef = useRef<HTMLInputElement>(null);
   const ready = step >= questions.length;
+  const chooseTemplate = (prompt: string) => {
+    onComposer(prompt);
+    composerRef.current?.focus();
+  };
   return (
     <section className={`chat-panel ${mobilePanel === "chat" ? "mobile-active" : ""}`} aria-label={t("app.workspace.agentus_yordamchisi")}>
       <header className="chat-header">
@@ -977,6 +991,15 @@ function ChatPanel({
         <div ref={chatEndRef} />
       </div>
       <div className="chat-composer-wrap">
+        {!ready && (
+          <div className="agent-template-chips" role="group" aria-label={t("app.workspace.agent_shablonlari")}>
+            {agentTemplateChips.map(({ id, icon: Icon, label, prompt }) => (
+              <Button key={id} type="button" title={prompt} onClick={() => chooseTemplate(prompt)}>
+                <Icon />{label}
+              </Button>
+            ))}
+          </div>
+        )}
         {ready && (
           <div className="edit-hints">
             {[t("app.workspace.nomini_ozgartir"), t("app.workspace.tool_qosh"), t("app.workspace.qoidalarni_qisqartir")].map((hint) => (
@@ -986,6 +1009,7 @@ function ChatPanel({
         )}
         <form className="chat-composer" onSubmit={onSubmit}>
           <input
+            ref={composerRef}
             value={composer}
             onChange={(event) => onComposer(event.target.value)}
             placeholder={ready ? t("app.workspace.agentga_ozgartirish_yozing") : step === 0 ? t("app.workspace.agent_nomini_yozing") : t("app.workspace.javobingizni_yozing")}
