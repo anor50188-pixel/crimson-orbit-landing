@@ -30,6 +30,10 @@ export const Route = createFileRoute("/seller/publish/$agentId")({
   head: () => ({
     meta: [
       { title: "Agentni Marketplace'ga chiqarish — Agentus" },
+      { property: "og:title", content: "Agentni nashrga tayyorlash — Agentus" },
+      { property: "og:description", content: "Agent nomi, tavsifi, narxi va rasmlarini bosqichma-bosqich tayyorlash demo muhiti." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:

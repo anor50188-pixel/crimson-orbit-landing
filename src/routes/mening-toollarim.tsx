@@ -60,6 +60,10 @@ export const Route = createFileRoute("/mening-toollarim")({
   head: () => ({
     meta: [
       { title: "Mening toollarim — Agentus" },
+      { property: "og:title", content: "Mening toollarim — Agentus" },
+      { property: "og:description", content: "Agentus tool katalogi, o'rnatilgan toollar va konfiguratsiyalarni boshqaring." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
