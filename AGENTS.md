@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the marketing landing page as flat section components with page-scoped CSS tokens and lightweight CSS/RAF animation; this preserves the existing application theme and makes later template porting straightforward.
+- Keep marketing tariffs and roadmap values in a browser-safe data module; the landing shows proposals, never grants subscriptions or simulates backend features.
