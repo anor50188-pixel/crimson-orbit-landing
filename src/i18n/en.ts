@@ -1,4 +1,4 @@
-// Same keys in all languages; Uzbek is the source of truth.
+// Identical keys across Uzbek, Russian and English.
 const dictionary = {
   "app": {
     "common": {
@@ -810,7 +810,8 @@ const dictionary = {
       "target_users": "Target: {n}+ users",
       "marketing_smm": "Marketing / SMM",
       "example_flow": "Client → Lead → Proposal → Contract",
-      "name_prefix": "Name: "
+      "name_prefix": "Name: ",
+      "per_sale": "/ sale"
     }
   }
 } as const;
