@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { I18nProvider } from '@/i18n';
+import { ScrollAtmosphere } from '@/components/cosmic-ending';
 
 function NotFoundComponent() {
   useI18n();
@@ -108,7 +110,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <I18nProvider>{children}<ScrollAtmosphere/></I18nProvider>
         <Scripts />
       </body>
     </html>
