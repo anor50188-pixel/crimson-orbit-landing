@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import cosmos from "@/assets/workspace-cosmos.jpg";
+import crimsonPlanet from "@/assets/workspace-crimson-planet.jpg";
+import ringedPlanet from "@/assets/workspace-ringed-planet.jpg";
 
 /** Static bitmap/canvas layers; only their transforms and opacity animate. */
 export function WorkspaceCosmos() {
@@ -53,6 +55,8 @@ export function WorkspaceCosmos() {
   return (
     <div ref={root} className="workspace-cosmos" aria-hidden="true">
       <img className="cosmos-art" src={cosmos} width={1920} height={1088} alt="" draggable={false} />
+      <img className="cosmos-crimson-planet" src={crimsonPlanet} alt="" draggable={false} />
+      <img className="cosmos-ringed-planet" src={ringedPlanet} alt="" draggable={false} />
       <canvas ref={canvas} className="cosmos-stars" />
       <div className="cosmos-stars cosmos-stars-secondary" />
       <div className="cosmos-smoke" />
