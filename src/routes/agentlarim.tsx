@@ -825,7 +825,7 @@ function AgentCard(props: CardProps) {
             ) : (
               <MenuItem
                 icon={Trash2}
-                label=translate("app.tools.ochirish")
+                label={translate("app.tools.ochirish")}
                 onClick={() => setConfirmDelete(true)}
                 danger
               />

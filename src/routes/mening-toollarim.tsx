@@ -1006,7 +1006,7 @@ function GeneralTab({ tool, config }: { tool: ToolDef; config: ToolConfig }) {
       <div className="grid grid-cols-2 gap-3">
         <InfoCell label="Dasturchi" value={tool.developer ?? "Agentus"} />
         <InfoCell label="Versiya" value={`v${tool.version}`} />
-        <InfoCell label=translate("app.seller.kategoriya") value={tool.category} />
+        <InfoCell label={translate("app.seller.kategoriya")} value={tool.category} />
         <InfoCell label={translate("app.tools.oxirgi_yangilanish")} value={formatDate(tool.updatedAt)} />
         {tool.purchasedAt && <InfoCell label={translate("app.tools.sotib_olingan")} value={formatDate(tool.purchasedAt)} />}
         <InfoCell label={translate("app.tools.oxirgi_sinov")} value={formatDateTime(config.lastTestedAt)} />

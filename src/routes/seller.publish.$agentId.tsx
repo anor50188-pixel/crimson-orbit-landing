@@ -634,7 +634,7 @@ function Step2Pricing({ onNext, onBack }: { onNext: () => void; onBack: () => vo
             selected={source === "agentus"}
             onClick={() => setSource("agentus")}
             title={translate("app.seller.agentus_orqali")}
-            badge=translate("app.workspace.pro")
+            badge={translate("app.workspace.pro")}
             desc={translate("app.seller.agentus_api_xarajatlarni_boshqaradi")}
           />
         </div>
