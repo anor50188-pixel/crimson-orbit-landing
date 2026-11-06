@@ -136,14 +136,14 @@ const questions = localized(() => ([
 ]));
 
 const directions = localized(() => ([
-  "Talabalar",
-  "Biznes",
-  "Marketing",
+  t("app.shared.students"),
+  t("app.shared.business"),
+  t("app.shared.marketing"),
   t("app.workspace.qollabquvvatlash"),
-  "Kontent",
-  "Tadqiqot",
+  t("app.shared.content"),
+  t("app.shared.research"),
   t("app.workspace.talim"),
-  "Samaradorlik",
+  t("app.shared.productivity"),
 ]));
 
 const iconChoices: { id: string; icon: LucideIcon; label: string }[] = localized(() => ([
@@ -162,8 +162,8 @@ const toolChoices: { name: string; icon: LucideIcon }[] = localized(() => ([
   { name: t("app.workspace.web_qidiruv"), icon: Search },
   { name: t("app.workspace.http_sorov"), icon: Globe },
   { name: t("app.workspace.xotira"), icon: Database },
-  { name: "Kalkulyator", icon: Calculator },
-  { name: "Sana/vaqt", icon: Clock },
+  { name: t("app.shared.calculator"), icon: Calculator },
+  { name: t("app.shared.date_time"), icon: Clock },
 ]));
 
 const schedules = localized(() => ([t("app.workspace.qolda"), t("app.workspace.har_soat"), t("app.workspace.har_kuni"), t("app.workspace.har_hafta")]));
@@ -362,7 +362,7 @@ function AgentCreatePage() {
     const normalized = text.toLowerCase();
     let field = "instructions";
     setDraft((current) => {
-      if (normalized.startsWith("nomini")) {
+      if (/^(nomini|название|name)\s*:/i.test(text.trim())) {
         field = "name";
         const name = text
           .replace(/^nomini\s*:?/i, "")
@@ -979,7 +979,7 @@ function ChatPanel({
         {ready && (
           <div className="edit-hints">
             {[t("app.workspace.nomini_ozgartir"), t("app.workspace.tool_qosh"), t("app.workspace.qoidalarni_qisqartir")].map((hint) => (
-              <Button key={hint} type="button" onClick={() => onComposer(hint === t("app.workspace.nomini_ozgartir") ? "Nomini: " : hint)}>{hint}</Button>
+              <Button key={hint} type="button" onClick={() => onComposer(hint === t("app.workspace.nomini_ozgartir") ? t("app.shared.name_prefix") : hint)}>{hint}</Button>
             ))}
           </div>
         )}

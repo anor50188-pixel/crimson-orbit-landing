@@ -795,8 +795,23 @@ const dictionary = {
       "tool_few": "{n} tools",
       "tool_many": "{n} tools",
       "tool_other": "{n} tools",
-      "card": "Card {n}"
+      "card": "Card {n}",
+      "students": "Students",
+      "business": "Business",
+      "marketing": "Marketing",
+      "content": "Content",
+      "research": "Research",
+      "productivity": "Productivity",
+      "calculator": "Calculator",
+      "date_time": "Date and time",
+      "pricing": "Pricing",
+      "free": "Free",
+      "per_month": "/ month",
+      "target_users": "Target: {n}+ users",
+      "marketing_smm": "Marketing / SMM",
+      "example_flow": "Client → Lead → Proposal → Contract",
+      "name_prefix": "Name: "
     }
   }
-};
+} as const;
 export default dictionary;

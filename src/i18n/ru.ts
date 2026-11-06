@@ -795,8 +795,23 @@ const dictionary = {
       "tool_few": "{n} инструмента",
       "tool_many": "{n} инструментов",
       "tool_other": "{n} инструмента",
-      "card": "Карточка {n}"
+      "card": "Карточка {n}",
+      "students": "Студенты",
+      "business": "Бизнес",
+      "marketing": "Маркетинг",
+      "content": "Контент",
+      "research": "Исследования",
+      "productivity": "Продуктивность",
+      "calculator": "Калькулятор",
+      "date_time": "Дата и время",
+      "pricing": "Цены",
+      "free": "Бесплатно",
+      "per_month": "/ месяц",
+      "target_users": "Цель: {n}+ пользователей",
+      "marketing_smm": "Маркетинг / SMM",
+      "example_flow": "Клиент → Лид → Предложение → Договор",
+      "name_prefix": "Название: "
     }
   }
-};
+} as const;
 export default dictionary;
