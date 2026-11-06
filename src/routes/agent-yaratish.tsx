@@ -1,3 +1,5 @@
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { CosmicEnding } from '@/components/cosmic-ending';
 import { t, localized, useI18n, getLocale, formatNumber, relativeTime, plural } from '@/i18n';
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -233,6 +235,8 @@ const soonContent: Record<
 let messageId = 0;
 const nextMessageId = () => ++messageId;
 
+function soonLabel(key: SoonKey) { return key === "Marketplace" ? t("app.workspace.marketplace") : key === "Mening toollarim" ? t("app.workspace.mening_toollarim") : key === "Sotuvchi paneli" ? t("app.workspace.sotuvchi_paneli") : t("app.workspace.tolovlar"); }
+
 function AgentCreatePage() {
   useI18n();
   const navigate = useNavigate();
@@ -444,7 +448,7 @@ function AgentCreatePage() {
       />
 
       <main className={`workspace-main ${phase === "builder" ? "is-builder" : ""}`}>
-        {phase === "home" && <WorkspaceCosmos />}
+        {phase === "home" && <><WorkspaceCosmos /><WorkspaceCosmos continuous /></>}
 
         <header className="workspace-topbar">
           <div className={`topbar-title ${phase === "home" ? "home-topbar-title" : ""}`}>
@@ -470,7 +474,7 @@ function AgentCreatePage() {
             >
               {theme === "dark" ? <Sun /> : <Moon />}
             </Button>
-            <div className="language-segments" aria-label={t("app.workspace.til")}><Button type="button" aria-pressed="true">{t("app.workspace.uz")}</Button>{["RU", "EN"].map(language => <Button key={language} type="button" onClick={() => showToast(t("app.workspace.v0_tili_tez_orada_mavjud_boladi", { v0: language }))}>{language}</Button>)}</div>
+            <LanguageSwitcher/>
             <div className="topbar-popover-wrap">
               <Button
                 className="icon-button notification-button"
@@ -578,7 +582,7 @@ function AgentCreatePage() {
         ...suggestions.map(item => ({ label: item.text, group: "Shablonlar", run: () => { goHome(); setPrompt(item.text); later(() => promptRef.current?.focus(), 100); } })),
         { label: t("app.workspace.asosiy"), group: "Sahifalar", run: goHome },
         { label: t("app.workspace.agentlarim"), group: "Sahifalar", run: () => { navigate({ to: "/agentlarim" }); } },
-        ...(["Marketplace", t("app.workspace.mening_toollarim"), t("app.workspace.sotuvchi_paneli"), t("app.workspace.tolovlar")] as SoonKey[]).map(label => ({ label, group: "Sahifalar", run: () => setSoon(label) })),
+        ...(["Marketplace", "Mening toollarim", "Sotuvchi paneli", "To'lovlar"] as SoonKey[]).map(label => ({ label: soonLabel(label), group: t("app.workspace.asosiy_bolimlar"), run: () => setSoon(label) })),
       ]} />}
       {soon && <ComingSoonModal section={soon} onClose={() => setSoon(null)} />}
       {toast && (
@@ -760,7 +764,7 @@ function HomeView({
             <div className="composer-options">
               <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "templates" ? null : "templates")} aria-expanded={popover === "templates"}><Layers />{t("app.workspace.shablon_tanlash")}</Button>
               <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "tools" ? null : "tools")} aria-expanded={popover === "tools"}><Wrench />{t("app.workspace.toollar")}</Button>
-              <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "language" ? null : "language")} aria-expanded={popover === "language"}>{t("app.workspace.til_uz")}</Button>
+              <Button className="composer-chip" type="button" onClick={() => setPopover(value => value === "language" ? null : "language")} aria-expanded={popover === "language"}>{t("app.shared.language")}: {getLocale().slice(0,2).toUpperCase()}</Button>
             </div>
             <span className="prompt-shortcut">⌘ ↵</span>
             <Button className="neon-button create-button" type="button" disabled={!prompt.trim()} onClick={submit}>
@@ -770,7 +774,7 @@ function HomeView({
           {popover && <div className="composer-popover">
             {popover === "templates" && suggestions.map((item, index) => <Button key={item.text} type="button" onClick={() => chooseSuggestion(item.text)}>{shortLabels[index]}<ArrowRight /></Button>)}
             {popover === "tools" && <><p>{t("app.workspace.toollar_agent_yaratish_bosqichida_tanlanadi")}</p><Button type="button" onClick={() => { setPopover(null); onSoon("Mening toollarim"); }}>{t("app.workspace.mening_toollarim")}<ArrowRight /></Button></>}
-            {popover === "language" && <>{["UZ", "RU", "EN"].map(language => <Button key={language} type="button" onClick={() => { setPopover(null); if (language !== "UZ") onNotice(t("app.workspace.v0_tili_tez_orada_mavjud_boladi", { v0: language })); }}>{language}{language === "UZ" && <Check />}</Button>)}</>}
+            {popover === "language" && <LanguageSwitcher/>}
           </div>}
         </div>
         <div className="suggestion-grid">
@@ -798,7 +802,7 @@ function HomeView({
                   <StatusPill status={status} />
                 </div>
                 <h3>{name}</h3>
-                <p>{t("app.workspace.oxirgi_ishga_tushirish_2_soat_oldin")}</p>
+                <p>{t("app.shared.last_run", { time: relativeTime(-2, "hour") })}</p>
                 <Button className="glass-button" type="button" onClick={() => onStart(t("app.workspace.v0_agentini_sinash", { v0: name }))}>
                   <Play /> {t("app.workspace.sinash")}</Button>
               </article>
@@ -834,6 +838,7 @@ function HomeView({
           <div className="section-title-row"><div><span className="section-kicker">{t("app.workspace.goyadan_boshlang")}</span><h2>{t("app.workspace.tayyor_shablonlar")}</h2></div><Button className="text-link" type="button" onClick={() => { promptRef.current?.focus(); promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); setPopover("templates"); }}>{t("app.workspace.barchasini_korish")}<ArrowRight /></Button></div>
           <div className="template-rail">{suggestions.map(({ icon: Icon, text }, index) => <article className={`template-tile template-${index}`} key={text}><div className="template-cover"><Icon /></div><h3>{shortLabels[index]}</h3><Button className="glass-button" type="button" onClick={() => { chooseSuggestion(text); promptRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>{t("app.workspace.tanlash")}<ArrowRight /></Button></article>)}</div>
         </section>
+        <CosmicEnding onCreate={onNew}/>
       </div>
     </div>
   );
@@ -841,7 +846,10 @@ function HomeView({
 
 function StatusPill({ status }: { status: string }) {
   useI18n();
-  const className = status === "Faol" ? "active" : status === "Qoralama" ? "draft" : "paused";
+  const active = status === "Faol" || status === t("app.agents.faol");
+  const draft = status === "Qoralama" || status === t("app.workspace.qoralama");
+  const className = active ? "active" : draft ? "draft" : "paused";
+  status = active ? t("app.agents.faol") : draft ? t("app.workspace.qoralama") : t("app.workspace.toxtatilgan");
   return <span className={`status-pill ${className}`}><span />{status}</span>;
 }
 
@@ -866,7 +874,7 @@ function UsageMetric({ icon: Icon, label, value, percent }: { icon: LucideIcon; 
     return () => { observer.disconnect(); cancelAnimationFrame(frame); };
   }, [total]);
   return <div className="usage-metric" ref={root}>
-    <div className="metric-ring" style={{ "--progress": `${percent * 3.6}deg` } as CSSProperties}><strong>{count.toLocaleString("en-US").replaceAll(",", " ")}</strong><small>/ {limit}</small></div>
+    <div className="metric-ring" style={{ "--progress": `${percent * 3.6}deg` } as CSSProperties}><strong>{formatNumber(count)}</strong><small>/ {formatNumber(Number(limit?.replaceAll(" ", "")))}</small></div>
     <p><Icon />{label}</p><small>{t("app.workspace.joriy_oy")}</small>
   </div>;
 }
@@ -1137,7 +1145,7 @@ function ComingSoonModal({ section, onClose }: { section: SoonKey; onClose: () =
       <div className="coming-modal" role="dialog" aria-modal="true" aria-labelledby="coming-title" ref={dialogRef}>
         <Button className="icon-button modal-close" type="button" onClick={onClose} aria-label={t("app.workspace.yopish")}><X /></Button>
         <span className="coming-icon"><Icon /></span>
-        <div className="coming-title"><h2 id="coming-title">{section}</h2><span className="soon-badge"><Clock />{t("app.workspace.tez_orada")}</span></div>
+        <div className="coming-title"><h2 id="coming-title">{soonLabel(section)}</h2><span className="soon-badge"><Clock />{t("app.workspace.tez_orada")}</span></div>
         <p className="coming-description">{content.description} {t("app.workspace.yangi_imkoniyatlar_tayyor_bolganda_shu_bolimda")}</p>
         <div className="coming-preview" aria-hidden="true">
           <div className="preview-sidebar"><span /><span /><span /></div>
