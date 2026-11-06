@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import cosmos from "@/assets/workspace-cosmos.jpg";
-import crimsonPlanet from "@/assets/workspace-crimson-planet.jpg";
-import ringedPlanet from "@/assets/workspace-ringed-planet.jpg";
+const cosmos = "/images/workspace-cosmos.webp";
+const crimsonPlanet = "/images/workspace-crimson-planet.webp";
+const ringedPlanet = "/images/workspace-ringed-planet.webp";
 
 /** Static bitmap/canvas layers; only their transforms and opacity animate. */
 export function WorkspaceCosmos() {

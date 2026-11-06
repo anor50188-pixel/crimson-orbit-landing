@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ArrowLeft, ArrowRight, Bot, Wrench, Users, Clock, Database, Shield, Store, Send, Globe, Zap, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AIText } from "@/components/workspace-command";
 
 type Card = { icon: LucideIcon; title: string; text: string };
 const icons = [Bot, Wrench, Users, Clock, Database, Shield, Store];
@@ -80,7 +81,7 @@ export function KnowledgeCarousel({ cards }: { cards: Card[] }) {
       onPointerCancel={() => { dragging.current = false; }}>
       <div className="knowledge-ring" ref={ring}>
         {cards.map((card, index) => <article key={card.title} className={`info-card knowledge-accent-${index}`}>
-          <MiniIllustration index={index} /><h3>{card.title}</h3><p>{card.text}</p><span className="info-card-number">0{index + 1}</span>
+          <MiniIllustration index={index} /><h3><AIText text={card.title} /></h3><p><AIText text={card.text} /></p><span className="info-card-number">0{index + 1}</span>
         </article>)}
       </div>
     </div>
